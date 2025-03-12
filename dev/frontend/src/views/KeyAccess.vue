@@ -139,6 +139,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 20px;
 }
 
 .barre h1 {
@@ -157,4 +158,21 @@ footer {
   text-align: center;
   margin-top: auto; /* S'assure que le footer est toujours en bas */
 }
+
+.fr-btn {
+  background-color: #95e257;
+}
+
+.fr-btn:hover {
+  background-color: #7fc04b;
+}
+
+.fr-grid-row button {
+  background-color: #ff4140;
+}
+
+.fr-grid-row button:hover {
+  background-color: #ce0500; /* Nouvelle couleur de fond lors du survol */
+}
+
 </style>

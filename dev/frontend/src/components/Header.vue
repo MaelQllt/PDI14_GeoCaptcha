@@ -20,14 +20,14 @@
                                 <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
                             </p>
                         </a>
-                        <p class="fr-header__service-tagline">Interface Administrateur des GéoCaptcha</p>
+                        <p class="fr-header__service-tagline">Interface Administrateur du GéoCaptcha</p>
                     </div>
                 </div>
                 <div class="fr-header__tools">
                     <div class="fr-header__tools-links">
                         <ul class="fr-btns-group">
                             <li>
-                                <a href="/geo-captcha" class="fr-btn fr-icon-earth-fill fr-btn">Création de GéoCaptcha</a>
+                                <a href="/geo-captcha" class="fr-btn fr-icon-earth-fill fr-btn">Générer un GéoCaptcha</a>
                             </li>
                             <li>
                                 <a href="/dashboard" class="fr-btn fr-icon-dashboard-3-line fr-btn">Dashboard</a>

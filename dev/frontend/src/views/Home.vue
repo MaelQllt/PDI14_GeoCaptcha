@@ -1,57 +1,87 @@
 <template>
   <div class="home">
-    <h1 class="fr-h1">Bienvenue sur le panneau d'administration</h1>
-    <div class="fr-btn-group">
-      <button @click="navigateToGeoCaptcha" class="fr-btn fr-btn--primary">Créer un GéoCaptcha</button>
-      <button @click="navigateToDashboard" class="fr-btn fr-btn--primary">Tableau de Bord</button>
-      <button @click="navigateToKeyGeneration" class="fr-btn fr-btn--primary">Créer une clé d'accès</button>
-    </div>
+    <!-- Bloc d'introduction -->
+    <section class="intro">
+      <div class="fr-container">
+        <h1 class="fr-title">GeoCaptcha - Interface Administrateur</h1>
+        <p class="fr-text">
+          Le système GeoCaptcha permet de protéger les accès à certaines ressources géographiques en validant les utilisateurs par des défis basés sur la localisation. 
+          Cette interface administrateur est dédiée à la gestion des GeoCaptchas. 
+          Vous y trouverez des outils pour créer, gérer et suivre les défis géographiques tout en permettant une gestion fine des clés d'accès.
+        </p>
+        <p class="fr-text">
+          Grâce à cette interface, vous pourrez administrer l’ensemble des GeoCaptchas, consulter les statistiques en temps réel sur leur utilisation et gérer les clés d'accès des utilisateurs. 
+          Une solution clé en main pour garantir la sécurité et l'intégrité des données géographiques tout en optimisant l'expérience utilisateur.
+        </p>
+      </div>
+    </section>
+
+    <!-- Bloc image/logo cliquable -->
+    <section class="logo-section">
+      <div class="fr-container">
+        <a href="https://qlf-geocaptcha.ign.fr/api/v1/" target="_blank" rel="noopener noreferrer">
+          <img src="@/assets/logo.png" alt="Logo GeoCaptcha" class="logo-img" />
+        </a>
+      </div>
+    </section>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Home',
-  methods: {
-    navigateToGeoCaptcha() {
-      this.$router.push({ name: 'geo-captcha' });
-    },
-    navigateToDashboard() {
-      this.$router.push({ name: 'dashboard' });
-    },
-    navigateToKeyGeneration() {
-      this.$router.push({ name: 'key-access' });
-    }
-  }
-}
+<script setup>
+// Aucun changement nécessaire ici
 </script>
 
 <style scoped>
-.fr-btn-group {
+/* Assurer que le contenu commence sous le header */
+.home {
+  padding-top: 110px; /* Hauteur du header + marge de sécurité */
+  padding-bottom: 2rem; /* Assurer un espace avant le footer */
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  margin-top: 30px;
+  align-items: center;
 }
 
-.fr-btn {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.5;
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-    border: 2px solid transparent;
-    border-radius: 0.25rem;
-    background-color: transparent;
-    border-color: #90c149;
-    color: #90c149;
-    outline-color: #90c149;
-}
-
-button {
+/* Section d'introduction */
+.intro {
+  background-color: #f5f5f5;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
+  max-width: 800px; /* Limite la largeur du bloc */
+  margin-bottom: 2rem;
+}
+
+.fr-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #90c149;
+  text-align: center; /* Centrage du titre */
+}
+
+.fr-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #555;
+  margin-bottom: 1.5rem;
+  text-align: center; /* Centrage du texte */
+}
+
+/* Section image/logo */
+.logo-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-img {
+  width: 200px; /* Ajuste la taille du logo */
+  height: auto;
+  max-width: 100%;
 }
 </style>
+
+
+
+

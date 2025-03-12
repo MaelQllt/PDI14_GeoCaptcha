@@ -1,0 +1,27 @@
+.fr-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .fr-btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.5;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 0.25rem;
+      background-color: transparent;
+      border-color: #90c149;
+      color: #90c149;
+      outline-color: #90c149;
+  }
+  
+  button {
+    width: 100%;
+  }

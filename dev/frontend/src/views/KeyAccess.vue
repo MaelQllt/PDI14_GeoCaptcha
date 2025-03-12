@@ -115,5 +115,5 @@ export default {
 .key-generation {
   padding: 1em;
 }
-  </style>
+</style>
   

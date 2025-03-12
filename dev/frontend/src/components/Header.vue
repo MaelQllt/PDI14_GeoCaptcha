@@ -67,11 +67,11 @@ function setActiveButton(button) {
   left: 0;
   width: 100%;
   z-index: 1000; /* Assure qu'il est au-dessus des autres éléments */
-  background-color: white; /* Fond blanc */
+  background-color: #fff; /* Fond blanc */
   display: flex; /* Utilisation de flex pour gérer la disposition */
   justify-content: space-between; /* Logo à gauche et boutons à droite */
   padding: 0 0; /* Espacement autour du header */
-  border-bottom: 0px solid #e0e0e0; /* Bordure sous le header */
+  border-bottom: 0px solid #fff; /* Bordure sous le header */
   height: 100px; /* Hauteur du header */
 }
 
@@ -111,7 +111,7 @@ body {
 .fr-nav {
   display: flex;
   align-items: stretch; /* Étire les boutons pour qu'ils occupent toute la hauteur du header */
-  background-color: var(--fr-color-white); /* Fond blanc */
+  background-color: #fff; /* Fond blanc */
   width: 100%; /* Prend toute la largeur du header */
 }
 
@@ -139,7 +139,7 @@ body {
   border: none !important;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #333 !important;
+  color: #000 !important;
   text-align: center;
   outline: none !important;
   display: flex;
@@ -151,9 +151,10 @@ body {
 
 /* Effet au survol */
 .fr-btn:hover {
-  background-color: rgba(144, 192, 73, 0.1) !important; /* Arrière-plan vert transparent */
-  color: #333 !important;
+  background-color: rgba(149, 226, 87, 0.5) !important; /* Arrière-plan vert transparent */
+  color: #000 !important; /* Texte vert transparent */
 }
+
 
 .fr-btn:hover::after {
   content: ''; /* Crée un élément après le bouton */
@@ -162,17 +163,17 @@ body {
   left: 0;
   width: 100%;
   height: 3px; /* Épaisseur de la ligne */
-  background-color: #5a8e3f; /* Ligne verte foncée */
+  background-color: #68a532; /* Ligne verte foncée */
 }
 
 /* Effet au clic (focus) */
 .fr-btn:active {
-  background-color: rgba(144, 192, 73, 0.2) !important; /* Arrière-plan vert transparent quand on clique */
+  background-color: rgba(149, 226, 87, 0.5) !important; /* Arrière-plan vert transparent quand on clique */
 }
 
 /* Style pour le bouton actif */
 .fr-btn.active {
-  background-color: #90c050 !important; /* Couleur de fond vert pour le bouton actif */
-  color: white !important; /* Texte en blanc pour le bouton actif */
+  background-color: #7fc04b!important; /* Couleur de fond vert pour le bouton actif */
+  color: #fff !important; /* Texte en blanc pour le bouton actif */
 }
 </style>

@@ -13,13 +13,31 @@
     <nav class="fr-nav">
       <ul class="fr-nav__list">
         <li class="fr-nav__item">
-          <router-link to="/dashboard" class="fr-btn">Gestion des GeoCaptchas</router-link>
+          <router-link
+            to="/dashboard"
+            class="fr-btn"
+            :class="{ active: activeButton === 'dashboard' }"
+            @click="setActiveButton('dashboard')"
+            >Gestion des GeoCaptchas</router-link
+          >
         </li>
         <li class="fr-nav__item">
-          <router-link to="/geo-captcha" class="fr-btn">Générer des GeoCaptchas</router-link>
+          <router-link
+            to="/geo-captcha"
+            class="fr-btn"
+            :class="{ active: activeButton === 'geo-captcha' }"
+            @click="setActiveButton('geo-captcha')"
+            >Générer des GeoCaptchas</router-link
+          >
         </li>
         <li class="fr-nav__item">
-          <router-link to="/key-access" class="fr-btn">Gestion des clés d'accès</router-link>
+          <router-link
+            to="/key-access"
+            class="fr-btn"
+            :class="{ active: activeButton === 'key-access' }"
+            @click="setActiveButton('key-access')"
+            >Gestion des clés d'accès</router-link
+          >
         </li>
       </ul>
     </nav>
@@ -27,7 +45,16 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import logo from "@/assets/logo.svg"; // Chemin de ton logo
+
+// Variable pour suivre l'état du bouton actif
+const activeButton = ref('');
+
+// Fonction pour définir le bouton actif
+function setActiveButton(button) {
+  activeButton.value = button;
+}
 </script>
 
 <style scoped>
@@ -143,4 +170,9 @@ body {
   background-color: rgba(144, 192, 73, 0.2) !important; /* Arrière-plan vert transparent quand on clique */
 }
 
+/* Style pour le bouton actif */
+.fr-btn.active {
+  background-color: #90c050 !important; /* Couleur de fond vert pour le bouton actif */
+  color: white !important; /* Texte en blanc pour le bouton actif */
+}
 </style>

@@ -5,12 +5,16 @@
       <div class="fr-container">
         <h1 class="fr-title">GeoCaptcha - Interface Administrateur</h1>
         <p class="fr-text">
-          Le système GeoCaptcha permet de protéger les accès à certaines ressources géographiques en validant les utilisateurs par des défis basés sur la localisation. 
-          Cette interface administrateur est dédiée à la gestion des GeoCaptchas. 
-          Vous y trouverez des outils pour créer, gérer et suivre les défis géographiques tout en permettant une gestion fine des clés d'accès.
-        </p>
+          Lorsque vous arrivez sur un site internet, il vous est souvent demandé si vous êtes un
+          humain ou un robot. Pour prouver votre humanité vous devez résoudre un captcha, la plu-
+          part du temps sous la forme de déchiffrage de texte ou bien de séquence d’images. L’IGN,
+          par la Mission Architecture Réseau et Sécurité (MARS), a conçu un système novateur
+          dans ce domaine, les GéoCaptcha. Ces captchas reposent sur des données géographiques,
+          l’objectif est de proposer aux utilisateurs un nouveau type de captcha qui se veut ludique
+          et respectueux de la vie privée tout en sensibilisant le public à la donnée géospatiale.
+</p>
         <p class="fr-text">
-          Grâce à cette interface, vous pourrez administrer l’ensemble des GeoCaptchas, consulter les statistiques en temps réel sur leur utilisation et gérer les clés d'accès des utilisateurs. 
+          Grâce à cette interface, vous pourrez administrer l’ensemble des GeoCaptchas, consulter les statistiques sur leur utilisation et gérer les clés d'accès des utilisateurs. 
           Une solution clé en main pour garantir la sécurité et l'intégrité des données géographiques tout en optimisant l'expérience utilisateur.
         </p>
       </div>

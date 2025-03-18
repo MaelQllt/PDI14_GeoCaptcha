@@ -164,27 +164,37 @@ export default {
     },
 
     async rejectGeocaptcha() {
-      try {
-        // Supprimer le géocaptcha de la liste (envoi d'une requête DELETE vers le serveur)
-        const response = await fetch(`http://localhost:3002/geocaptchas/${this.selectedGeocaptcha.id}`, {
-          method: 'DELETE',
-        });
+  this.isRejecting = true;
+  try {
+    // Suppression du géocaptcha
+    const response = await fetch(`http://localhost:3002/geocaptchas/${this.selectedGeocaptcha.id}`, {
+      method: 'DELETE',
+    });
 
-        if (!response.ok) {
-          throw new Error("Erreur lors de la suppression du Géocaptcha");
-        }
-
-        // Filtrer l'élément supprimé de la liste des géocaptchas
-        this.items = this.items.filter(item => item.id !== this.selectedGeocaptcha.id);
-
-        // Fermer le modal après la suppression
-        this.closeModal();
-        this.closeConfirmationModal(); // Fermer la fenêtre modale de confirmation après la suppression
-
-      } catch (error) {
-        console.error("Erreur lors de la suppression:", error);
-      }
+    if (!response.ok) {
+      throw new Error("Erreur lors de la suppression du Géocaptcha");
     }
+
+    // Mise à jour de la liste des géocaptchas
+    this.items = this.items.filter(item => item.id !== this.selectedGeocaptcha.id);
+
+    // Réactualisation des métriques
+    this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
+    const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
+    const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
+    this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+    // Fermeture des modaux
+    this.closeModal();
+    this.closeConfirmationModal();
+  } catch (error) {
+    console.error("Erreur lors de la suppression:", error);
+  } finally {
+    this.isRejecting = false;
+  }
+}
+
+
   },
   mounted() {
     window.scrollTo(0, 0);

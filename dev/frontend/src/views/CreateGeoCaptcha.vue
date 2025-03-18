@@ -50,7 +50,7 @@ export default {
   methods: {
     createGeoCaptcha() {
       // Logique pour créer un GéoCaptcha (à implémenter)
-      alert(`GéoCaptcha créé avec une difficulté : ${this.difficulty}`);
+      alert(`GéoCaptcha du département ${this.selectedDepartement} créé avec une difficulté : ${this.difficulty}`);
     }
   }
 }

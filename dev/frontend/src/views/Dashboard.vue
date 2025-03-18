@@ -51,10 +51,10 @@
                   <div class="fr-modal__content">
                     <div>
                       <p><strong>ID:</strong> {{ selectedGeocaptcha.id }}</p>
-                      <p><strong>Attempts:</strong> {{ selectedGeocaptcha.attempts }}</p>
-                      <p><strong>Successes:</strong> {{ selectedGeocaptcha.successes }}</p>
-                      <p><strong>Failures:</strong> {{ selectedGeocaptcha.failures }}</p>
-                      <p><strong>Accuracy:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
+                      <p><strong>Essais:</strong> {{ selectedGeocaptcha.attempts }}</p>
+                      <p><strong>Réussites:</strong> {{ selectedGeocaptcha.successes }}</p>
+                      <p><strong>Echecs:</strong> {{ selectedGeocaptcha.failures }}</p>
+                      <p><strong>Précision:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
                     </div>
 
                     <!-- Colonne de l'image -->

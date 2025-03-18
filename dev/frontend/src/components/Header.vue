@@ -5,6 +5,7 @@
         <!-- Logo -->
         <a href="/" class="logo-container">
           <img :src="logo" alt="Logo" class="fr-logo" />
+          <span class="logo-text">CaptchAdmin</span> 
         </a>
       </div>
     </div>
@@ -100,6 +101,12 @@ body {
   width: auto;
   height: 80px;
   object-fit: contain; /* Garde les proportions du logo */
+}
+
+.logo-text {
+  font-size: 1.5rem; /* Taille de texte ajustée */
+  font-weight: bold;
+  margin-left: 10px; /* Espace entre le logo et le texte */
 }
 
 /* Effet au survol du logo */

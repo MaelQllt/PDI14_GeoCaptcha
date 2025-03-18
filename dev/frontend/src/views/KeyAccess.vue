@@ -145,7 +145,7 @@ export default {
 
     // Méthode pour récupérer les clés depuis le serveur
     async fetchKeys() {
-      const response = await fetch("http://localhost:3001/keys");
+      const response = await fetch("http://localhost:3002/keys");
       this.apiKeys = await response.json();
     },
 
@@ -158,7 +158,7 @@ export default {
       };
 
       try {
-        await fetch("http://localhost:3000/keys", {
+        await fetch("http://localhost:3002/keys", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newKey)
@@ -178,7 +178,7 @@ export default {
       if (!id) return;
 
       try {
-        const response = await fetch(`http://localhost:3001/keys/${id}`, { method: "DELETE" });
+        const response = await fetch(`http://localhost:3002/keys/${id}`, { method: "DELETE" });
 
         if (!response.ok) {
           throw new Error("Erreur lors de la suppression de la clé.");

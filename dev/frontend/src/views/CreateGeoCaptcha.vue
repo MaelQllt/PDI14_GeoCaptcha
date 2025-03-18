@@ -1,24 +1,73 @@
 <template>
-  <div class="geo-captcha">
+  <div class="generation">
     <h1 class="fr-h1">Créez vos GéoCaptchas</h1>
     <form @submit.prevent="createGeoCaptcha">
       <div class="fr-input-group">
-        <label class="fr-label" for="difficulty">Difficulté :</label>
+        <label-choix class="fr-label" for="difficulty">Difficulté :</label-choix>
         <select id="difficulty" v-model="difficulty" class="fr-select">
           <option value="easy">Facile</option>
           <option value="medium">Moyenne</option>
           <option value="hard">Difficile</option>
         </select>
-
-        <label class="fr-label" for="departement">Département :</label>
-        <select id="departement" v-model="selectedDepartement" class="fr-select">
-          <option v-for="dept in availableDepartements" :key="dept.numero" :value="dept.numero">
-            {{ dept.nom }} ({{ dept.numero }})
-          </option>
-        </select>
+        <fieldset class="fr-fieldset" id="radio" aria-labelledby="radio-legend radio-messages">
+          <label-choix class="fr-fieldset__legend--regular fr-fieldset__legend" id="radio-legend">
+            Choix de la zone géographique :
+          </label-choix>
+          <div class="fr-fieldset__element">
+            <div class="fr-radio-group">
+              <input value="1" type="radio" id="radio-1" name="radio" @click = "closeDepartement" checked>
+              <label class="fr-label" for="radio-1">
+                  Aléatoire
+              </label>
+            </div>
+          </div>
+          <div class="fr-fieldset__element">
+            <div class="fr-radio-group">
+              <input value="2" type="radio" id="radio-2" name="radio" @click ="openDepartement">
+              <label class="fr-label" for="radio-2">
+                  Département
+              </label>
+            </div>
+          </div>
+          <div class="fr-messages-group" id="radio-messages" aria-live="polite">
+          </div>
+        </fieldset>
+          
+          <select id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }">
+            <option value="" disabled selected>Choisissez votre département</option>
+            <option v-for="dept in availableDepartements" :key="dept.numero" :value="dept.numero">
+              {{ dept.nom }} ({{ dept.numero }})
+            </option>
+          </select>
       </div>
       
-      <button type="submit" class="fr-btn fr-btn--primary">Créer le GéoCaptcha</button>
+      <button type="button" class="fr-btn" @click="openModal">Générer</button>
+
+      <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+        <div class="modal-content" @click.stop>
+          <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__content">
+                        <h1 id="modal-overlay-title" class="fr-modal__title">
+                            Vous avez généré ce GéoCaptcha :
+                        </h1>
+                        <img src="../assets/logo.png" alt="geocaptcha">
+                    </div>
+                    <div class="fr-modal__footer">
+                        <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                              <button type="button" id="button-6047" class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" @click ="closeModal">Conserver</button>
+                              <button type="button" id="button-6048" class="fr-btn" @click="closeModal">Supprimer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+      </div>
+
     </form>
   </div>
 </template>
@@ -29,7 +78,9 @@ export default {
     return {
       difficulty: 'easy',
       selectedDepartement: "",
-      departements: []
+      departements: [],
+      isModalOpen: false, // Ajout pour gérer l'affichage de la modale
+      isDepartement: false
     };
   },
 
@@ -38,8 +89,9 @@ export default {
       return this.departements.filter(dept => dept.disponibilite === "Disponible");
     }
   },
+
   mounted() {
-    fetch("http://localhost:3002/departements") // Récupération des départements depuis le backend
+    fetch("http://localhost:3002/departements") 
       .then(response => response.json())
       .then(data => {
         this.departements = data;
@@ -49,33 +101,41 @@ export default {
   
   methods: {
     createGeoCaptcha() {
-      // Logique pour créer un GéoCaptcha (à implémenter)
       alert(`GéoCaptcha du département ${this.selectedDepartement} créé avec une difficulté : ${this.difficulty}`);
+    },
+
+    openModal() {
+      this.isModalOpen = true;
+      document.body.style.overflow = 'hidden'
+      
+    },
+
+    closeModal() {
+      this.isModalOpen = false;
+      document.body.style.overflow = 'auto';
+    },
+
+    openDepartement(){
+      this.isDepartement = true;
+    },
+
+    closeDepartement(){
+      this.isDepartement = false;
     }
   }
 }
 </script>
 
 <style scoped>
-
-.geo-captcha {
+.generation {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  text-align: center;
-  padding: 10em;
-}
-
-
-.geo-captcha {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  text-align: center;
+  text-align: left;
+  margin-left: 8em;
+  margin-right: 8em;
 }
 
 form {
@@ -91,7 +151,6 @@ form {
   background-color: #95e257;
 }
 
-
 .fr-btn:hover {
   background-color: #7fc04b;
 }
@@ -101,4 +160,58 @@ form {
   outline: 2px solid #95e257;
 }
 
+/* MODAL STYLES */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/*.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}*/
+
+
+
+.fr-modal__content img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.fr-modal__content {
+  padding: 1em;
+}
+
+
+/* Style pour le bouton "Supprimer" */
+#button-6048 {
+  background-color: #f44336; /* Rouge */
+  color: white;
+}
+
+#button-6048:hover {
+  background-color: #da190b; /* Changement de couleur au survol */
+}
+
+label-choix {
+  margin-top: 20px;
+}
+
+.hidden {
+  visibility: hidden; /* Cache l'élément mais garde son espace */
+  opacity: 0; /* Le rend invisible */
+}
 </style>

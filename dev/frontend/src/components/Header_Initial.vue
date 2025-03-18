@@ -48,10 +48,7 @@
   </script>
   
   <style scoped>
-  .fr-header {
-    background-color: white;
-  }
-
+  
   .fr-responsive-img {
     margin-right: -22px;
   }

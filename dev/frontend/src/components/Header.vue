@@ -41,8 +41,8 @@
             </div>
         </div>
     </div>
-</header>
-  </template>
+    </header>
+</template>
   
   <script>
   export default {
@@ -51,10 +51,7 @@
   </script>
   
   <style scoped>
-  .fr-header {
-    background-color: white;
-  }
-
+  
   .fr-responsive-img {
     margin-right: -22px;
   }

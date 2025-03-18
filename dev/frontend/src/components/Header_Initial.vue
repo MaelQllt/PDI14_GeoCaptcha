@@ -6,7 +6,7 @@
                 <div class="fr-header__brand fr-enlarge-link">
                     <div class="fr-header__brand-top">
                         <div class="fr-header__operator">
-                            <img class="fr-responsive-img" style="max-width:4rem;" src="../assets/Logo 3.PNG" alt="À MODIFIER" />
+                            <img class="fr-responsive-img" style="max-width:4rem;" src="../assets/Logo1_Diego.PNG" alt="À MODIFIER" />
                             <!-- L’alternative de l’image (attribut alt) doit impérativement être renseignée et reprendre le texte visible dans l’image -->
                         </div> 
                         <div class="fr-header__navbar">
@@ -55,5 +55,5 @@
   .fr-responsive-img {
     margin-right: -22px;
   }
-  
+
   </style>

@@ -7,7 +7,7 @@
         <form @submit.prevent="openConfirmationModal">
           <div class="fr-input-group">
             <label class="fr-label" for="key-name">Nom :</label>
-            <input type="text" id="key-name" v-model="keyName" class="fr-input" placeholder="Nom de la clé d'accès" />
+            <input type="text" id="key-name" v-model="keyName" class="fr-input" placeholder="Nom associé à la clé d'accès" />
           </div>
 
           <div class="fr-input-group">
@@ -352,7 +352,10 @@ footer {
 .fr-input {
   width: 100%;
   padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+}
+
+.fr-input:focus,
+.fr-select:focus {
+  outline: 2px solid #7fc04b;
 }
 </style>

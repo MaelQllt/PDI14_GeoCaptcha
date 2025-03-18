@@ -53,7 +53,7 @@ export default {
   methods: {
     async fetchData() {
   try {
-    const response = await fetch("http://localhost:3001/geocaptchas");
+    const response = await fetch("http://localhost:3002/geocaptchas");
     if (!response.ok) {
       throw new Error("Erreur lors de la récupération des données");
     }

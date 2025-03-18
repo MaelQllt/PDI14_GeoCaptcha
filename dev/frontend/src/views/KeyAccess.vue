@@ -1,15 +1,10 @@
 <template>
   <div class="page-container">
-    <!-- Header, qui reste toujours en haut -->
-    <header>
-      <!-- Ajoutez ici le code du header -->
-    </header>
-
     <!-- Contenu principal de la page -->
     <main class="main-content">
       <div class="key-generation">
         <h1 class="fr-h1">Création de clé d'accès API</h1>
-        <form @submit.prevent="generateApiKey">
+        <form @submit.prevent="openConfirmationModal">
           <div class="fr-input-group">
             <label class="fr-label" for="key-name">Nom :</label>
             <input type="text" id="key-name" v-model="keyName" class="fr-input" placeholder="Nom de la clé d'accès" />
@@ -28,16 +23,27 @@
         <div class="barre">
           <h1>Liste des clés d'accès</h1>
           <div class="fr-search-bar">
-            <input class="fr-input" placeholder="Rechercher" type="search">
-            <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
+            <input
+              class="fr-input"
+              placeholder="Rechercher par nom"
+              type="search"
+              v-model="searchQuery"
+            />
+            <button title="Rechercher" type="button" class="fr-btn"> Rechercher</button>
           </div>
         </div>
 
         <div class="fr-grid-row fr-grid-row--gutters">
-          <div v-for="(key, index) in apiKeys" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
+          <div
+            v-for="(key, index) in filteredKeys"
+            :key="index"
+            class="fr-col-12 fr-col-md-6 fr-col-lg-4"
+          >
             <div class="fr-tile">
               <div class="fr-tile__body">
-                <button type="button" class="fr-btn fr-btn--sm" @click="deleteKey(key.id)">Supprimer</button>
+                <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.id)">
+                  Supprimer
+                </button>
               </div>
               <div class="fr-tile__header">
                 <h3 class="fr-tile__title">Nom : {{ key.name }}</h3>
@@ -48,12 +54,39 @@
           </div>
         </div>
       </div>
-    </main>
 
-    <!-- Footer, qui apparaît uniquement en bas -->
-    <footer>
-      <!-- Ajoutez ici le code du footer -->
-    </footer>
+      <!-- Modal de confirmation de suppression -->
+      <div v-if="showModal" class="modal-overlay">
+        <div class="modal-content">
+          <h2>Êtes-vous sûr de vouloir supprimer cette clé ?</h2>
+          <div class="modal-actions">
+            <button @click="deleteKey(keyToDelete)" class="fr-btn fr-btn--sm btn-delete">Oui, supprimer</button>
+            <button @click="closeModal" class="fr-btn fr-btn--sm btn-cancel">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de confirmation pour générer une clé -->
+      <div v-if="showConfirmationModal" class="modal-overlay">
+        <div class="modal-content">
+          <h2>Êtes-vous sûr de vouloir générer cette clé ?</h2>
+          <div class="modal-actions">
+            <button @click="generateApiKey" class="fr-btn fr-btn--primary btn-generate">Oui, générer</button>
+            <button @click="closeConfirmationModal" class="fr-btn fr-btn--sm btn-cancel">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal si l'utilisateur n'a pas rempli les informations avant de générer -->
+      <div v-if="showMissingInfoModal" class="modal-overlay">
+        <div class="modal-content">
+          <h2>Veuillez remplir tous les champs avant de générer la clé d'accès.</h2>
+          <div class="modal-actions">
+            <button @click="closeMissingInfoModal" class="fr-btn fr-btn--sm btn-cancel">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </template>
 
@@ -61,45 +94,106 @@
 export default {
   data() {
     return {
-      keyName: '',
-      email: '',
-      apiKeys: []
+      keyName: "",
+      email: "",
+      apiKeys: [],
+      searchQuery: "",
+      showModal: false, // Contrôle l'affichage du modal de suppression
+      keyToDelete: null, // Stocke l'ID de la clé à supprimer
+      showConfirmationModal: false, // Contrôle l'affichage du modal de confirmation pour la génération de clé
+      showMissingInfoModal: false, // Contrôle l'affichage du modal si l'utilisateur n'a pas rempli les infos
     };
   },
+  computed: {
+    filteredKeys() {
+      return this.apiKeys.filter((key) =>
+        key.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    }
+  },
   methods: {
-    async fetchKeys() {
-      const response = await fetch("http://localhost:3000/keys");
-      this.apiKeys = await response.json();
+    // Ouvrir le modal et définir la clé à supprimer
+    openModal(id) {
+      this.keyToDelete = id;
+      this.showModal = true;
     },
-    async generateApiKey() {
+
+    // Fermer le modal sans effectuer de suppression
+    closeModal() {
+      this.showModal = false;
+      this.keyToDelete = null;
+    },
+
+    // Ouvrir le modal de confirmation pour générer une clé
+    openConfirmationModal() {
       if (!this.keyName || !this.email) {
-        alert("Veuillez remplir tous les champs.");
+        this.showMissingInfoModal = true; // Affiche le modal d'erreur si les champs sont vides
         return;
       }
+      this.showConfirmationModal = true; // Affiche le modal de confirmation
+    },
 
+    // Fermer le modal de confirmation pour générer une clé
+    closeConfirmationModal() {
+      this.showConfirmationModal = false; // Ferme le modal de confirmation
+    },
+
+    // Fermer le modal si l'utilisateur n'a pas rempli les champs
+    closeMissingInfoModal() {
+      this.showMissingInfoModal = false; // Ferme le modal d'erreur
+    },
+
+    // Méthode pour récupérer les clés depuis le serveur
+    async fetchKeys() {
+      const response = await fetch("http://localhost:3002/keys");
+      this.apiKeys = await response.json();
+    },
+
+    // Méthode pour générer une nouvelle clé d'accès
+    async generateApiKey() {
       const newKey = {
         name: this.keyName,
         email: this.email,
         value: "API-KEY-" + Math.random().toString(36).substr(2, 9)
       };
 
-      await fetch("http://localhost:3000/keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newKey)
-      });
+      try {
+        await fetch("http://localhost:3002/keys", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newKey)
+        });
 
-      this.fetchKeys(); // Recharger la liste après ajout
-      this.keyName = "";
-      this.email = "";
+        this.fetchKeys();
+        this.keyName = "";
+        this.email = "";
+        this.showConfirmationModal = false; // Ferme le modal de confirmation après la génération
+      } catch (error) {
+        console.error("Erreur lors de la génération de la clé", error);
+      }
     },
+
+    // Méthode pour supprimer la clé d'accès après confirmation
     async deleteKey(id) {
-      await fetch(`http://localhost:3000/keys/${id}`, { method: "DELETE" });
-      this.fetchKeys(); // Recharger la liste après suppression
+      if (!id) return;
+
+      try {
+        const response = await fetch(`http://localhost:3002/keys/${id}`, { method: "DELETE" });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la suppression de la clé.");
+        }
+
+        this.fetchKeys();  // Recharge la liste après suppression
+        this.closeModal();  // Ferme le modal après suppression
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
     }
   },
   mounted() {
-    this.fetchKeys();
+    window.scrollTo(0, 0);
+    this.fetchKeys(); // Appel de la méthode pour récupérer les clés dès le chargement de la page
   }
 };
 </script>
@@ -108,23 +202,23 @@ export default {
 .page-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Permet d'occuper toute la hauteur de la page */
+  min-height: 100vh;
 }
 
 header {
-  position: fixed; /* Fixe le header en haut de la page */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 10; /* Assure que le header est au-dessus du reste du contenu */
-  background-color: #fff; /* Assurez-vous que le header a un fond visible */
-  padding: 1rem; /* Ajoutez un peu de padding pour que le contenu soit bien espacé */
+  z-index: 10;
+  background-color: #fff;
+  padding: 1rem;
 }
 
 .main-content {
-  flex-grow: 1; /* Prend l'espace restant après le header et avant le footer */
+  flex-grow: 1;
   padding: 2rem;
-  margin-top: 80px; /* Espace pour décaler le contenu sous le header */
+  margin-top: 80px;
 }
 
 .fr-alert {
@@ -144,8 +238,6 @@ header {
 
 .barre h1 {
   margin: 0;
-  display: flex;
-  align-items: center;
 }
 
 .key-generation {
@@ -156,15 +248,15 @@ footer {
   background-color: #f1f1f1;
   padding: 1rem;
   text-align: center;
-  margin-top: auto; /* S'assure que le footer est toujours en bas */
+  margin-top: auto;
 }
 
 .fr-btn {
-  background-color: #95e257;
+  background-color: #7fc04b;
 }
 
 .fr-btn:hover {
-  background-color: #7fc04b;
+  background-color: #68a532;
 }
 
 .fr-grid-row button {
@@ -175,4 +267,92 @@ footer {
   background-color: #ce0500;
 }
 
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* Ajoute un alignement en bas */
+}
+
+.modal-actions .btn-cancel {
+  background-color: #ddd;
+  color: #3a3a3a;
+  align-self: flex-end; /* Aligne le bouton "Fermer" en bas à droite */
+}
+
+.modal-actions .btn-cancel:hover {
+  background-color: #c1c1c1;
+}
+
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  width: 48%;
+}
+
+.modal-actions .btn-delete {
+  background-color: #e1000f;
+  color: white;
+}
+
+.modal-actions .btn-delete:hover {
+  background-color: #c9191e;
+}
+
+.modal-actions .btn-cancel {
+  background-color: #ddd;
+  color: #3a3a3a;
+}
+
+.modal-actions .btn-cancel:hover {
+  background-color: #c1c1c1;
+}
+
+.fr-btn--danger {
+  background-color: #e1000f;
+}
+
+.fr-btn--danger:hover {
+  background-color: #c9191e;
+}
+
+.fr-input-group {
+  margin-bottom: 1em;
+}
+
+.fr-input-group .fr-label {
+  margin-bottom: 0.5em;
+}
+
+.fr-input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
 </style>

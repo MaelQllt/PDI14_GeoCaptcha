@@ -39,7 +39,7 @@ export default {
     }
   },
   mounted() {
-    fetch("http://localhost:3000/departements") // Récupération des départements depuis le backend
+    fetch("http://localhost:3002/departements") // Récupération des départements depuis le backend
       .then(response => response.json())
       .then(data => {
         this.departements = data;

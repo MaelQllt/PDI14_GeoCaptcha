@@ -172,7 +172,7 @@ footer {
 }
 
 .fr-grid-row button:hover {
-  background-color: #ce0500; /* Nouvelle couleur de fond lors du survol */
+  background-color: #ce0500;
 }
 
 </style>

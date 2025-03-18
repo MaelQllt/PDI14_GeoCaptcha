@@ -1,0 +1,59 @@
+[
+    {
+      "id": 1,
+      "status": "completed",
+      "attempts": 10,
+      "successes": 8,
+      "failures": 2,
+      "accuracy": 80,
+      "date": "2025-03-18T12:00:00",
+      "geoLocation": {
+        "latitude": 48.8566,
+        "longitude": 2.3522
+      },
+      "logo": "logo.svg"
+    },
+    {
+      "id": 2,
+      "status": "pending",
+      "attempts": 5,
+      "successes": 3,
+      "failures": 2,
+      "accuracy": 60,
+      "date": "2025-03-17T08:30:00",
+      "geoLocation": {
+        "latitude": 34.0522,
+        "longitude": -118.2437
+      },
+      "logo": "logo.svg"
+    },
+    {
+      "id": 3,
+      "status": "completed",
+      "attempts": 15,
+      "successes": 12,
+      "failures": 3,
+      "accuracy": 80,
+      "date": "2025-03-16T18:45:00",
+      "geoLocation": {
+        "latitude": 40.7128,
+        "longitude": -74.0060
+      },
+      "logo": "logo.svg"
+    },
+    {
+      "id": 4,
+      "status": "failed",
+      "attempts": 7,
+      "successes": 2,
+      "failures": 5,
+      "accuracy": 28.57,
+      "date": "2025-03-15T14:00:00",
+      "geoLocation": {
+        "latitude": 51.5074,
+        "longitude": -0.1278
+      },
+      "logo": "logo.svg"
+    }
+  ]
+  

@@ -6,7 +6,7 @@
                 <div class="fr-header__brand fr-enlarge-link">
                     <div class="fr-header__brand-top">
                         <div class="fr-header__operator">
-                            <img class="fr-responsive-img" style="max-width:4rem;" src="../assets/Logo 3.PNG" alt="À MODIFIER">
+                            <img class="fr-responsive-img" style="max-width:4rem;" src="../assets/Logo 3.PNG" alt="À MODIFIER" />
                             <!-- L’alternative de l’image (attribut alt) doit impérativement être renseignée et reprendre le texte visible dans l’image -->
                         </div> 
                         <div class="fr-header__navbar">
@@ -27,13 +27,10 @@
                     <div class="fr-header__tools-links">
                         <ul class="fr-btns-group">
                             <li>
-                                <a href="/geo-captcha" class="fr-btn fr-icon-earth-fill fr-btn">Générer un GéoCaptcha</a>
+                                <a href="/service-utilisateur" class="fr-btn">Obtenir une clé d'accès</a>
                             </li>
                             <li>
-                                <a href="/dashboard" class="fr-btn fr-icon-dashboard-3-line fr-btn">Dashboard</a>
-                            </li>
-                            <li>
-                                <a href="/key-access" class="fr-btn fr-icon-user-setting-fill fr-btn--tertiary">Clé d'accès</a>
+                                <a href="/connexion-admin" class="fr-btn fr-icon-account-circle-fill fr-btn--tertiary">Se connecter en tant qu'administrateur</a>
                             </li>
                         </ul>
                     </div>
@@ -60,4 +57,3 @@
   }
   
   </style>
-  

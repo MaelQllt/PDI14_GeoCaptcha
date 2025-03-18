@@ -60,7 +60,7 @@
   .fr-footer {
     padding: 20px;
     text-align: center;
-    margin-top: 40px;
+    margin-top: auto;
   }
   
   .fr-logo{

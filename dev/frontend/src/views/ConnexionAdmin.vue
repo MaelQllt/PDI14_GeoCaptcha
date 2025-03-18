@@ -67,7 +67,7 @@
                                         <div class="fr-fieldset__element">
                                             <ul class="fr-btns-group">
                                                 <li>
-                                                    <button type="button" class="fr-mt-2v fr-btn">Se connecter</button>
+                                                    <button @click="goToGeoCaptcha" type="button" class="fr-mt-2v fr-btn">Se connecter</button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -88,6 +88,11 @@
 <script>
 export default {
   name: 'ConnexionAdmin',
+  methods: {
+    goToGeoCaptcha() {
+      this.$router.push("/geo-captcha");
+    }
+  }
 }
 </script>
 

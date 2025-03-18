@@ -59,6 +59,6 @@
 }
 
 .fr-alert {
-  margin-top: 20px;
+  margin: 20px;
 }
 </style>

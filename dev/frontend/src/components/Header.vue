@@ -47,7 +47,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import logo from "@/assets/logo.svg"; // Chemin de ton logo
+import logo from "@/assets/logo.png"; // Chemin de ton logo
 
 // Variable pour suivre l'état du bouton actif
 const activeButton = ref('');

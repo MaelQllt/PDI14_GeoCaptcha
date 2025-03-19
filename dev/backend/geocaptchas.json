@@ -14,86 +14,16 @@
     "logo": "logo.svg"
   },
   {
-    "id": 20,
-    "status": "failed",
-    "attempts": 14,
-    "successes": 7,
-    "failures": 7,
-    "accuracy": 50.00,
-    "date": "2025-11-12T00:00:00",
-    "geoLocation": {
-      "latitude": -55.4321,
-      "longitude": -70.8765
-    },
-    "logo": "logo.svg"
-  },
-  {
-    "id": 21,
-    "status": "pending",
-    "attempts": 10,
-    "successes": 6,
-    "failures": 4,
-    "accuracy": 60.00,
-    "date": "2025-11-18T00:00:00",
-    "geoLocation": {
-      "latitude": -62.1345,
-      "longitude": -50.1123
-    },
-    "logo": "logo.svg"
-  },
-  {
-    "id": 22,
-    "status": "success",
-    "attempts": 19,
-    "successes": 18,
-    "failures": 1,
-    "accuracy": 94.74,
-    "date": "2025-12-03T00:00:00",
-    "geoLocation": {
-      "latitude": -39.5634,
-      "longitude": -72.5421
-    },
-    "logo": "logo.svg"
-  },
-  {
-    "id": 23,
-    "status": "failed",
-    "attempts": 30,
-    "successes": 12,
-    "failures": 18,
-    "accuracy": 40.00,
-    "date": "2025-12-10T00:00:00",
-    "geoLocation": {
-      "latitude": -48.3921,
-      "longitude": -64.2134
-    },
-    "logo": "logo.svg"
-  },
-  {
     "id": 24,
     "status": "pending",
     "attempts": 25,
     "successes": 14,
     "failures": 11,
-    "accuracy": 56.00,
+    "accuracy": 56,
     "date": "2025-12-15T00:00:00",
     "geoLocation": {
       "latitude": -47.1234,
       "longitude": -75.4321
-    },
-    "logo": "logo.svg"
-  },
-  {
-    "id": 25,
-    "status": "success",
-    "attempts": 35,
-    "successes": 32,
-    "failures": 3,
-    "accuracy": 91.43,
-    "date": "2025-12-20T00:00:00",
-    "geoLocation": {
-      "latitude": -45.8765,
-      "longitude": -67.5643
     },
     "logo": "logo.svg"
   },
@@ -103,7 +33,7 @@
     "attempts": 40,
     "successes": 18,
     "failures": 22,
-    "accuracy": 45.00,
+    "accuracy": 45,
     "date": "2025-12-25T00:00:00",
     "geoLocation": {
       "latitude": -49.1234,
@@ -154,26 +84,12 @@
     "logo": "logo.svg"
   },
   {
-    "id": 30,
-    "status": "pending",
-    "attempts": 21,
-    "successes": 13,
-    "failures": 8,
-    "accuracy": 61.90,
-    "date": "2026-01-18T00:00:00",
-    "geoLocation": {
-      "latitude": -59.3212,
-      "longitude": -65.4321
-    },
-    "logo": "logo.svg"
-  },
-  {
     "id": 31,
     "status": "success",
     "attempts": 20,
     "successes": 17,
     "failures": 3,
-    "accuracy": 85.00,
+    "accuracy": 85,
     "date": "2026-01-25T00:00:00",
     "geoLocation": {
       "latitude": -46.9834,
@@ -187,7 +103,7 @@
     "attempts": 15,
     "successes": 6,
     "failures": 9,
-    "accuracy": 40.00,
+    "accuracy": 40,
     "date": "2026-01-28T00:00:00",
     "geoLocation": {
       "latitude": -54.6743,
@@ -201,7 +117,7 @@
     "attempts": 10,
     "successes": 5,
     "failures": 5,
-    "accuracy": 50.00,
+    "accuracy": 50,
     "date": "2026-02-02T00:00:00",
     "geoLocation": {
       "latitude": -47.5621,

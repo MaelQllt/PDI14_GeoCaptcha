@@ -151,7 +151,8 @@ export default {
   computed: {
     filteredKeys() {
       return this.apiKeys.filter((key) =>
-        key.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        key.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        key.email.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
   },

@@ -6,8 +6,8 @@
         <h1 class="fr-title">GeoCaptcha - Interface Administrateur</h1>
         <p class="fr-text">
           Lorsque vous arrivez sur un site internet, il vous est souvent demandé si vous êtes un
-          humain ou un robot. Pour prouver votre humanité vous devez résoudre un captcha, la plu-
-          part du temps sous la forme de déchiffrage de texte ou bien de séquence d’images. L’IGN,
+          humain ou un robot. Pour prouver votre humanité vous devez résoudre un captcha, la plupart
+          du temps sous la forme de déchiffrage de texte ou bien de séquence d’images. L’IGN,
           par la Mission Architecture Réseau et Sécurité (MARS), a conçu un système novateur
           dans ce domaine, les GéoCaptcha. Ces captchas reposent sur des données géographiques,
           l’objectif est de proposer aux utilisateurs un nouveau type de captcha qui se veut ludique

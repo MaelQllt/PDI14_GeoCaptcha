@@ -56,36 +56,80 @@
       </div>
 
       <!-- Modal de confirmation de suppression -->
-      <div v-if="showModal" class="modal-overlay">
-        <div class="modal-content">
-          <h2>Êtes-vous sûr de vouloir supprimer cette clé ?</h2>
-          <div class="modal-actions">
-            <button @click="deleteKey(keyToDelete)" class="fr-btn fr-btn--sm btn-delete">Oui, supprimer</button>
-            <button @click="closeModal" class="fr-btn fr-btn--sm btn-cancel">Annuler</button>
+    <div v-if="showModal" class="modal-overlay">
+      <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-modal__body">
+              <div class="fr-modal__header">
+                <h2 class="fr-modal__title">
+                  <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
+                  Confirmation de suppression
+                </h2>
+                <button @click="closeModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
+              </div>
+              <div class="fr-modal__content">
+                <p>Êtes-vous sûr de vouloir supprimer cette clé ?</p>
+              </div>
+              <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
+                <button @click="confirmDelete" class="fr-btn fr-btn--reject">Oui, supprimer</button>
+                <button @click="closeModal" class="fr-btn fr-btn--cancel" id="cancel">Annuler</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Modal de confirmation pour générer une clé -->
-      <div v-if="showConfirmationModal" class="modal-overlay">
-        <div class="modal-content">
-          <h2>Êtes-vous sûr de vouloir générer cette clé ?</h2>
-          <div class="modal-actions">
-            <button @click="generateApiKey" class="fr-btn fr-btn--primary btn-generate">Oui, générer</button>
-            <button @click="closeConfirmationModal" class="fr-btn fr-btn--sm btn-cancel">Annuler</button>
+    <!-- Modal de confirmation de génération -->
+    <div v-if="showConfirmationModal" class="modal-overlay">
+      <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-modal__body">
+              <div class="fr-modal__header">
+                <h2 class="fr-modal__title">
+                  <span class="fr-icon-check-line fr-icon--lg" aria-hidden="true"></span>
+                  Génération de clé
+                </h2>
+                <button @click="generateApiKey" class="fr-btn--close fr-btn" id="close">Fermer</button>
+              </div>
+              <div class="fr-modal__content">
+                <p>La clé a été générée avec succès.</p>
+              </div>
+              <div class="fr-modal__footer fr-btns-group--right">
+                <button @click="generateApiKey" class="fr-btn fr-btn--primary" id="OK">OK</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Modal si l'utilisateur n'a pas rempli les informations avant de générer -->
-      <div v-if="showMissingInfoModal" class="modal-overlay">
-        <div class="modal-content">
-          <h2>Veuillez remplir tous les champs avant de générer la clé d'accès.</h2>
-          <div class="modal-actions">
-            <button @click="closeMissingInfoModal" class="fr-btn fr-btn--sm btn-cancel">Fermer</button>
+    <!-- Modal d'erreur pour les champs requis -->
+    <div v-if="showMissingInfoModal" class="modal-overlay">
+      <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-modal__body">
+              <div class="fr-modal__header">
+                <h2 class="fr-modal__title">
+                  <span class="fr-icon-error-line fr-icon--lg" aria-hidden="true"></span>
+                  Informations manquantes
+                </h2>
+                <button @click="closeMissingInfoModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
+              </div>
+              <div class="fr-modal__content">
+                <p>Veuillez remplir tous les champs requis avant de générer une clé.</p>
+              </div>
+              <div class="fr-modal__footer fr-btns-group--right">
+                <button @click="closeMissingInfoModal" class="fr-btn fr-btn--primary" id="OK">OK</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
     </main>
   </div>
 </template>
@@ -199,30 +243,18 @@ export default {
 </script>
 
 <style scoped>
+
+/* Main */
 .page-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  background-color: #fff;
-  padding: 1rem;
-}
-
 .main-content {
   flex-grow: 1;
   padding: 2rem;
   margin-top: 80px;
-}
-
-.fr-alert {
-  margin-top: 20px;
 }
 
 .key-list {
@@ -244,12 +276,6 @@ header {
   padding: 1em;
 }
 
-footer {
-  background-color: #f1f1f1;
-  padding: 1rem;
-  text-align: center;
-  margin-top: auto;
-}
 
 .fr-btn {
   background-color: #7fc04b;
@@ -266,6 +292,27 @@ footer {
 .fr-grid-row button:hover {
   background-color: #ce0500;
 }
+
+.fr-input-group {
+  margin-bottom: 1em;
+}
+
+.fr-input-group .fr-label {
+  margin-bottom: 0.5em;
+}
+
+.fr-input {
+  width: 100%;
+  padding: 0.8rem;
+}
+
+.fr-input:focus,
+.fr-select:focus {
+  outline: 2px solid #7fc04b;
+}
+
+
+/* Modal */
 
 .modal-overlay {
   position: fixed;
@@ -306,11 +353,6 @@ footer {
 }
 
 
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
 .modal-actions button {
   width: 48%;
 }
@@ -333,29 +375,42 @@ footer {
   background-color: #c1c1c1;
 }
 
-.fr-btn--danger {
-  background-color: #e1000f;
+#OK{
+  background-color: #7fc04b !important;
 }
 
-.fr-btn--danger:hover {
-  background-color: #c9191e;
+#OK:hover {
+  background-color: #68a532 !important;
 }
 
-.fr-input-group {
-  margin-bottom: 1em;
+#close{
+  background: none;
+  border: none;
+  color: #000;
+  cursor: pointer;
 }
 
-.fr-input-group .fr-label {
-  margin-bottom: 0.5em;
+#close:hover {
+  color: #3a3a3a !important;
 }
 
-.fr-input {
-  width: 100%;
-  padding: 0.8rem;
+
+.fr-btn--reject {
+        background-color: #ff4140; /* Couleur personnalisée */
+        color: #fff; /* Couleur du texte */
+    }
+
+    .fr-btn--reject:hover {
+        background-color: #ce0500; /* Couleur au survol */
+    }
+
+#cancel{
+  background-color: #ddd !important;
+  color: #3a3a3a;
 }
 
-.fr-input:focus,
-.fr-select:focus {
-  outline: 2px solid #7fc04b;
+#cancel:hover {
+  background-color: #c1c1c1 !important;
+  color: #3a3a3a;
 }
 </style>

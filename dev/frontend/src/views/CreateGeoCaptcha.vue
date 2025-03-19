@@ -3,12 +3,12 @@
     <h1 class="fr-h1">Créez vos GéoCaptchas</h1>
     <form @submit.prevent="createGeoCaptcha">
       <div class="fr-input-group">
-        <label-choix class="fr-label" for="difficulty">Difficulté :</label-choix>
+        <!--<label-choix class="fr-label" for="difficulty">Difficulté :</label-choix>
         <select id="difficulty" v-model="difficulty" class="fr-select">
           <option value="easy">Facile</option>
           <option value="medium">Moyenne</option>
           <option value="hard">Difficile</option>
-        </select>
+        </select>-->
         <fieldset class="fr-fieldset" id="radio" aria-labelledby="radio-legend radio-messages">
           <label-choix class="fr-fieldset__legend--regular fr-fieldset__legend" id="radio-legend">
             Choix de la zone géographique :
@@ -160,7 +160,9 @@ form {
   outline: 2px solid #95e257;
 }
 
-/* MODAL STYLES */
+.modal__body {
+
+}
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -174,36 +176,26 @@ form {
   z-index: 1000;
 }
 
-/*.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 600px;
-  width: 90%;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}*/
 
 
 
 .fr-modal__content img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain;
+  object-fit: fill;
 }
-
-.fr-modal__content {
+.modal-content {
   padding: 1em;
 }
 
 
-/* Style pour le bouton "Supprimer" */
 #button-6048 {
-  background-color: #f44336; /* Rouge */
+  background-color: #f44336;
   color: white;
 }
 
 #button-6048:hover {
-  background-color: #da190b; /* Changement de couleur au survol */
+  background-color: #da190b;
 }
 
 label-choix {
@@ -211,7 +203,7 @@ label-choix {
 }
 
 .hidden {
-  visibility: hidden; /* Cache l'élément mais garde son espace */
-  opacity: 0; /* Le rend invisible */
+  visibility: hidden;
+  opacity: 0;
 }
 </style>

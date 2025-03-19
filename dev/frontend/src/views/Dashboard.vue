@@ -206,6 +206,8 @@ export default {
 
 
 <style scoped>
+
+/* Main */
 .page-container {
   display: flex;
   flex-direction: column;
@@ -218,6 +220,8 @@ export default {
   margin-top: 80px;
 }
 
+
+/* Metriques */
 .metrics-dashboard {
   padding: 1em;
 }
@@ -264,6 +268,17 @@ export default {
   text-align: center;
 }
 
+.item-info {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 0.5rem 1.5rem;
+  font-size: 0.9rem;
+}
+
+.item-info p {
+  margin: 0;
+}
+
 .geocaptcha-logo {
   width: 80px; /* Ajuste la taille en fonction de tes besoins */
   height: auto;
@@ -272,6 +287,17 @@ export default {
 }
 
 /* Style pour le modal */
+
+.modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
 .modal-overlay .fr-modal__content {
   display: grid;
   grid-template-columns: 1fr 1fr; /* 2 colonnes de taille égale */
@@ -279,7 +305,6 @@ export default {
   align-items: center; /* Centrer les éléments verticalement */
 }
 
-/* Style pour l'image du logo dans le modal */
 .modal-overlay .geocaptcha-logo {
   width: 120px; /* Ajuste la taille de l'image */
   height: auto;
@@ -301,15 +326,6 @@ export default {
   z-index: 1000;
 }
 
-.modal {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 500px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: relative; /* Permet de positionner les éléments enfants de manière absolue */
-}
 
 .modal button {
   position: absolute;  /* Positionner le bouton de manière absolue par rapport au modal */
@@ -329,43 +345,6 @@ export default {
 }
 
 
-.item-info {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 0.5rem 1.5rem;
-  font-size: 0.9rem;
-}
-
-.item-info p {
-  margin: 0;
-}
-
-/* Style pour le modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 500px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
-
-
-/* Style pour l'en-tête du modal */
 .fr-modal__header {
   display: flex;
   justify-content: space-between; /* Espacer le titre et le bouton */

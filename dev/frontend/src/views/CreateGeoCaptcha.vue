@@ -237,4 +237,31 @@ p {
 #alert-1068 {
   margin-top:1em;
 }
+
+/* Couleur du bouton radio coché */
+.fr-radio-group input[type="radio"]:checked + label::before {
+  background-color: #7fc04b; /* Couleur verte pour l'état coché */
+  border: 2px solid #347003; /* Bordure verte pour le bouton radio coché */
+}
+
+/* Couleur du bouton radio non coché */
+.fr-radio-group input[type="radio"]:not(:checked) + label::before {
+  background-color: #e0e0e0; /* Couleur gris clair pour l'état non coché */
+  border: 2px solid #000 !important; /* Bordure noire pour le bouton non coché */
+}
+
+/* Couleur du bouton radio au survol */
+.fr-radio-group input[type="radio"]:hover + label::before {
+  background-color: #c5e1a5; /* Couleur de fond au survol */
+  border: 2px solid #7fc04b; /* Bordure verte au survol */
+}
+
+/* Couleur du label du bouton radio */
+.fr-radio-group input[type="radio"]:checked + label {
+  color: #7fc04b; /* Couleur du texte du label quand le radio est coché */
+}
+
+.fr-radio-group input[type="radio"]:not(:checked) + label {
+  color: #000000; /* Couleur du texte pour un bouton non coché */
+}
 </style>

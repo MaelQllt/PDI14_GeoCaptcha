@@ -32,7 +32,48 @@ npm install @gouvfr/dsfr
 Une fois terminé le DSFR sera alors installé dans le dossier:
 **node_modules/@gouvfr/dsfr/**
 
+Vous pouvez d'ailleurs visualiser les composants, fondamentaux et autres éléments du DSFR en local ainsi:
 
+```
+npm install browser-sync
+cd node_modules/@gouvfr/dsfr/
+npm run serve
+```
+Une fois le serveur lancé, les exemples sont disponibles à l'adresse : http://localhost:8080/example/
 
+**Attention**: le port peut être un autre que 8080, suivez la réponse de votre terminal en priorité.
+
+## Installation de Vite
+
+Etant donné que nous travaillons en Vue, la visualisation de notre frontend via [Vite](https://vitejs.fr/guide/) correspond exactement à nos besoins.
+
+Pour l'installer vous pouvez simplement executer cette ligne:
+
+```
+npm install vite
+```
+
+## Autre installation utile
+
+Nous avons choisi d'utiliser l'API [geo.api.gouv.fr](https://geo.api.gouv.fr/decoupage-administratif/departements) pour récupérer les départements. Nous utilisons alors une requête Axios. Il faut donc que Axios soit installé:
+
+```
+npm install axios
+```
+
+Nous avons fait ce choix car l'API est mise à jour en cas de modification des départements et que cela simplifie la lecture du code. Néanmoins d'autres options sont envisageables.
+
+## Lancement du projet sur Localhost
+
+Afin de lancer le projet nous allons utiliser, une fois encore, **npm**. Pour ce faire rendez vous dans votre terminal ouvert dans votre dossier frontend. Faites ensuite cette requête:
+
+```
+npm run dev
+```
+
+Ainsi vous devriez obtenir un accès local au projet que vous pouvez désormais visualiser sur votre navigateur à l'adresse:
+ http://localhost:5173/
+
+**Attention**: le port peut être un autre que 5173, suivez la réponse de votre terminal en priorité.
 
 

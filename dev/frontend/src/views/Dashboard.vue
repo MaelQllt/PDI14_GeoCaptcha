@@ -22,14 +22,30 @@
 
         <!-- Liste des géocaptchas analysés -->
         <div class="metrics-list">
-          <h1 class="fr-h1">Liste des Géocaptchas</h1>
-          <div v-for="item in items" :key="item.id" class="item" @click="selectGeocaptcha(item)">
+          <div class="list-header">
+            <h1 class="fr-h1">Liste des Géocaptchas</h1>
+            <div class="fr-select-group" style="text-align: right;">
+              <label class="fr-label" for="filter-select">
+                <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
+                Filtrer
+              </label>
+              <select class="fr-select" aria-describedby="select-messages" id="filter-select" v-model="filterOption" @change="applyFilter">
+                <option value="all">Tous</option>
+                <option value="id-asc">ID (croissant)</option>
+                <option value="id-desc">ID (décroissant)</option>
+                <option value="success-asc">Précision (croissant)</option>
+                <option value="success-desc">Précision (décroissant)</option>
+              </select>
+            </div>
+          </div>
+          <div v-for="item in filteredItems" :key="item.id" class="item" @click="selectGeocaptcha(item)">
             <img :src="logoSrc" alt="Logo Géocaptcha" class="geocaptcha-logo" />
             <div class="item-info">
-              <p><strong>Attempts:</strong> {{ item.attempts }}</p>
-              <p><strong>Successes:</strong> {{ item.successes }}</p>
-              <p><strong>Failures:</strong> {{ item.failures }}</p>
-              <p><strong>Accuracy:</strong> {{ item.accuracy }}%</p>
+              <p><strong>ID:</strong> {{ item.id }}</p>
+              <p><strong>Essais:</strong> {{ item.attempts }}</p>
+              <p><strong>Succès:</strong> {{ item.successes }}</p>
+              <p><strong>Echecs:</strong> {{ item.failures }}</p>
+              <p><strong>Précision:</strong> {{ item.accuracy }}%</p>
             </div>
           </div>
         </div>
@@ -111,19 +127,44 @@ import logo from "@/assets/logo.png"; // Importation de l'image
 
 export default {
   data() {
-    return {
-      items: [],
-      loading: true,
-      error: false,
-      totalResolved: 0,
-      successRate: 0,
-      logoSrc: logo,
-      selectedGeocaptcha: null,  // Ajouter l'état pour stocker le géocaptcha sélectionné
-      isModalVisible: false,      // Ajouter l'état pour contrôler la visibilité du modal
-      isConfirmationModalVisible: false,  // État pour la fenêtre modale de confirmation
-    };
-  },
+  return {
+    items: [],
+    loading: true,
+    error: false,
+    totalResolved: 0,
+    successRate: 0,
+    logoSrc: logo,
+    selectedGeocaptcha: null,
+    isModalVisible: false,
+    isConfirmationModalVisible: false,
+    filterOption: 'all', // Option de filtrage par défaut
+  };
+},
+computed: {
+  // Propriété calculée pour filtrer les items
+  filteredItems() {
+  if (this.filterOption === 'all') {
+    return this.items;
+  } else if (this.filterOption === 'id-asc') {
+    return [...this.items].sort((a, b) => a.id - b.id);
+  } else if (this.filterOption === 'id-desc') {
+    return [...this.items].sort((a, b) => b.id - a.id);
+  } else if (this.filterOption === 'success-asc') {
+    return [...this.items].sort((a, b) => a.accuracy - b.accuracy);
+  } else if (this.filterOption === 'success-desc') {
+    return [...this.items].sort((a, b) => b.accuracy - a.accuracy);
+  }
+  return this.items;
+}
+},
   methods: {
+    // Ajouter cette méthode avec les autres méthodes existantes
+  applyFilter() {
+    // La méthode est vide car le filtrage est fait via la propriété calculée filteredItems
+    // Mais on peut ajouter ici d'autres actions si nécessaire lors du changement de filtre
+    console.log("Filtre appliqué:", this.filterOption);
+  },
+
     async fetchData() {
       try {
         const response = await fetch("http://localhost:3002/geocaptchas");
@@ -250,6 +291,7 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-top: 2rem;
+
 }
 
 .metrics-list h1 {
@@ -270,7 +312,7 @@ export default {
 
 .item-info {
   display: grid;
-  grid-template-columns: repeat(2, auto);
+  grid-template-columns: repeat(2, 1fr); /* 2 colonnes */
   gap: 0.5rem 1.5rem;
   font-size: 0.9rem;
 }
@@ -278,6 +320,13 @@ export default {
 .item-info p {
   margin: 0;
 }
+
+/* Cibler le dernier élément quand il y a un nombre impair d'éléments */
+.item-info p:nth-last-child(1) {
+  grid-column: span 2; /* Prendre les 2 colonnes */
+  text-align: center; /* Centrer le texte */
+}
+
 
 .geocaptcha-logo {
   width: 80px; /* Ajuste la taille en fonction de tes besoins */
@@ -387,5 +436,52 @@ export default {
     color: #3a3a3a; /* Couleur du texte */
 }
 
+
+/* filtre */
+/* Ajout pour l'en-tête de liste avec filtre */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  grid-column: span 3;
+}
+
+.list-header h1 {
+  margin: 0;
+}
+
+.fr-select-group {
+  min-width: 200px;
+}
+
+/* Modifier le style du fr-label pour aligner le texte à droite */
+.fr-label {
+  display: flex;
+  justify-content: flex-end; /* Aligne à droite */
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-align: right; /* Texte aligné à droite */
+}
+
+/* Pour aligner l'icône et le texte */
+.fr-icon--sm {
+  margin-right: 0.3rem; /* Espace entre l'icône et le texte */
+}
+
+.fr-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* S'assurer que le sélecteur DSFR s'intègre bien */
+.fr-select:focus {
+  outline: 1px solid #7fc04b;
+  outline-offset: 1px;
+}
 </style>
 

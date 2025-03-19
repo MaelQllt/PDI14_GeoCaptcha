@@ -51,30 +51,30 @@
       
       <button type="button" class="fr-btn" @click="openModal">Générer</button>
 
-      <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+      <div v-if="isModalOpen" class="modal-overlay">
         <div class="modal-content" @click.stop>
           <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-grid-row fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                 <div class="fr-modal__body">
-                    <div class="fr-modal__content">
-                        <h1 id="modal-overlay-title" class="fr-modal__title">
-                            Vous avez généré ce GéoCaptcha :
-                        </h1>
-                        <img src="../assets/logo.png" alt="geocaptcha">
+                  <div class="fr-modal__content">
+                    <h1 id="modal-overlay-title" class="fr-modal__title">
+                      Vous avez généré ce GéoCaptcha :
+                    </h1>
+                    <img src="../assets/logo.png" alt="geocaptcha">
                     </div>
                     <div class="fr-modal__footer">
-                        <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
-                              <button type="button" id="button-6047" class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" @click ="handleConserver">Conserver</button>
-                              <button type="button" id="button-6048" class="fr-btn" @click="closeModal">Supprimer</button>
-                        </div>
+                      <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                        <button type="button" id="button-6047" class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" @click ="handleConserver">Conserver</button>
+                        <button type="button" id="button-6048" class="fr-btn" @click="closeModal">Supprimer</button>
+                      </div>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-        </div>
-      </div>
 
     </form>
   </div>
@@ -193,13 +193,21 @@ form {
   z-index: 1000;
 }
 
+.modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
 
 
 
 .fr-modal__content img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: fill;
+  object-fit: contain;
 }
 .modal-content {
   padding: 1em;
@@ -237,4 +245,6 @@ p {
 #alert-1068 {
   margin-top:1em;
 }
+
+
 </style>

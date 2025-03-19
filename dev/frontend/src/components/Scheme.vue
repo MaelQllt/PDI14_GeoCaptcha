@@ -9,7 +9,7 @@
                     aria-controls="fr-theme-modal" 
                     data-fr-opened="false"
                 >
-            </button>
+                </button>
             </div>
         </div>
     </fieldset>
@@ -51,8 +51,6 @@ export default {
             }
         };
 
-        // Vérification de l'existence des attributs
-        const rootSelector = document.documentElement;
         const storedTheme = localStorage.getItem("scheme") || "";
         const currentScheme = document.documentElement.getAttribute(attrScheme);
 

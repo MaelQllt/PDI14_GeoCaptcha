@@ -168,21 +168,18 @@ form {
 .fr-btn {
   margin-top: 20px;
   align-self: center;
-  background-color: #95e257;
+  background-color: #7fc04b;
 }
 
 .fr-btn:hover {
-  background-color: #7fc04b;
+  background-color: #68a532;
 }
 
 .fr-input:focus,
 .fr-select:focus {
-  outline: 2px solid #95e257;
+  outline: 2px solid #7fc04b;
 }
 
-.modal__body {
-
-}
 .modal-overlay {
   position: fixed;
   top: 0;

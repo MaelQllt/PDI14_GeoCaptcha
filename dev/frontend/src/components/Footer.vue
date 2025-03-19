@@ -37,7 +37,8 @@
           <République Française class="footer-logo" />
         </div>
         <!-- Logo de l'IGN -->
-        <img src="@/assets/IGN.png" alt="Logo de l'IGN" class="footer-logo" />
+        <!-- Logo de l'IGN, logo du milieu -->
+        <img src="@/assets/IGN.png" alt="Logo de l'IGN" class="footer-logo middle" />
         <!-- Logo de l'école -->
         <img src="@/assets/ENSG.png" alt="Logo de l'école" class="footer-logo" />
       </div>
@@ -106,6 +107,7 @@
 }
 
 /* Partie basse du footer */
+/* Partie basse du footer */
 .footer-bottom {
   display: flex;
   justify-content: center;
@@ -114,14 +116,24 @@
 
 .logos {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between; /* Espacement égal entre les logos */
   align-items: center;
-  gap: 1rem;
+  gap: 1rem; /* Espacement entre tous les logos */
+  width: 100%; /* Pour étendre les logos sur toute la largeur disponible */
+  max-width: 500px; /* Ajuste cette valeur en fonction de la largeur souhaitée */
 }
 
 .footer-logo {
-  width: 80px; /* Ajuste la taille des logos */
-  height: auto;
-  max-width: 100%;
+  width: 80px; /* Taille des logos */
+  height: 80px;
+  object-fit: contain; /* Pour garder le ratio des logos */
 }
+
+/* Centrer le logo du milieu */
+.footer-logo.middle {
+  margin-left: auto; /* Pousse les logos à gauche */
+  margin-right: auto; /* Pousse les logos à droite */
+}
+
+
 </style>

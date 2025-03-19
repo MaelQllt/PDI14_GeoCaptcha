@@ -98,20 +98,6 @@
     "logo": "logo.svg"
   },
   {
-    "id": 32,
-    "status": "failed",
-    "attempts": 15,
-    "successes": 6,
-    "failures": 9,
-    "accuracy": 40,
-    "date": "2026-01-28T00:00:00",
-    "geoLocation": {
-      "latitude": -54.6743,
-      "longitude": -68.3421
-    },
-    "logo": "logo.svg"
-  },
-  {
     "id": 33,
     "status": "pending",
     "attempts": 10,
@@ -150,20 +136,6 @@
     "geoLocation": {
       "latitude": -51.9874,
       "longitude": -73.3456
-    },
-    "logo": "logo.svg"
-  },
-  {
-    "id": 36,
-    "status": "pending",
-    "attempts": 14,
-    "successes": 9,
-    "failures": 5,
-    "accuracy": 64.29,
-    "date": "2026-02-20T00:00:00",
-    "geoLocation": {
-      "latitude": -49.4321,
-      "longitude": -61.2345
     },
     "logo": "logo.svg"
   }

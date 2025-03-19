@@ -72,7 +72,7 @@
                 <p>Êtes-vous sûr de vouloir supprimer cette clé ?</p>
               </div>
               <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
-                <button @click="confirmDelete" class="fr-btn fr-btn--reject">Oui, supprimer</button>
+                <button @click="deleteKey" class="fr-btn fr-btn--reject">Oui, supprimer</button>
                 <button @click="closeModal" class="fr-btn fr-btn--cancel" id="cancel">Annuler</button>
               </div>
             </div>
@@ -219,7 +219,8 @@ export default {
     },
 
     // Méthode pour supprimer la clé d'accès après confirmation
-    async deleteKey(id) {
+    async deleteKey() {  // Retirez le paramètre id de la fonction
+      const id = this.keyToDelete;  // Utilisez l'ID stocké dans keyToDelete
       if (!id) return;
 
       try {

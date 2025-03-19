@@ -15,7 +15,7 @@
           </label-choix>
           <div class="fr-fieldset__element">
             <div class="fr-radio-group">
-              <input value="1" type="radio" id="radio-1" name="radio" @click = "closeDepartement" checked>
+              <input value="1" type="radio" id="radio-1" name="radio" @click = "closeDepartement" checked :disabled="isSuccess">
               <label class="fr-label" for="radio-1">
                   Aléatoire
               </label>
@@ -23,7 +23,7 @@
           </div>
           <div class="fr-fieldset__element">
             <div class="fr-radio-group">
-              <input value="2" type="radio" id="radio-2" name="radio" @click ="openDepartement">
+              <input value="2" type="radio" id="radio-2" name="radio" @click ="openDepartement" :disabled="isSuccess">
               <label class="fr-label" for="radio-2">
                   Département
               </label>
@@ -32,13 +32,21 @@
           <div class="fr-messages-group" id="radio-messages" aria-live="polite">
           </div>
         </fieldset>
-          
+        <p v-if ="!isDepartement">Le GéoCaptcha sera généré avec une localisation aléatoire en France.</p>
+        <p v-if ="isDepartement">Le GéoCaptcha sera généré dans le département de France que vous aurez choisi.</p>
           <select id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }">
             <option value="" disabled selected>Choisissez votre département</option>
-            <option v-for="dept in availableDepartements" :key="dept.numero" :value="dept.numero">
+            <option v-for="dept in availableDepartements" :key="dept.numero" :value="dept.nom">
               {{ dept.nom }} ({{ dept.numero }})
             </option>
           </select>
+
+          <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
+            <h3 class="fr-alert__title">Succès de la création</h3>
+            <p v-if ="isDepartement">{{ successMessage }}</p>
+            <p v-else>GéoCaptcha créé avec une localisation aléatoire en France.</p>
+          </div> 
+          
       </div>
       
       <button type="button" class="fr-btn" @click="openModal">Générer</button>
@@ -57,7 +65,7 @@
                     </div>
                     <div class="fr-modal__footer">
                         <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
-                              <button type="button" id="button-6047" class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" @click ="closeModal">Conserver</button>
+                              <button type="button" id="button-6047" class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" @click ="handleConserver">Conserver</button>
                               <button type="button" id="button-6048" class="fr-btn" @click="closeModal">Supprimer</button>
                         </div>
                     </div>
@@ -80,7 +88,9 @@ export default {
       selectedDepartement: "",
       departements: [],
       isModalOpen: false, // Ajout pour gérer l'affichage de la modale
-      isDepartement: false
+      isDepartement: false,
+      isSuccess: false,
+      successMessage: "",
     };
   },
 
@@ -101,7 +111,11 @@ export default {
   
   methods: {
     createGeoCaptcha() {
-      alert(`GéoCaptcha du département ${this.selectedDepartement} créé avec une difficulté : ${this.difficulty}`);
+    this.successMessage = `GéoCaptcha du département ${this.selectedDepartement} créé avec succès!`;
+    this.isSuccess = true;
+      setTimeout(() => {
+      this.isSuccess = false;
+      }, 3000);
     },
 
     openModal() {
@@ -121,7 +135,13 @@ export default {
 
     closeDepartement(){
       this.isDepartement = false;
+    },
+
+    handleConserver() {
+      this.closeModal();
+      this.createGeoCaptcha();
     }
+
   }
 }
 </script>
@@ -205,5 +225,19 @@ label-choix {
 .hidden {
   visibility: hidden;
   opacity: 0;
+}
+
+p {
+  width: 95%;
+}
+
+.fr-input-group {
+  min-width: 300px;
+  max-width: 500px;
+  width: 100%; /* Il prendra toute la place dispo mais restera dans les limites */
+}
+
+#alert-1068 {
+  margin-top:1em;
 }
 </style>

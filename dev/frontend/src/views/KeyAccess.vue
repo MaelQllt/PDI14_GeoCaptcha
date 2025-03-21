@@ -54,12 +54,12 @@
           >
             <div class="fr-tile">
               <div class="fr-tile__body">
-                <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.id)">
+                <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.appId)"> <!-- J'ai mis le nom attendu par l'api-->
                   Supprimer
                 </button>
               </div>
               <div class="fr-tile__header">
-                <h3 class="fr-tile__title">Id : {{ key._id }}</h3>  <!-- J'ai mis Id car il n'existe pas de nom dans les resultats de la route. -->
+                <h3 class="fr-tile__title">Nom : {{ key.appId }}</h3>  <!-- J'ai mis Id car il n'existe pas de nom dans les resultats de la route. -->
                 <h3 class="fr-tile__title">Adresse mail : {{ key.email }}</h3>
                 <h3 class="fr-tile__title">Clé d'accès : {{ key.apiKey }}</h3>
               </div>
@@ -172,7 +172,7 @@ export default {
       apiKey : import.meta.env.VITE_API_KEY,
       apiId : import.meta.env.VITE_API_ID,
       firstObject: 1,
-      nbObjects: 3,
+      nbObjects: 9,
     };
   },
   // J'ai enlévé nom ou name car ça n'existe pas dans le dictionnaire retourné par l'api
@@ -238,7 +238,7 @@ export default {
     // Méthode pour générer une nouvelle clé d'accès
     async generateApiKey() {
       const newKey = {
-        name: this.keyName,
+        appId : this.keyName, //Au lieu de name, il fallait mettre appId pour que ça reste le nom des champs attendus par l'api.
         email: this.email,
         referer: this.referer, // J'ai ajouté ça
         role: this.role,      // J'ai ajouté ça
@@ -246,23 +246,33 @@ export default {
       };
 
       try {
-        await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser", {
+        const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "x-api-key": this.apiKey,
-            "x-app-id": this.apiId},
+            "x-app-id": this.apiId
+          },
           body: JSON.stringify(newKey)
         });
 
-        this.fetchKeys();
+        // Vérifiez si la requête a réussi (status 200-299)
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+
+
+
+        await this.fetchKeys();
         this.keyName = "";
-        this.email   = "";
-        this.referer =  ""; // J'ai ajouté ça
-        this.role    ="";     // J'ai ajouté ça
+        this.email = "";
+        this.referer = ""; // J'ai ajouté ça
+        this.role = "";     // J'ai ajouté ça
         this.showConfirmationModal = false; // Ferme le modal de confirmation après la génération
+
       } catch (error) {
         console.error("Erreur lors de la génération de la clé", error);
+        this.errorMessage = "Une erreur est survenue lors de la génération de la clé.";
       }
     },
 
@@ -284,7 +294,7 @@ export default {
           throw new Error("Erreur lors de la suppression de la clé.");
         }
 
-        this.fetchKeys();  // Recharge la liste après suppression
+        await  this.fetchKeys();  // Recharge la liste après suppression
         this.closeModal();  // Ferme le modal après suppression
       } catch (error) {
         console.error("Erreur:", error);

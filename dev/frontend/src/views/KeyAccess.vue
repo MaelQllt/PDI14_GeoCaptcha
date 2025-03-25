@@ -380,13 +380,11 @@ export default {
     prevPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-        window.scrollTo(0, 0);
     }
   },
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-        window.scrollTo(0, 0);
     }
   },
 

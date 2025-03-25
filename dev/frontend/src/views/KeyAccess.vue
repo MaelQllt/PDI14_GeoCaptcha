@@ -15,6 +15,19 @@
             <input type="email" id="email" v-model="email" class="fr-input" placeholder="Adresse mail" />
           </div>
 
+          <!-- J'ai ajouté ces deux champs : referer et role car l'api doit avoir ces quatres champs-->
+          <div class="fr-input-group">
+            <label class="fr-label" for="key-referer">Referer :</label>
+            <input type="text" id="key-referer" v-model="referer" class="fr-input" placeholder="Votre  site internet" />
+          </div>
+
+          <div class="fr-input-group">
+            <label class="fr-label" for="key-role">Role :</label>
+            <input type="text" id="key-role" v-model="role" class="fr-input" placeholder="Votre role" />
+          </div>
+
+
+
           <button type="submit" class="fr-btn fr-btn--primary">Générer la clé</button>
         </form>
       </div>
@@ -29,7 +42,7 @@
               type="search"
               v-model="searchQuery"
             />
-            <button title="Rechercher" type="button" class="fr-btn"> Rechercher</button>
+            <button title="Rechercher" type="button" class="fr-btn"> Rechercher </button>
           </div>
         </div>
 
@@ -41,18 +54,24 @@
           >
             <div class="fr-tile">
               <div class="fr-tile__body">
-                <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.id)">
+                <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.appId)"> <!-- J'ai mis le nom attendu par l'api-->
                   Supprimer
                 </button>
               </div>
               <div class="fr-tile__header">
-                <h3 class="fr-tile__title">Nom : {{ key.name }}</h3>
+                <h3 class="fr-tile__title">Nom : {{ key.appId }}</h3>  <!-- J'ai mis Id car il n'existe pas de nom dans les resultats de la route. -->
                 <h3 class="fr-tile__title">Adresse mail : {{ key.email }}</h3>
-                <h3 class="fr-tile__title">Clé d'accès : {{ key.value }}</h3>
+                <h3 class="fr-tile__title">Clé d'accès : {{ key.apiKey }}</h3>
               </div>
             </div>
           </div>
         </div>
+
+         <!-- Message si la liste des clés est vide -->
+        <div v-if="filteredKeys.length === 0" class="fr-alert fr-alert--info">
+          Aucune clé d'accès trouvée.
+        </div>
+
       </div>
 
       <!-- Modal de confirmation de suppression -->
@@ -92,6 +111,8 @@
                   <span class="fr-icon-check-line fr-icon--lg" aria-hidden="true"></span>
                   Génération de clé
                 </h2>
+                <!-- J'ai l'impression qu'on génère la clé deux fois : lorsqu'on ferme ou lorsqu'on clique sur Ok -->
+                <!-- Je pense que pour éviter ça, le mieux c'est de mettre les champs en required  ou trouver un moyen pour ne pas générer le code deux fois-->
                 <button @click="generateApiKey" class="fr-btn--close fr-btn" id="close">Fermer</button>
               </div>
               <div class="fr-modal__content">
@@ -100,7 +121,7 @@
               <div class="fr-modal__footer fr-btns-group--right">
                 <button @click="generateApiKey" class="fr-btn fr-btn--primary" id="OK">OK</button>
               </div>
-            </div>
+            </div> 
           </div>
         </div>
       </div>
@@ -140,18 +161,25 @@ export default {
     return {
       keyName: "",
       email: "",
+      referer: "",
+      role: "",
       apiKeys: [],
       searchQuery: "",
       showModal: false, // Contrôle l'affichage du modal de suppression
       keyToDelete: null, // Stocke l'ID de la clé à supprimer
       showConfirmationModal: false, // Contrôle l'affichage du modal de confirmation pour la génération de clé
       showMissingInfoModal: false, // Contrôle l'affichage du modal si l'utilisateur n'a pas rempli les infos
+      apiKey : import.meta.env.VITE_API_KEY,
+      apiId : import.meta.env.VITE_API_ID,
+      firstObject: 1,
+      nbObjects: 9,
     };
   },
+  // J'ai enlévé nom ou name car ça n'existe pas dans le dictionnaire retourné par l'api
   computed: {
     filteredKeys() {
       return this.apiKeys.filter((key) =>
-        key.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        key.appId.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         key.email.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
@@ -189,32 +217,62 @@ export default {
     },
 
     // Méthode pour récupérer les clés depuis le serveur
+
     async fetchKeys() {
-      const response = await fetch("http://localhost:3002/keys");
-      this.apiKeys = await response.json();
+      // const response = await fetch("http://localhost:3002/keys");
+       const response = await fetch(
+      `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
+      {
+        headers: {
+          "Accept": "application/json",
+          "x-api-key": this.apiKey,
+          "x-app-id": this.apiId
+        },
+      }
+    );
+      const resultat = await response.json();
+      this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers))|| [];
+      // console.log(this.apiKeys)
     },
 
     // Méthode pour générer une nouvelle clé d'accès
     async generateApiKey() {
       const newKey = {
-        name: this.keyName,
+        appId : this.keyName, //Au lieu de name, il fallait mettre appId pour que ça reste le nom des champs attendus par l'api.
         email: this.email,
-        value: "API-KEY-" + Math.random().toString(36).substr(2, 9)
+        referer: this.referer, // J'ai ajouté ça
+        role: this.role,      // J'ai ajouté ça
+        // value: "API-KEY-" + Math.random().toString(36).substr(2, 9) : il fait par l'api directement c'est pas à nous de faire(Je pense)
       };
 
       try {
-        await fetch("http://localhost:3002/keys", {
+        const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": this.apiKey,
+            "x-app-id": this.apiId
+          },
           body: JSON.stringify(newKey)
         });
 
-        this.fetchKeys();
+        // Vérifiez si la requête a réussi (status 200-299)
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+
+
+
+        await this.fetchKeys();
         this.keyName = "";
         this.email = "";
+        this.referer = ""; // J'ai ajouté ça
+        this.role = "";     // J'ai ajouté ça
         this.showConfirmationModal = false; // Ferme le modal de confirmation après la génération
+
       } catch (error) {
         console.error("Erreur lors de la génération de la clé", error);
+        this.errorMessage = "Une erreur est survenue lors de la génération de la clé.";
       }
     },
 
@@ -224,13 +282,19 @@ export default {
       if (!id) return;
 
       try {
-        const response = await fetch(`http://localhost:3002/keys/${id}`, { method: "DELETE" });
+        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser/${id}`,
+            { method: "DELETE",
+                  headers: {
+                  "Accept": "*/*",
+                  "x-api-key": this.apiKey,
+                  "x-app-id": this.apiId
+                }});
 
         if (!response.ok) {
           throw new Error("Erreur lors de la suppression de la clé.");
         }
 
-        this.fetchKeys();  // Recharge la liste après suppression
+        await  this.fetchKeys();  // Recharge la liste après suppression
         this.closeModal();  // Ferme le modal après suppression
       } catch (error) {
         console.error("Erreur:", error);

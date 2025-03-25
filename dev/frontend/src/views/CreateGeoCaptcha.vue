@@ -1,183 +1,222 @@
 <template>
-  <div class="generation">
-    <h1 class="fr-h1">Créez vos GéoCaptchas</h1>
-    <form @submit.prevent="createGeoCaptcha">
-      <div class="fr-input-group">
-        <!--<label-choix class="fr-label" for="difficulty">Difficulté :</label-choix>
-        <select id="difficulty" v-model="difficulty" class="fr-select">
-          <option value="easy">Facile</option>
-          <option value="medium">Moyenne</option>
-          <option value="hard">Difficile</option>
-        </select>-->
-        <fieldset class="fr-fieldset" id="radio" aria-labelledby="radio-legend radio-messages">
-          <label-choix class="fr-fieldset__legend--regular fr-fieldset__legend" id="radio-legend">
-            Choix de la zone géographique :
-          </label-choix>
-          <div class="fr-fieldset__element">
-            <div class="fr-radio-group">
-              <input value="1" type="radio" id="radio-1" name="radio" @click = "closeDepartement" checked :disabled="isSuccess">
-              <label class="fr-label" for="radio-1">
-                  Aléatoire
-              </label>
-            </div>
-          </div>
-          <div class="fr-fieldset__element">
-            <div class="fr-radio-group">
-              <input value="2" type="radio" id="radio-2" name="radio" @click ="openDepartement" :disabled="isSuccess">
-              <label class="fr-label" for="radio-2">
-                  Département
-              </label>
-            </div>
-          </div>
-          <div class="fr-messages-group" id="radio-messages" aria-live="polite">
-          </div>
-        </fieldset>
-        <p v-if ="!isDepartement">Le GéoCaptcha sera généré avec une localisation aléatoire en France.</p>
-        <p v-if ="isDepartement">Le GéoCaptcha sera généré dans le département de France que vous aurez choisi.</p>
-          <select id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }">
-            <option value="" disabled selected>Choisissez votre département</option>
-            <option v-for="dept in availableDepartements" :key="dept.numero" :value="dept.nom">
-              {{ dept.nom }} ({{ dept.numero }})
-            </option>
-          </select>
-
-          <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
-            <h3 class="fr-alert__title">Succès de la création</h3>
-            <p v-if ="isDepartement">{{ successMessage }}</p>
-            <p v-else>GéoCaptcha créé avec une localisation aléatoire en France.</p>
-          </div> 
-          
-      </div>
-      
-      <button type="button" class="fr-btn" @click="openModal">Générer</button>
-
-      <div v-if="isModalOpen" class="modal-overlay">
-        <div class="modal-content" @click.stop>
-          <div class="fr-container fr-container--fluid fr-container-md">
-            <div class="fr-grid-row fr-grid-row--center">
-              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                <div class="fr-modal__body">
-                  <div class="fr-modal__content">
-                    <h1 id="modal-overlay-title" class="fr-modal__title">
-                      Vous avez généré ce GéoCaptcha :
-                    </h1>
-                    <img src="../assets/logo.png" alt="geocaptcha">
+  <div class="home">
+  <div class="geo-captcha">
+    <div class="fr-container fr-container--fluid fr-mb-md-14v">
+      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-pt-10v fr-pt-md-14v fr-pb-6v fr-pb-md-10v">
+            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-9 fr-col-lg-8"> 
+                <label class="fr-label label_param" for="select-hint">
+                  <span class="fr-h4">Paramètres de génération</span> 
+                  <span class="fr-hint-text">En choisissant Zone Géographique vous pourrez obtenir un GéoCaptcha spécifique à un département.</span>
+                </label>
+                <fieldset class="fr-segmented">
+                  <div class="fr-segmented__elements">
+                    <div class="fr-segmented__element">
+                      <input value="1" v-model="selectedOption" checked type="radio" id="segmented-2073-2" name="segmented-2073">
+                      <label class="fr-icon-road-map-line fr-label" for="segmented-2073-2">
+                        Zone Géographique précise
+                      </label>
                     </div>
-                    <div class="fr-modal__footer">
-                      <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
-                        <button type="button" id="button-6047" class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" @click ="handleConserver">Conserver</button>
-                        <button type="button" id="button-6048" class="fr-btn" @click="closeModal">Supprimer</button>
-                      </div>
+                    <div class="fr-segmented__element">
+                      <input value="2" v-model="selectedOption" type="radio" id="segmented-2073-1" name="segmented-2073">
+                      <label class="fr-icon-question-line fr-label" for="segmented-2073-1">
+                        Aléatoire
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+                <div v-if="selectedOption === '1'">
+                  <div class="fr-select-group">
+                    <label class="fr-label" for="select">Choix du département:</label>
+                    <select class="fr-select" id="select" name="select" v-model="selectedDepartement">
+                      <option value="" selected disabled hidden>Sélectionner un département</option>
+                      <option v-for="departement in departements" :key="departement.nom" :value="departement.nom">
+                        {{ departement.code }} - {{ departement.nom }}
+                      </option>
+                    </select>
+                    <div class="fr-messages-group" id="select-messages" aria-live="polite"></div>
+                    <div class="btn_generer"><button @click="openModal_dep" type="button" class="fr-btn">Générer</button></div>   
+                  </div>
+
+                  <div v-if="showSuccess" id="alert-1068" class="fr-alert fr-alert--success success_gc">
+                    <h3 class="fr-alert__title">Le GéoCaptcha a bien été accepté</h3>
+                    <p>Votre action a été enregistrée avec succès.</p>
+                  </div>
+                  <div v-if="showError" id="alert-1070" class="fr-alert fr-alert--error error_alert">
+                    <h4 class="fr-alert__title">Aucun département sélectionné</h4>
+                    <p>Veuillez sélectionner un département avant de générer un GéoCaptcha.</p>
+                  </div>
+                </div>
+
+                <div v-if="showModal_dep" class="modal-overlay">
+                  <div class="fr-container fr-container--fluid fr-container-md">
+                    <div class="fr-grid-row fr-grid-row--center">
+                        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                            <div class="fr-modal__body">
+                                <div class="fr-modal__header">
+                                    <button @click="closeModal" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
+                                </div>
+                                <div class="fr-modal__content">
+                                    <h1 id="modal-6053-title" class="fr-modal__title">
+                                        <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                                        GéoCaptcha généré
+                                    </h1>
+                                    <p>Voici un GéoCaptcha correspondant à la zone géographique choisi {{ selectedDepartement }}: </p>
+                                    <img src="../assets/GeoCaptcha.png" alt="GéoCaptcha" class="geo-img">
+                                </div>
+                                <div class="fr-modal__footer">
+                                    <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                                        <button @click="successAction" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>
+                                        <button @click="closeModal" type="button" id="button-6048" class="refuse-btn fr-btn fr-icon-close-circle-line fr-btn--icon-left fr-btn--tertiary">Refuser</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-    </form>
+                <div v-if="selectedOption === '2'">
+                  <div class="fr-select-group">En cliquant ci-dessous un GéoCaptcha aléatoire vous sera généré automatiquement:</div>
+                  <div class="btn_generer"><button @click="openModal_ale" type="button" class="fr-btn">Générer</button></div>    
+                  <div v-if="showSuccess_ale" id="alert-1068" class="fr-alert fr-alert--success success_gc">
+                    <h3 class="fr-alert__title">Le GéoCaptcha a bien été accepté</h3>
+                    <p>Votre action a été enregistrée avec succès.</p>
+                  </div>              
+                </div>
+
+                <div v-if="showModal_ale" class="modal-overlay_ale">
+                  <div class="fr-container fr-container--fluid fr-container-md">
+                    <div class="fr-grid-row fr-grid-row--center">
+                        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                            <div class="fr-modal__body">
+                                <div class="fr-modal__header">
+                                    <button @click="closeModal" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
+                                </div>
+                                <div class="fr-modal__content">
+                                    <h1 id="modal-6053-title" class="fr-modal__title">
+                                        <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                                        GéoCaptcha généré
+                                    </h1>
+                                    <p>Voici un GéoCaptcha généré aléatoirement: </p>
+                                    <img src="../assets/GeoCaptcha.png" alt="GéoCaptcha" class="geo-img">
+                                </div>
+                                <div class="fr-modal__footer">
+                                    <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                                        <button @click="successAction_ale" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>
+                                        <button @click="closeModal" type="button" id="button-6048" class="refuse-btn fr-btn fr-icon-close-circle-line fr-btn--icon-left fr-btn--tertiary">Refuser</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+      </div> 
+    </div>
   </div>
+</div>
 </template>
 
 <script>
+
+import axios from "axios";
+
 export default {
   data() {
     return {
-      difficulty: 'easy',
+      selectedOption: "1",
       selectedDepartement: "",
-      departements: [],
-      isModalOpen: false, // Ajout pour gérer l'affichage de la modale
-      isDepartement: false,
-      isSuccess: false,
-      successMessage: "",
+      departements: [], 
+      showModal_dep: false,
+      showModal_ale: false,
+      showError: false, 
+      showSuccess: false,
+      showSuccess_ale: false,
     };
   },
 
-  computed: {
-    availableDepartements() {
-      return this.departements.filter(dept => dept.disponibilite === "Disponible");
-    }
+  mounted() {
+    this.fetchDepartements();
   },
 
-  mounted() {
-    fetch("http://localhost:3002/departements") 
-      .then(response => response.json())
-      .then(data => {
-        this.departements = data;
-      })
-      .catch(error => console.error("Erreur lors du chargement des départements:", error));
-  },
-  
   methods: {
-    createGeoCaptcha() {
-    this.successMessage = `GéoCaptcha du département ${this.selectedDepartement} créé avec succès!`;
-    this.isSuccess = true;
-      setTimeout(() => {
-      this.isSuccess = false;
-      }, 3000);
+
+    async fetchDepartements() {
+      try {
+        const response = await axios.get("https://geo.api.gouv.fr/departements");
+        this.departements = response.data; 
+      } catch (error) {
+        console.error("Erreur lors de la récupération des départements :", error);
+      }
     },
 
-    openModal() {
-      this.isModalOpen = true;
-      document.body.style.overflow = 'hidden'
-      
+    openModal_dep() {
+      if (this.selectedDepartement) {
+        this.showModal_dep = true; 
+        this.showError = false;
+      } else {
+        this.showError = true;
+      }
+    },
+
+    openModal_ale() {
+        this.showModal_ale = true; 
     },
 
     closeModal() {
-      this.isModalOpen = false;
-      document.body.style.overflow = 'auto';
+      this.showModal_dep = false;
+      this.showModal_ale = false;
     },
 
-    openDepartement(){
-      this.isDepartement = true;
+    successAction() {
+      this.showSuccess = true;
+      setTimeout(() => {
+      this.showSuccess = false;
+      }, 3000);
+    this.showModal_dep = false;
+    this.showModal_ale = false;
     },
 
-    closeDepartement(){
-      this.isDepartement = false;
-    },
-
-    handleConserver() {
-      this.closeModal();
-      this.createGeoCaptcha();
-    }
+  successAction_ale() {
+    this.showSuccess_ale = true; 
+    this.showModal_dep = false;
+    this.showModal_ale = false;
+  },
 
   }
 }
 </script>
 
 <style scoped>
-.generation {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  text-align: left;
-  margin-left: 8em;
-  margin-right: 8em;
+
+.home {
+  margin-top: 170px;
+}
+.fr-h1 {
+  margin-top: 30px;
+  text-align: center;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+.label_param{
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.fr-btn {
+.fr-select-group {
   margin-top: 20px;
-  align-self: center;
-  background-color: #7fc04b;
 }
 
-.fr-btn:hover {
-  background-color: #68a532;
-}
-
-.fr-input:focus,
-.fr-select:focus {
-  outline: 2px solid #7fc04b;
+.btn_generer {
+  text-align: right;
+  margin-top: 20px;
 }
 
 .modal-overlay {
@@ -186,64 +225,55 @@ form {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 1000;
+  align-items: center;
+  z-index: 1000; /* S'assurer que la modale est au-dessus des autres éléments */
 }
 
-.modal {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 500px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: relative;
+.modal-overlay_ale {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* S'assurer que la modale est au-dessus des autres éléments */
 }
 
-
-
-
-.fr-modal__content img {
-  object-fit: contain;
-}
-.modal-content {
-  padding: 1em;
-}
-
-
-#button-6048 {
-  background-color: #f44336;
-  color: white;
-}
-
-#button-6048:hover {
-  background-color: #da190b;
-}
-
-label-choix {
+.error_alert {
   margin-top: 20px;
 }
 
-.hidden {
-  visibility: hidden;
-  opacity: 0;
+.success_gc{
+  margin-top: 20px;
+}
+.geo-img{
+  display: block;
+  margin: 0 auto;
 }
 
-p {
-  width: 95%;
+.accept-btn{
+  outline: 2px solid rgb(0,0,145);
 }
 
-.fr-input-group {
-  min-width: 300px;
-  max-width: 500px;
-  width: 100%; /* Il prendra toute la place dispo mais restera dans les limites */
+.accept-btn:hover{
+  outline: 2px solid rgb(18,18,255);
 }
 
-#alert-1068 {
-  margin-top:1em;
+.refuse-btn{
+  color: rgb(225,0,15);
+  outline: 2px solid rgb(225,0,15);
 }
+
+.refuse-btn{
+  color: rgb(255,41,47);
+  outline: 2px solid rgb(255,41,47);
+}
+
 
 </style>

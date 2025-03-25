@@ -402,6 +402,44 @@ form {
   z-index: 1000;
 }
 
+.modal-content {
+  width: 90%; /* Augmentez cette valeur selon vos besoins */
+  max-width: 1200px; /* Ajustez la largeur maximale */
+  max-height: 90vh; /* 90% de la hauteur de l'écran */
+  background: white;
+  border-radius: 8px;
+  padding: 2em;
+  overflow-y: auto; /* Permet le scrolling si le contenu est trop grand */
+}
+
+.image-container {
+  width: 100%;
+  height: 70vh; /* Ajustez la hauteur selon vos besoins */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1em 0;
+}
+
+.image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.fr-modal__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.fr-modal__title {
+  margin-bottom: 1em;
+  text-align: center;
+}
 .modal {
   background-color: white;
   padding: 2rem;

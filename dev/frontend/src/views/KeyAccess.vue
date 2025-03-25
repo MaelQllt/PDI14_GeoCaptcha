@@ -1,167 +1,257 @@
-<template>
-  <div class="page-container">
-    <!-- Contenu principal de la page -->
-    <main class="main-content">
-      <div class="key-generation">
-        <h1 class="fr-h1">Création de clé d'accès API</h1>
-        <form @submit.prevent="openConfirmationModal">
-          <div class="fr-input-group">
-            <label class="fr-label" for="key-name">Nom :</label>
-            <input type="text" id="key-name" v-model="keyName" class="fr-input" placeholder="Nom associé à la clé d'accès" />
-          </div>
-
-          <div class="fr-input-group">
-            <label class="fr-label" for="email">Adresse mail associée :</label>
-            <input type="email" id="email" v-model="email" class="fr-input" placeholder="Adresse mail" />
-          </div>
-
-          <!-- J'ai ajouté ces deux champs : referer et role car l'api doit avoir ces quatres champs-->
-          <div class="fr-input-group">
-            <label class="fr-label" for="key-referer">Referer :</label>
-            <input type="text" id="key-referer" v-model="referer" class="fr-input" placeholder="Votre  site internet" />
-          </div>
-
-          <div class="fr-input-group">
-            <label class="fr-label" for="key-role">Role :</label>
-            <input type="text" id="key-role" v-model="role" class="fr-input" placeholder="Votre role" />
-          </div>
-
-
-
-          <button type="submit" class="fr-btn fr-btn--primary">Générer la clé</button>
-        </form>
-      </div>
-
-      <div class="key-list">
-        <div class="barre">
-          <h1>Liste des clés d'accès</h1>
-          <div class="fr-search-bar">
-            <input
-              class="fr-input"
-              placeholder="Rechercher par nom"
-              type="search"
-              v-model="searchQuery"
-            />
-            <button title="Rechercher" type="button" class="fr-btn"> Rechercher </button>
-          </div>
-        </div>
-
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div
-            v-for="(key, index) in filteredKeys"
-            :key="index"
-            class="fr-col-12 fr-col-md-6 fr-col-lg-4"
+<template> 
+    <div class="fr-tabs">
+      <!-- Liste des onglets -->
+      <ul class="fr-tabs__list" role="tablist" aria-label="Navigation des onglets">
+        <li role="presentation">
+          <button
+            id="tabpanel-404"
+            class="fr-tabs__tab fr-icon-group-line fr-tabs__tab--icon-left"
+            :class="{ 'fr-tabs__tab--selected': activeTab === 'tabpanel-404' }"
+            role="tab"
+            :aria-selected="activeTab === 'tabpanel-404'"
+            aria-controls="tabpanel-404-panel"
+            @click="switchTab('tabpanel-404')"
           >
-            <div class="fr-tile">
-              <div class="fr-tile__body">
-                <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.appId)"> <!-- J'ai mis le nom attendu par l'api-->
-                  Supprimer
-                </button>
+            Liste des utilisateurs
+          </button>
+        </li>
+        <li role="presentation">
+          <button
+            id="tabpanel-405"
+            class="fr-tabs__tab fr-icon-user-add-line fr-tabs__tab--icon-left"
+            :class="{ 'fr-tabs__tab--selected': activeTab === 'tabpanel-405' }"
+            role="tab"
+            :aria-selected="activeTab === 'tabpanel-405'"
+            aria-controls="tabpanel-405-panel"
+            @click="switchTab('tabpanel-405')"
+          >
+            Générer une clé d'accès
+          </button>
+        </li>
+      </ul>
+
+      <!-- Contenus des onglets -->
+
+      <div
+        id="tabpanel-404-panel"
+        class="fr-tabs__panel"
+        :class="{ 'fr-tabs__panel--selected': activeTab === 'tabpanel-404' }"
+        role="tabpanel"
+        aria-labelledby="tabpanel-404"
+      >
+        <div class="key-list">
+          <div class="barre">
+            <h1>Liste des utilisateurs</h1>
+            <div class="fr-search-bar">
+              <input
+                class="fr-input"
+                placeholder="Rechercher par nom"
+                type="search"
+                v-model="searchQuery"
+              />
+              <button title="Rechercher" type="button" class="fr-btn"> Rechercher </button>
+            </div>
+          </div>
+
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div
+              v-for="(key, index) in filteredKeys"
+              :key="index"
+              class="fr-col-12 fr-col-md-6 fr-col-lg-4"
+            >
+              <div class="fr-tile">
+                <div class="fr-tile__body">
+                  <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.appId)">
+                    Supprimer
+                  </button>
+                </div>
+                <div class="fr-tile__header">
+                  <h3 class="fr-tile__title">Nom : {{ key.appId }}</h3>
+                  <h3 class="fr-tile__title">Adresse mail : {{ key.email }}</h3>
+                  <h3 class="fr-tile__title">Referer : {{ key.referer }}</h3>
+                  <h3 class="fr-tile__title">Rôle : {{ key.role }}</h3>
+                </div>
               </div>
-              <div class="fr-tile__header">
-                <h3 class="fr-tile__title">Nom : {{ key.appId }}</h3>  <!-- J'ai mis Id car il n'existe pas de nom dans les resultats de la route. -->
-                <h3 class="fr-tile__title">Adresse mail : {{ key.email }}</h3>
-                <h3 class="fr-tile__title">Clé d'accès : {{ key.apiKey }}</h3>
+            </div>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div class="pagination" v-if="totalPages > 1">
+            <button 
+              @click="prevPage" 
+              :disabled="currentPage === 1" 
+              class="fr-btn pagination-btn"
+            >
+              ←
+            </button>
+            <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
+            <button 
+              @click="nextPage" 
+              :disabled="currentPage === totalPages" 
+              class="fr-btn pagination-btn"
+            >
+              →
+            </button>
+          </div>
+
+          <!-- Message si la liste des clés est vide -->
+          <div v-if="filteredKeys.length === 0" class="fr-alert fr-alert--info">
+            Aucune clé d'accès trouvée.
+          </div>
+
+        </div>
+
+        <!-- Modal de confirmation de suppression -->
+        <div v-if="showModal" class="modal-overlay">
+          <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                  <div class="fr-modal__header">
+                    <h2 class="fr-modal__title">
+                      <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
+                      Confirmation de suppression
+                    </h2>
+                    <button @click="closeModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
+                  </div>
+                  <div class="fr-modal__content">
+                    <p>Êtes-vous sûr de vouloir supprimer cette clé ?</p>
+                  </div>
+                  <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
+                    <button @click="deleteKey" class="fr-btn fr-btn--reject">Oui, supprimer</button>
+                    <button @click="closeModal" class="fr-btn fr-btn--cancel" id="cancel">Annuler</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-         <!-- Message si la liste des clés est vide -->
-        <div v-if="filteredKeys.length === 0" class="fr-alert fr-alert--info">
-          Aucune clé d'accès trouvée.
-        </div>
-
       </div>
 
-      <!-- Modal de confirmation de suppression -->
-    <div v-if="showModal" class="modal-overlay">
-      <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-            <div class="fr-modal__body">
-              <div class="fr-modal__header">
-                <h2 class="fr-modal__title">
-                  <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
-                  Confirmation de suppression
-                </h2>
-                <button @click="closeModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
+      <div
+        id="tabpanel-405-panel"
+        class="fr-tabs__panel"
+        :class="{ 'fr-tabs__panel--selected': activeTab === 'tabpanel-405' }"
+        role="tabpanel"
+        aria-labelledby="tabpanel-405"
+      >
+        <!-- Contenu principal de la page -->
+        <div class="main-content">
+          <div class="key-generation">
+          <h1 class="fr-h1">Générer une clé d'accès</h1>
+          <form @submit.prevent="openConfirmationModal">
+
+            <div class="fr-input-group">
+              <label class="fr-label" for="key-name">Nom :</label>
+              <input
+                type="text"
+                id="key-name"
+                v-model="keyName"
+                class="fr-input"
+                placeholder="Nom associé à la clé d'accès (minimum 5 caractères)"
+                minlength="5"
+                required
+              />
+            </div>
+
+
+            <div class="fr-input-group">
+              <label class="fr-label" for="email">Adresse mail associée :</label>
+              <input type="email" id="email" v-model="email" class="fr-input" placeholder="exemple@xyz.fr" />
+            </div>
+
+            <div class="fr-input-group">
+              <label class="fr-label" for="key-referer">Referer :</label>
+              <input
+                type="text"
+                id="key-referer"
+                v-model="referer"
+                class="fr-input"
+                placeholder="Exemple : https://application-client1.eu/"
+                @input="validateReferer"
+              />
+              <span v-if="referer && !isValidReferer" class="fr-error">Le format de l'URL est incorrect. Exemple : https://application-client1.eu/</span>
+            </div>
+
+
+            <div class="fr-select-group">
+              <label class="fr-label" for="select">Rôle :</label>
+              <select id="select" name="select" v-model="role" class="fr-select">
+                <option value="" disabled selected hidden>Choisissez un rôle</option>
+                <option value='admin'>Admin</option>
+                <option value='private'>Private</option>
+              </select>
+            </div>
+
+            <button type="submit" class="fr-btn fr-btn--primary">Générer la clé</button>
+          </form>
+          </div>
+          <!-- Modal de confirmation de génération -->
+          <div v-if="showConfirmationModal" class="modal-overlay">
+            <div class="fr-container fr-container--fluid fr-container-md">
+              <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                  <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                      <h2 class="fr-modal__title">
+                        <span class="fr-icon-check-line fr-icon--lg" aria-hidden="true"></span>
+                        Génération de clé
+                      </h2>
+                      <!-- J'ai l'impression qu'on génère la clé deux fois : lorsqu'on ferme ou lorsqu'on clique sur Ok -->
+                      <!-- Je pense que pour éviter ça, le mieux c'est de mettre les champs en required  ou trouver un moyen pour ne pas générer le code deux fois-->
+                      <button @click="generateApiKey" class="fr-btn--close fr-btn" id="close">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                      <p>La clé a été générée avec succès.</p>
+                    </div>
+                    <div class="fr-modal__footer fr-btns-group--right">
+                      <button @click="generateApiKey" class="fr-btn fr-btn--primary" id="OK">OK</button>
+                    </div>
+                  </div> 
+                </div>
               </div>
-              <div class="fr-modal__content">
-                <p>Êtes-vous sûr de vouloir supprimer cette clé ?</p>
-              </div>
-              <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
-                <button @click="deleteKey" class="fr-btn fr-btn--reject">Oui, supprimer</button>
-                <button @click="closeModal" class="fr-btn fr-btn--cancel" id="cancel">Annuler</button>
+            </div>
+          </div>
+
+          <!-- Modal d'erreur pour les champs requis -->
+          <div v-if="showMissingInfoModal" class="modal-overlay">
+            <div class="fr-container fr-container--fluid fr-container-md">
+              <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                  <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                      <h2 class="fr-modal__title">
+                        <span class="fr-icon-error-line fr-icon--lg" aria-hidden="true"></span>
+                        Informations manquantes
+                      </h2>
+                      <button @click="closeMissingInfoModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                      <p>Veuillez remplir tous les champs requis avant de générer une clé.</p>
+                    </div>
+                    <div class="fr-modal__footer fr-btns-group--right">
+                      <button @click="closeMissingInfoModal" class="fr-btn fr-btn--primary" id="OK">OK</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Modal de confirmation de génération -->
-    <div v-if="showConfirmationModal" class="modal-overlay">
-      <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-            <div class="fr-modal__body">
-              <div class="fr-modal__header">
-                <h2 class="fr-modal__title">
-                  <span class="fr-icon-check-line fr-icon--lg" aria-hidden="true"></span>
-                  Génération de clé
-                </h2>
-                <!-- J'ai l'impression qu'on génère la clé deux fois : lorsqu'on ferme ou lorsqu'on clique sur Ok -->
-                <!-- Je pense que pour éviter ça, le mieux c'est de mettre les champs en required  ou trouver un moyen pour ne pas générer le code deux fois-->
-                <button @click="generateApiKey" class="fr-btn--close fr-btn" id="close">Fermer</button>
-              </div>
-              <div class="fr-modal__content">
-                <p>La clé a été générée avec succès.</p>
-              </div>
-              <div class="fr-modal__footer fr-btns-group--right">
-                <button @click="generateApiKey" class="fr-btn fr-btn--primary" id="OK">OK</button>
-              </div>
-            </div> 
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal d'erreur pour les champs requis -->
-    <div v-if="showMissingInfoModal" class="modal-overlay">
-      <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-            <div class="fr-modal__body">
-              <div class="fr-modal__header">
-                <h2 class="fr-modal__title">
-                  <span class="fr-icon-error-line fr-icon--lg" aria-hidden="true"></span>
-                  Informations manquantes
-                </h2>
-                <button @click="closeMissingInfoModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
-              </div>
-              <div class="fr-modal__content">
-                <p>Veuillez remplir tous les champs requis avant de générer une clé.</p>
-              </div>
-              <div class="fr-modal__footer fr-btns-group--right">
-                <button @click="closeMissingInfoModal" class="fr-btn fr-btn--primary" id="OK">OK</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </main>
-  </div>
 </template>
+
 
 <script>
 export default {
   data() {
     return {
+      activeTab: "tabpanel-404",
       keyName: "",
       email: "",
       referer: "",
+      isValidReferer: true,
       role: "",
       apiKeys: [],
       searchQuery: "",
@@ -172,19 +262,44 @@ export default {
       apiKey : import.meta.env.VITE_API_KEY,
       apiId : import.meta.env.VITE_API_ID,
       firstObject: 1,
-      nbObjects: 9,
+      nbObjects: 20,
+      currentPage: 1,
+      totalKeys: 0,
+      itemsPerPage: 9,
     };
   },
-  // J'ai enlévé nom ou name car ça n'existe pas dans le dictionnaire retourné par l'api
   computed: {
     filteredKeys() {
-      return this.apiKeys.filter((key) =>
-        key.appId.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        key.email.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      // First, filter based on search query
+      const filtered = this.apiKeys.filter(key => {
+        const searchQueryLower = this.searchQuery.toLowerCase();
+        
+        const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
+        const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
+        const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
+
+        return appIdMatch || emailMatch || refererMatch;
+      });
+
+      // Then paginate the filtered results
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return filtered.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.apiKeys.length / this.itemsPerPage);
     }
   },
   methods: {
+
+    switchTab(tabId) {
+      this.activeTab = tabId;
+    },
+
+    validateReferer() {
+    const regex = /^https:\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+\/$/;
+    this.isValidReferer = regex.test(this.referer);
+    },
     // Ouvrir le modal et définir la clé à supprimer
     openModal(id) {
       this.keyToDelete = id;
@@ -218,22 +333,7 @@ export default {
 
     // Méthode pour récupérer les clés depuis le serveur
 
-    async fetchKeys() {
-      // const response = await fetch("http://localhost:3002/keys");
-       const response = await fetch(
-      `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
-      {
-        headers: {
-          "Accept": "application/json",
-          "x-api-key": this.apiKey,
-          "x-app-id": this.apiId
-        },
-      }
-    );
-      const resultat = await response.json();
-      this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers))|| [];
-      // console.log(this.apiKeys)
-    },
+   
 
     // Méthode pour générer une nouvelle clé d'accès
     async generateApiKey() {
@@ -299,28 +399,81 @@ export default {
       } catch (error) {
         console.error("Erreur:", error);
       }
-    }
+    },
+
+    // New pagination methods
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+
+    async fetchKeys() {
+      try {
+        const response = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
+          {
+            headers: {
+              "Accept": "application/json",
+              "x-api-key": this.apiKey,
+              "x-app-id": this.apiId
+            },
+          }
+        );
+        const resultat = await response.json();
+        this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
+        this.totalKeys = this.apiKeys.length;
+      } catch (error) {
+        console.error("Erreur lors de la récupération des clés", error);
+      }
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
     this.fetchKeys(); // Appel de la méthode pour récupérer les clés dès le chargement de la page
+  },
+
+  watch: {
+    // Reset to first page when search query changes
+    searchQuery() {
+      this.currentPage = 1;
+    }
   }
 };
 </script>
 
 <style scoped>
 
-/* Main */
-.page-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+.fr-tabs{
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 170px;  
+}
+/* Styles des onglets sélectionnés */
+.fr-tabs__tab--selected {
+  background-color: #007bff;
+  color: white;
 }
 
-.main-content {
-  flex-grow: 1;
-  padding: 2rem;
-  margin-top: 80px;
+/* Masquer les panels inactifs tout en maintenant leur espace */
+.fr-tabs__panel {
+  visibility: hidden; /* Utiliser visibility ou opacity pour masquer sans décalage */
+  opacity: 0; /* Si tu veux rendre le panel totalement invisible sans affecter son espace */
+  transition: opacity 0.1s ease, visibility 0.3s ease; /* Animation de transition */
+  height: auto !important;
+  display: none;
+}
+
+/* Afficher le panel sélectionné */
+.fr-tabs__panel--selected {
+  visibility: visible;
+  display: block; 
+  opacity: 1; /* Rendre le panel visible */
 }
 
 .key-list {
@@ -340,15 +493,6 @@ export default {
 
 .key-generation {
   padding: 1em;
-}
-
-
-.fr-btn {
-  background-color: #7fc04b;
-}
-
-.fr-btn:hover {
-  background-color: #68a532;
 }
 
 .fr-grid-row button {
@@ -372,11 +516,14 @@ export default {
   padding: 0.8rem;
 }
 
-.fr-input:focus,
-.fr-select:focus {
-  outline: 2px solid #7fc04b;
+.cle-generer {
+  display: block;
+  margin-left: auto;
 }
 
+.fr-alert {
+  margin: 15px;
+}
 
 /* Modal */
 
@@ -478,5 +625,27 @@ export default {
 #cancel:hover {
   background-color: #c1c1c1 !important;
   color: #3a3a3a;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-btn {
+  margin: 0 10px;
+  background-color: #7fc04b;
+  color: white;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-weight: bold;
 }
 </style>

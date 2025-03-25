@@ -97,7 +97,7 @@ function setActiveButton(button) {
 
 /* Effet au survol */
 .fr-btn:hover {
-  background-color: rgb(152,152,248)!important; /* Arrière-plan vert transparent */
+  background-color: rgb(18,18,255)!important; /* Arrière-plan vert transparent */
   color: #ffffff !important; /* Texte vert transparent */
 }
 

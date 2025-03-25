@@ -167,10 +167,10 @@
                 id="key-referer"
                 v-model="referer"
                 class="fr-input"
-                placeholder="Exemple : https://application-client1.eu/"
+                placeholder="Exemple : http(s)://application-client1.eu/"
                 @input="validateReferer"
               />
-              <span v-if="referer && !isValidReferer" class="fr-error">Le format de l'URL est incorrect. Exemple : https://application-client1.eu/</span>
+              <span v-if="referer && !isValidReferer" class="fr-error">Le format de l'URL est incorrect. Exemple : http(s)://application-client1.eu/</span>
             </div>
 
 
@@ -265,39 +265,39 @@ export default {
       nbObjects: 20,
       currentPage: 1,
       totalKeys: 0,
-      itemsPerPage: 9,
+      itemsPerPage: 6,
     };
   },
   computed: {
     filteredKeys() {
-      // First, filter based on search query
-      const filtered = this.apiKeys.filter(key => {
-        const searchQueryLower = this.searchQuery.toLowerCase();
-        
-        const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
-        const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
-        const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
+    const filtered = this.apiKeys.filter(key => {
+      const searchQueryLower = this.searchQuery.toLowerCase();
+      
+      const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
+      const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
+      const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
 
-        return appIdMatch || emailMatch || refererMatch;
-      });
+      return appIdMatch || emailMatch || refererMatch;
+    });
 
-      // Then paginate the filtered results
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return filtered.slice(start, end);
-    },
-    totalPages() {
-      return Math.ceil(this.apiKeys.length / this.itemsPerPage);
-    }
+    // Pagination
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return filtered.slice(start, end);
+  },
+  totalPages() {
+    return Math.ceil(this.apiKeys.length / this.itemsPerPage);
+  }
   },
   methods: {
 
     switchTab(tabId) {
       this.activeTab = tabId;
+      this.fetchKeys();
     },
 
     validateReferer() {
-    const regex = /^https:\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+\/$/;
+    const regex = /^(https?:\/\/)[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+\/$/;
     this.isValidReferer = regex.test(this.referer);
     },
     // Ouvrir le modal et définir la clé à supprimer
@@ -403,36 +403,65 @@ export default {
 
     // New pagination methods
     prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-      }
-    },
-
-    async fetchKeys() {
-      try {
-        const response = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
-          {
-            headers: {
-              "Accept": "application/json",
-              "x-api-key": this.apiKey,
-              "x-app-id": this.apiId
-            },
-          }
-        );
-        const resultat = await response.json();
-        this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
-        this.totalKeys = this.apiKeys.length;
-      } catch (error) {
-        console.error("Erreur lors de la récupération des clés", error);
-      }
-    },
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
   },
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  },
+
+  // Ajoutez cette nouvelle méthode pour récupérer les clés supplémentaires
+  async fetchMoreKeys() {
+    try {
+      const response = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=21&nbObjects=20`,
+        {
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": this.apiKey,
+            "x-app-id": this.apiId
+          },
+        }
+      );
+      const resultat = await response.json();
+      const additionalKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
+      
+      // Ajouter les clés supplémentaires à la liste existante
+      this.apiKeys = [...this.apiKeys, ...additionalKeys];
+      this.totalKeys = this.apiKeys.length;
+    } catch (error) {
+      console.error("Erreur lors de la récupération des clés supplémentaires", error);
+    }
+  },
+
+  async fetchKeys() {
+    try {
+      const response = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=1&nbObjects=20`,
+        {
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": this.apiKey,
+            "x-app-id": this.apiId
+          },
+        }
+      );
+      const resultat = await response.json();
+      this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
+      this.totalKeys = this.apiKeys.length;
+
+      // Si moins de 20 clés, pas besoin de chercher plus
+      if (this.apiKeys.length === 20) {
+        await this.fetchMoreKeys();
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des clés", error);
+    }
+  },
+},
   mounted() {
     window.scrollTo(0, 0);
     this.fetchKeys(); // Appel de la méthode pour récupérer les clés dès le chargement de la page

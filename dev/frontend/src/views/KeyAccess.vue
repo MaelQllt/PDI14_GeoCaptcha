@@ -61,7 +61,7 @@
             >
               <div class="fr-tile">
                 <div class="fr-tile__body">
-                  <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.appId)">
+                  <button type="button" class="delete-btn fr-btn fr-btn--sm" @click="openModal(key.appId)">
                     Supprimer
                   </button>
                 </div>
@@ -79,18 +79,17 @@
           <div class="pagination" v-if="totalPages > 1">
             <button 
               @click="prevPage" 
+              type="button"
               :disabled="currentPage === 1" 
-              class="fr-btn pagination-btn"
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
             >
-              ←
             </button>
-            <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
+            <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
             <button 
               @click="nextPage" 
               :disabled="currentPage === totalPages" 
-              class="fr-btn pagination-btn"
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line"
             >
-              →
             </button>
           </div>
 
@@ -157,7 +156,7 @@
 
             <div class="fr-input-group">
               <label class="fr-label" for="email">Adresse mail associée :</label>
-              <input type="email" id="email" v-model="email" class="fr-input" placeholder="exemple@xyz.fr" />
+              <input type="email" id="email" v-model="email" class="fr-input" placeholder="exemple@xyz.fr" required/>
             </div>
 
             <div class="fr-input-group">
@@ -169,6 +168,7 @@
                 class="fr-input"
                 placeholder="Exemple : https://application-client1.eu/"
                 @input="validateReferer"
+                required
               />
               <span v-if="referer && !isValidReferer" class="fr-error">Le format de l'URL est incorrect. Exemple : https://application-client1.eu/</span>
             </div>
@@ -176,14 +176,14 @@
 
             <div class="fr-select-group">
               <label class="fr-label" for="select">Rôle :</label>
-              <select id="select" name="select" v-model="role" class="fr-select">
+              <select id="select" name="select" v-model="role" class="fr-select" required>
                 <option value="" disabled selected hidden>Choisissez un rôle</option>
                 <option value='admin'>Admin</option>
                 <option value='private'>Private</option>
               </select>
             </div>
 
-            <button type="submit" class="fr-btn fr-btn--primary">Générer la clé</button>
+            <button type="submit" class="fr-btn fr-btn--primary cle-generer">Générer la clé</button>
           </form>
           </div>
           <!-- Modal de confirmation de génération -->
@@ -193,46 +193,21 @@
                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                   <div class="fr-modal__body">
                     <div class="fr-modal__header">
-                      <h2 class="fr-modal__title">
-                        <span class="fr-icon-check-line fr-icon--lg" aria-hidden="true"></span>
-                        Génération de clé
-                      </h2>
-                      <!-- J'ai l'impression qu'on génère la clé deux fois : lorsqu'on ferme ou lorsqu'on clique sur Ok -->
-                      <!-- Je pense que pour éviter ça, le mieux c'est de mettre les champs en required  ou trouver un moyen pour ne pas générer le code deux fois-->
-                      <button @click="generateApiKey" class="fr-btn--close fr-btn" id="close">Fermer</button>
+                      <button @click="generateApiKey" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
                     </div>
                     <div class="fr-modal__content">
-                      <p>La clé a été générée avec succès.</p>
+                      <h1 id="modal-6053-title" class="fr-modal__title">
+                        <span class="fr-icon-check-line fr-icon--lg" aria-hidden="true"></span>
+                        Clé Générée
+                      </h1>
+                      <p>La clé a été générée avec succès. Un mail sera envoyé à l'adresse renseignée dans les plus brefs délais.</p>
                     </div>
-                    <div class="fr-modal__footer fr-btns-group--right">
-                      <button @click="generateApiKey" class="fr-btn fr-btn--primary" id="OK">OK</button>
+                    <div class="fr-modal__footer">
+                        <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                          <button @click="generateApiKey" type="button" id="button-6047" class="validate-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Valider</button>
+                        </div>
                     </div>
                   </div> 
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Modal d'erreur pour les champs requis -->
-          <div v-if="showMissingInfoModal" class="modal-overlay">
-            <div class="fr-container fr-container--fluid fr-container-md">
-              <div class="fr-grid-row fr-grid-row--center">
-                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                  <div class="fr-modal__body">
-                    <div class="fr-modal__header">
-                      <h2 class="fr-modal__title">
-                        <span class="fr-icon-error-line fr-icon--lg" aria-hidden="true"></span>
-                        Informations manquantes
-                      </h2>
-                      <button @click="closeMissingInfoModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
-                      <p>Veuillez remplir tous les champs requis avant de générer une clé.</p>
-                    </div>
-                    <div class="fr-modal__footer fr-btns-group--right">
-                      <button @click="closeMissingInfoModal" class="fr-btn fr-btn--primary" id="OK">OK</button>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -405,11 +380,13 @@ export default {
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
+        window.scrollTo(0, 0);
       }
     },
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
+        window.scrollTo(0, 0);
       }
     },
 
@@ -495,11 +472,11 @@ export default {
   padding: 1em;
 }
 
-.fr-grid-row button {
+.fr-grid-row .delete-btn {
   background-color: #ff4140;
 }
 
-.fr-grid-row button:hover {
+.fr-grid-row .delete-btn:hover {
   background-color: #ce0500;
 }
 
@@ -632,12 +609,6 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 20px;
-}
-
-.pagination-btn {
-  margin: 0 10px;
-  background-color: #7fc04b;
-  color: white;
 }
 
 .pagination-btn:disabled {

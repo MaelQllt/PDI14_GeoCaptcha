@@ -166,11 +166,11 @@
                 id="key-referer"
                 v-model="referer"
                 class="fr-input"
-                placeholder="Exemple : http(s)://application-client1.eu/"
+                placeholder="Exemple : http(s)://application-client1.eu"
                 @input="validateReferer"
                 required
               />
-              <span v-if="referer && !isValidReferer" class="fr-error">Le format de l'URL est incorrect. Exemple : http(s)://application-client1.eu/</span>
+              <span v-if="referer && !isValidReferer" class="fr-error">Le format de l'URL est incorrect. Exemple : http(s)://application-client1.eu</span>
             </div>
 
 
@@ -272,7 +272,7 @@ export default {
     },
 
     validateReferer() {
-    const regex = /^(https?:\/\/)[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+\/$/;
+    const regex = /^(https?:\/\/)[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/?\s*$/;
     this.isValidReferer = regex.test(this.referer);
     },
     // Ouvrir le modal et définir la clé à supprimer
@@ -289,7 +289,7 @@ export default {
 
     // Ouvrir le modal de confirmation pour générer une clé
     openConfirmationModal() {
-      if (!this.keyName || !this.email) {
+      if (!this.keyName || !this.email || !this.isValidReferer) {
         this.showMissingInfoModal = true; // Affiche le modal d'erreur si les champs sont vides
         return;
       }
@@ -312,14 +312,6 @@ export default {
 
     // Méthode pour générer une nouvelle clé d'accès
     async generateApiKey() {
-      const newKey = {
-        appId : this.keyName, //Au lieu de name, il fallait mettre appId pour que ça reste le nom des champs attendus par l'api.
-        email: this.email,
-        referer: this.referer, // J'ai ajouté ça
-        role: this.role,      // J'ai ajouté ça
-        // value: "API-KEY-" + Math.random().toString(36).substr(2, 9) : il fait par l'api directement c'est pas à nous de faire(Je pense)
-      };
-
       try {
         const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser", {
           method: "POST",
@@ -328,26 +320,61 @@ export default {
             "x-api-key": this.apiKey,
             "x-app-id": this.apiId
           },
-          body: JSON.stringify(newKey)
+          body: JSON.stringify({
+            appId: this.keyName,
+            email: this.email,
+            referer: this.referer,
+            role: this.role
+          })
         });
 
-        // Vérifiez si la requête a réussi (status 200-299)
         if (!response.ok) {
-          throw new Error(`Erreur HTTP : ${response.status}`);
+          const errorText = await response.text();
+          throw new Error(`Erreur HTTP : ${response.status} - ${errorText}`);
         }
 
+        const responseData = await response.json();
+        
+        // Log détaillé de la réponse
+        console.log('Réponse complète :', responseData);
 
+        // Extraction de la clé depuis l'objet cuser
+        const generatedApiKey = responseData.cuser?.key || 
+                                responseData.cuser?.apiKey || 
+                                responseData.cuser?.access_key;
+
+        if (!generatedApiKey) {
+          console.error('Aucune clé trouvée dans cuser', responseData.cuser);
+          throw new Error('Impossible de trouver la clé API dans la réponse');
+        }
+
+        const subject = encodeURIComponent("Votre nouvelle clé d'accès");
+        const body = encodeURIComponent(`Bonjour,
+
+Voici votre nouvelle clé d'accès :
+
+Nom : ${this.keyName}
+Clé : ${generatedApiKey}
+
+Veuillez la conserver de manière sécurisée.
+
+Cordialement,
+Votre service CaptchAdmin`);
+
+        window.location.href = `mailto:${this.email}?subject=${subject}&body=${body}`;
 
         await this.fetchKeys();
+        
+        // Réinitialisation des champs
         this.keyName = "";
         this.email = "";
-        this.referer = ""; // J'ai ajouté ça
-        this.role = "";     // J'ai ajouté ça
-        this.showConfirmationModal = false; // Ferme le modal de confirmation après la génération
+        this.referer = "";
+        this.role = "";
+        this.showConfirmationModal = false;
 
       } catch (error) {
         console.error("Erreur lors de la génération de la clé", error);
-        this.errorMessage = "Une erreur est survenue lors de la génération de la clé.";
+        this.errorMessage = error.message || "Une erreur est survenue lors de la génération de la clé.";
       }
     },
 
@@ -380,13 +407,11 @@ export default {
     prevPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-        window.scrollTo(0, 0);
     }
   },
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-        window.scrollTo(0, 0);
     }
   },
 
@@ -648,4 +673,12 @@ export default {
 .page-info {
   font-weight: bold;
 }
+
+
+.fr-tile__title {
+  font-size: 0.9rem;  /* Réduction de la taille de police */
+  margin-bottom: 0.25rem;  /* Réduction de l'espacement entre les titres */
+  line-height: 1.2;  /* Resserrement de l'interligne */
+}
+
 </style>

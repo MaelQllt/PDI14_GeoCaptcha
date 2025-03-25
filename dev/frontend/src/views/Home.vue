@@ -32,13 +32,17 @@
 </template>
 
 <script setup>
-// Aucun changement nécessaire ici
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  window.scrollTo(0, 0);
+});
 </script>
 
 <style scoped>
 /* Assurer que le contenu commence sous le header */
 .home {
-  padding-top: 110px; /* Hauteur du header + marge de sécurité */
+  padding-top: 200px; /* Hauteur du header + marge de sécurité */
   padding-bottom: 2rem; /* Assurer un espace avant le footer */
   display: flex;
   flex-direction: column;

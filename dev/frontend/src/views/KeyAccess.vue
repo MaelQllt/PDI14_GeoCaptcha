@@ -3,28 +3,51 @@
     <!-- Contenu principal de la page -->
     <main class="main-content">
       <div class="key-generation">
+
         <h1 class="fr-h1">Création de clé d'accès API</h1>
         <form @submit.prevent="openConfirmationModal">
+
           <div class="fr-input-group">
             <label class="fr-label" for="key-name">Nom :</label>
-            <input type="text" id="key-name" v-model="keyName" class="fr-input" placeholder="Nom associé à la clé d'accès" />
+            <input
+              type="text"
+              id="key-name"
+              v-model="keyName"
+              class="fr-input"
+              placeholder="Nom associé à la clé d'accès (minimum 5 caractères)"
+              minlength="5"
+              required
+            />
           </div>
+
 
           <div class="fr-input-group">
             <label class="fr-label" for="email">Adresse mail associée :</label>
-            <input type="email" id="email" v-model="email" class="fr-input" placeholder="Adresse mail" />
+            <input type="email" id="email" v-model="email" class="fr-input" placeholder="Exemple : xyz@xyz.fr" />
           </div>
 
-          <!-- J'ai ajouté ces deux champs : referer et role car l'api doit avoir ces quatres champs-->
           <div class="fr-input-group">
             <label class="fr-label" for="key-referer">Referer :</label>
-            <input type="text" id="key-referer" v-model="referer" class="fr-input" placeholder="Votre  site internet" />
+            <input
+              type="text"
+              id="key-referer"
+              v-model="referer"
+              class="fr-input"
+              placeholder="Exemple : https://application-client1.eu/"
+              @input="validateReferer"
+            />
+            <span v-if="referer && !isValidReferer" class="fr-error">Le format de l'URL est incorrect. Exemple : https://application-client1.eu/</span>
           </div>
 
+
           <div class="fr-input-group">
-            <label class="fr-label" for="key-role">Role :</label>
-            <input type="text" id="key-role" v-model="role" class="fr-input" placeholder="Votre role" />
+            <label class="fr-label" for="key-role">Rôle :</label>
+            <select id="key-role" v-model="role" class="fr-input">
+              <option value='admin'>Admin</option>
+              <option value='private'>Private</option>
+            </select>
           </div>
+
 
 
 
@@ -54,24 +77,43 @@
           >
             <div class="fr-tile">
               <div class="fr-tile__body">
-                <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.appId)"> <!-- J'ai mis le nom attendu par l'api-->
+                <button type="button" class="fr-btn fr-btn--sm" @click="openModal(key.appId)">
                   Supprimer
                 </button>
               </div>
               <div class="fr-tile__header">
-                <h3 class="fr-tile__title">Nom : {{ key.appId }}</h3>  <!-- J'ai mis Id car il n'existe pas de nom dans les resultats de la route. -->
+                <h3 class="fr-tile__title">Nom : {{ key.appId }}</h3>
                 <h3 class="fr-tile__title">Adresse mail : {{ key.email }}</h3>
-                <h3 class="fr-tile__title">Clé d'accès : {{ key.apiKey }}</h3>
+                <h3 class="fr-tile__title">Referer : {{ key.referer }}</h3>
+                <h3 class="fr-tile__title">Rôle : {{ key.role }}</h3>
               </div>
             </div>
           </div>
         </div>
 
-         <!-- Message si la liste des clés est vide -->
+        <!-- Pagination Controls -->
+        <div class="pagination" v-if="totalPages > 1">
+          <button
+            @click="prevPage"
+            :disabled="currentPage === 1"
+            class="fr-btn pagination-btn"
+          >
+            ←
+          </button>
+          <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
+          <button
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+            class="fr-btn pagination-btn"
+          >
+            →
+          </button>
+        </div>
+
+        <!-- Message if no keys found -->
         <div v-if="filteredKeys.length === 0" class="fr-alert fr-alert--info">
           Aucune clé d'accès trouvée.
         </div>
-
       </div>
 
       <!-- Modal de confirmation de suppression -->
@@ -162,6 +204,7 @@ export default {
       keyName: "",
       email: "",
       referer: "",
+      isValidReferer: true,
       role: "",
       apiKeys: [],
       searchQuery: "",
@@ -172,19 +215,40 @@ export default {
       apiKey : import.meta.env.VITE_API_KEY,
       apiId : import.meta.env.VITE_API_ID,
       firstObject: 1,
-      nbObjects: 9,
+      nbObjects: 20,
+      currentPage: 1,
+      totalKeys: 0,
+      itemsPerPage: 9,
     };
   },
-  // J'ai enlévé nom ou name car ça n'existe pas dans le dictionnaire retourné par l'api
   computed: {
     filteredKeys() {
-      return this.apiKeys.filter((key) =>
-        key.appId.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        key.email.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      // First, filter based on search query
+      const filtered = this.apiKeys.filter(key => {
+        const searchQueryLower = this.searchQuery.toLowerCase();
+
+        const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
+        const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
+        const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
+
+        return appIdMatch || emailMatch || refererMatch;
+      });
+
+      // Then paginate the filtered results
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return filtered.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.apiKeys.length / this.itemsPerPage);
     }
   },
   methods: {
+
+    validateReferer() {
+    const regex = /^https:\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+\/$/;
+    this.isValidReferer = regex.test(this.referer);
+    },
     // Ouvrir le modal et définir la clé à supprimer
     openModal(id) {
       this.keyToDelete = id;
@@ -218,22 +282,7 @@ export default {
 
     // Méthode pour récupérer les clés depuis le serveur
 
-    async fetchKeys() {
-      // const response = await fetch("http://localhost:3002/keys");
-       const response = await fetch(
-      `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
-      {
-        headers: {
-          "Accept": "application/json",
-          "x-api-key": this.apiKey,
-          "x-app-id": this.apiId
-        },
-      }
-    );
-      const resultat = await response.json();
-      this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers))|| [];
-      // console.log(this.apiKeys)
-    },
+
 
     // Méthode pour générer une nouvelle clé d'accès
     async generateApiKey() {
@@ -244,7 +293,6 @@ export default {
         role: this.role,      // J'ai ajouté ça
         // value: "API-KEY-" + Math.random().toString(36).substr(2, 9) : il fait par l'api directement c'est pas à nous de faire(Je pense)
       };
-      console.log(newKey)
 
       try {
         const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser", {
@@ -300,11 +348,50 @@ export default {
       } catch (error) {
         console.error("Erreur:", error);
       }
-    }
+    },
+
+    // New pagination methods
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+
+    async fetchKeys() {
+      try {
+        const response = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
+          {
+            headers: {
+              "Accept": "application/json",
+              "x-api-key": this.apiKey,
+              "x-app-id": this.apiId
+            },
+          }
+        );
+        const resultat = await response.json();
+        this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
+        this.totalKeys = this.apiKeys.length;
+      } catch (error) {
+        console.error("Erreur lors de la récupération des clés", error);
+      }
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
     this.fetchKeys(); // Appel de la méthode pour récupérer les clés dès le chargement de la page
+  },
+
+  watch: {
+    // Reset to first page when search query changes
+    searchQuery() {
+      this.currentPage = 1;
+    }
   }
 };
 </script>
@@ -479,5 +566,29 @@ export default {
 #cancel:hover {
   background-color: #c1c1c1 !important;
   color: #3a3a3a;
+}
+
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-btn {
+  margin: 0 10px;
+  background-color: #7fc04b;
+  color: white;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-weight: bold;
 }
 </style>

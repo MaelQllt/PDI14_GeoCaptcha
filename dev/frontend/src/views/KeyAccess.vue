@@ -245,24 +245,35 @@ export default {
   },
   computed: {
     filteredKeys() {
-    const filtered = this.apiKeys.filter(key => {
-      const searchQueryLower = this.searchQuery.toLowerCase();
-      
-      const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
-      const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
-      const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
+      const filtered = this.apiKeys.filter(key => {
+        const searchQueryLower = this.searchQuery.toLowerCase();
+        
+        const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
+        const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
+        const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
 
-      return appIdMatch || emailMatch || refererMatch;
-    });
+        return appIdMatch || emailMatch || refererMatch;
+      });
 
-    // Pagination
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return filtered.slice(start, end);
-  },
-  totalPages() {
-    return Math.ceil(this.apiKeys.length / this.itemsPerPage);
-  }
+      // Pagination
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return filtered.slice(start, end);
+    },
+    totalPages() {
+      // Calculate total pages based on filtered keys
+      const filtered = this.apiKeys.filter(key => {
+        const searchQueryLower = this.searchQuery.toLowerCase();
+        
+        const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
+        const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
+        const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
+
+        return appIdMatch || emailMatch || refererMatch;
+      });
+
+      return Math.ceil(filtered.length / this.itemsPerPage);
+    }
   },
   methods: {
 

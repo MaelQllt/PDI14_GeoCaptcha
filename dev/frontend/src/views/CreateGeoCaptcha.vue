@@ -86,7 +86,10 @@
                     <h1 id="modal-overlay-title" class="fr-modal__title">
                       Vous avez généré ce GéoCaptcha :
                     </h1>
-                    <img src="../assets/logo.png" alt="geocaptcha">
+                    <div class="image-container">
+                      <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                      <p v-else>Chargement de l'image...</p>
+                    </div>
                   </div>
                   <div class="fr-modal__footer">
                     <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
@@ -130,6 +133,7 @@ export default {
       mode: "",
       zipcodeError: "",
       modeError: "",
+      imageTuile: "",
     };
   },
 
@@ -239,6 +243,8 @@ export default {
         setTimeout(() => {
           this.isSuccess = false;
         }, 3000);
+        this.imageTuile = `https://tile.openstreetmap.org/${data.z}/${data.x}/${data.y}.png`
+        this.isModalOpen = true;
       } catch (error) {
         console.error("Erreur :", error);
       }

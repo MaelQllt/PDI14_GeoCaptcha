@@ -244,6 +244,7 @@ export default {
         role: this.role,      // J'ai ajouté ça
         // value: "API-KEY-" + Math.random().toString(36).substr(2, 9) : il fait par l'api directement c'est pas à nous de faire(Je pense)
       };
+      console.log(newKey)
 
       try {
         const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser", {

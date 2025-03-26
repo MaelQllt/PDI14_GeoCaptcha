@@ -7,6 +7,20 @@
 
         <!-- Graphiques et métriques -->
         <div class="metrics-overview">
+
+          <div class="metric-card">
+            <h3>Logs</h3>
+            <div class="logs">
+              <ul>
+                <p>log</p>
+                <li v-for="(log, index) in logs" :key="index">
+                <strong>{{ log.timestamp }}:</strong> {{ log.message }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+
           <div class="metric-card">
             <h3>Légende</h3>
             <div class="legende">
@@ -29,9 +43,7 @@
             </div>
           </div>
 
-          <div class="metric-card">
-            <h3>Logs</h3>
-          </div>
+          
         </div>
 
         <!-- Liste des géocaptchas analysés -->
@@ -166,6 +178,7 @@ export default {
       apiId: import.meta.env.VITE_API_ID,
       firstObject: 1,
       nbObjects: 20,
+      logs: [],
     };
   },
   computed: {
@@ -299,6 +312,11 @@ export default {
         if (!response.ok) {
           throw new Error("Erreur lors de la suppression du Géocaptcha");
         }
+
+        this.logs.push({
+          message: `GéoCaptcha ID ${this.selectedGeocaptcha.id} supprimé.`,
+          timestamp: new Date().toLocaleString()
+        });
 
         // Mise à jour de la liste des géocaptchas
         this.items = this.items.filter(item => item.id !== this.selectedGeocaptcha.id);
@@ -599,6 +617,15 @@ export default {
 .fr-select:focus {
   outline: 1px solid #7fc04b;
   outline-offset: 1px;
+}
+
+/*Liste des logs */
+
+.logs {
+  max-height: 200px; /* Définis une hauteur maximale */
+  overflow-y: auto; /* Ajoute une barre de défilement verticale si nécessaire */
+  border: 1px solid #ccc; /* Ajoute une bordure pour démarquer la section */
+   /* Ajoute un peu d’espace intérieur */
 }
 </style>
 

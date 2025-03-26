@@ -50,7 +50,6 @@
           </div>
         </div>
 
-
         <!-- Modal pour Détails du Géocaptcha -->
         <div v-if="isModalVisible" class="modal-overlay">
           <div class="fr-container fr-container--fluid fr-container-md">
@@ -67,15 +66,19 @@
                   <div class="fr-modal__content">
                     <div>
                       <p><strong>ID:</strong> {{ selectedGeocaptcha.id }}</p>
+                      <p><strong>IP:</strong> {{ selectedGeocaptcha.ip }}</p>
                       <p><strong>Essais:</strong> {{ selectedGeocaptcha.attempts }}</p>
                       <p><strong>Réussites:</strong> {{ selectedGeocaptcha.successes }}</p>
                       <p><strong>Echecs:</strong> {{ selectedGeocaptcha.failures }}</p>
                       <p><strong>Précision:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
+                      <p><strong>Referer:</strong> {{ selectedGeocaptcha.referer }}</p>
+                      <p><strong>Date de création:</strong> {{ selectedGeocaptcha.createdAt }}</p>
                     </div>
 
-                    <!-- Colonne de l'image -->
+                    <!-- Afficher les images du défi -->
                     <div>
-                      <img :src="logoSrc" alt="Logo Géocaptcha" class="geocaptcha-logo" />
+                      <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.backendId}`" alt="Backend" />
+                      <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.frontendId}`" alt="Frontend" />
                     </div>
                   </div>
 
@@ -84,7 +87,6 @@
                       <button @click="showConfirmationModal" class="fr-btn fr-btn--reject">Rejeter</button>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
@@ -116,7 +118,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </main>
   </div>
@@ -127,55 +128,80 @@ import logo from "@/assets/logo.png"; // Importation de l'image
 
 export default {
   data() {
-  return {
-    items: [],
-    loading: true,
-    error: false,
-    totalResolved: 0,
-    successRate: 0,
-    logoSrc: logo,
-    selectedGeocaptcha: null,
-    isModalVisible: false,
-    isConfirmationModalVisible: false,
-    filterOption: 'all', // Option de filtrage par défaut
-  };
-},
-computed: {
-  // Propriété calculée pour filtrer les items
-  filteredItems() {
-  if (this.filterOption === 'all') {
-    return this.items;
-  } else if (this.filterOption === 'id-asc') {
-    return [...this.items].sort((a, b) => a.id - b.id);
-  } else if (this.filterOption === 'id-desc') {
-    return [...this.items].sort((a, b) => b.id - a.id);
-  } else if (this.filterOption === 'success-asc') {
-    return [...this.items].sort((a, b) => a.accuracy - b.accuracy);
-  } else if (this.filterOption === 'success-desc') {
-    return [...this.items].sort((a, b) => b.accuracy - a.accuracy);
-  }
-  return this.items;
-}
-},
-  methods: {
-    // Ajouter cette méthode avec les autres méthodes existantes
-  applyFilter() {
-    // La méthode est vide car le filtrage est fait via la propriété calculée filteredItems
-    // Mais on peut ajouter ici d'autres actions si nécessaire lors du changement de filtre
-    console.log("Filtre appliqué:", this.filterOption);
+    return {
+      items: [],
+      loading: true,
+      error: false,
+      totalResolved: 0,
+      successRate: 0,
+      logoSrc: logo,
+      selectedGeocaptcha: null,
+      isModalVisible: false,
+      isConfirmationModalVisible: false,
+      filterOption: 'all', // Option de filtrage par défaut
+      apiKey: import.meta.env.VITE_API_KEY,
+      apiId: import.meta.env.VITE_API_ID,
+      firstObject: 1,
+      nbObjects: 20,
+    };
   },
+  computed: {
+    // Propriété calculée pour filtrer les items
+    filteredItems() {
+      if (this.filterOption === 'all') {
+        return this.items;
+      } else if (this.filterOption === 'id-asc') {
+        return [...this.items].sort((a, b) => a.id.localeCompare(b.id));
+      } else if (this.filterOption === 'id-desc') {
+        return [...this.items].sort((a, b) => b.id.localeCompare(a.id));
+      } else if (this.filterOption === 'success-asc') {
+        return [...this.items].sort((a, b) => a.accuracy - b.accuracy);
+      } else if (this.filterOption === 'success-desc') {
+        return [...this.items].sort((a, b) => b.accuracy - a.accuracy);
+      }
+      return this.items;
+    }
+  },
+  methods: {
+    // Appliquer le filtre
+    applyFilter() {
+      console.log("Filtre appliqué:", this.filterOption);
+    },
 
+    // Récupérer les données des géocaptchas
     async fetchData() {
       try {
-        const response = await fetch("http://localhost:3002/geocaptchas");
+        const response = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
+          {
+            headers: {
+              "Accept": "application/json",
+              "x-api-key": this.apiKey,
+              "x-app-id": this.apiId
+            },
+          }
+        );
+
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des données");
         }
+
         const data = await response.json();
-        this.items = data;
 
+        this.items = data.sessions.map(session => ({
+          id: session._id,
+          attempts: session.attempts,
+          successes: session.success ? 1 : 0,
+          failures: session.success ? 0 : 1,
+          accuracy: session.success ? 100 : 0,
+          challenge: session.captcha.challenge,
+          ip: session.ip,
+          referer: session.referer,
+          createdAt: session.createdAt,
+        }));
+
+        // Calculer les métriques
         this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
-
         const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
         const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
         this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
@@ -186,65 +212,76 @@ computed: {
       }
     },
 
-    selectGeocaptcha(item) {
-      this.selectedGeocaptcha = item;  // Stocker les informations du géocaptcha sélectionné
-      this.isModalVisible = true;      // Afficher le modal
+    // Sélectionner un géocaptcha
+    async selectGeocaptcha(item) {
+      try {
+        // Stocker les informations du géocaptcha sélectionné
+        this.selectedGeocaptcha = item;
+        this.isModalVisible = true; // Afficher le modal
+      } catch (error) {
+        console.error("Erreur lors de la sélection du géocaptcha:", error);
+      }
     },
 
+    // Fermer le modal
     closeModal() {
-      this.isModalVisible = false;  // Fermer le modal
-      this.selectedGeocaptcha = null; // Réinitialiser les informations du géocaptcha
+      this.isModalVisible = false;
+      this.selectedGeocaptcha = null;
     },
 
+    // Afficher le modal de confirmation
     showConfirmationModal() {
-      this.isConfirmationModalVisible = true; // Afficher la fenêtre modale de confirmation
+      this.isConfirmationModalVisible = true;
     },
 
+    // Fermer le modal de confirmation
     closeConfirmationModal() {
-      this.isConfirmationModalVisible = false; // Fermer la fenêtre modale de confirmation
+      this.isConfirmationModalVisible = false;
     },
 
+    // Rejeter un géocaptcha
     async rejectGeocaptcha() {
-  this.isRejecting = true;
-  try {
-    // Suppression du géocaptcha
-    const response = await fetch(`http://localhost:3002/geocaptchas/${this.selectedGeocaptcha.id}`, {
-      method: 'DELETE',
-    });
+      try {
+        // Suppression de la session via l'API
+        const response = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session/${this.selectedGeocaptcha.id}`,
+          {
+            method: 'DELETE',
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": this.apiKey,
+              "x-app-id": this.apiId
+            },
+          }
+        );
 
-    if (!response.ok) {
-      throw new Error("Erreur lors de la suppression du Géocaptcha");
+        if (!response.ok) {
+          throw new Error("Erreur lors de la suppression du Géocaptcha");
+        }
+
+        // Mise à jour de la liste des géocaptchas
+        this.items = this.items.filter(item => item.id !== this.selectedGeocaptcha.id);
+
+        // Réactualisation des métriques
+        this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
+        const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
+        const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
+        this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+        // Fermeture des modaux
+        this.closeModal();
+        this.closeConfirmationModal();
+      } catch (error) {
+        console.error("Erreur lors de la suppression:", error);
+      }
     }
-
-    // Mise à jour de la liste des géocaptchas
-    this.items = this.items.filter(item => item.id !== this.selectedGeocaptcha.id);
-
-    // Réactualisation des métriques
-    this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
-    const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
-    const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
-    this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
-
-    // Fermeture des modaux
-    this.closeModal();
-    this.closeConfirmationModal();
-  } catch (error) {
-    console.error("Erreur lors de la suppression:", error);
-  } finally {
-    this.isRejecting = false;
-  }
-}
-
-
   },
   mounted() {
     window.scrollTo(0, 0);
-    this.fetchData();  // Appeler la méthode fetchData au montage du composant
+    this.fetchData(); // Appeler la méthode fetchData au montage du composant
   }
 };
 </script>
-
-
 
 <style scoped>
 
@@ -484,4 +521,3 @@ computed: {
   outline-offset: 1px;
 }
 </style>
-

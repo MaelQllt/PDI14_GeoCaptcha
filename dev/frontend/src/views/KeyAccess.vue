@@ -42,14 +42,36 @@
         <div class="key-list">
           <div class="barre">
             <h1>Liste des utilisateurs</h1>
-            <div class="fr-search-bar">
-              <input
-                class="fr-input"
-                placeholder="Rechercher par nom"
-                type="search"
-                v-model="searchQuery"
-              />
-              <button title="Rechercher" type="button" class="fr-btn"> Rechercher </button>
+            <div class="search-container">
+              <div class="tag-container">
+                <ul class="fr-tags-group">
+                  <li>
+                    <button class="fr-tag" :class="{ 'fr-tag--selected': selectedTag === 'admin' }" :aria-pressed="(selectedTag === 'admin').toString()" type="button" @click="toggleTag('admin')">
+                      Admin
+                    </button>
+                  </li>
+                  <li>
+                    <button class="fr-tag" :class="{ 'fr-tag--selected': selectedTag === 'private' }" :aria-pressed="(selectedTag === 'private').toString()" type="button" @click="toggleTag('private')">
+                      Private
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div class="tooltip-container">
+                <button @mouseover="showTooltip" @mouseleave="hideTooltip" class="fr-btn--tertiary-no-outline fr-icon-question-line"></button>
+                <span v-if="isTooltipVisible" class="custom-tooltip">
+                  Vous pouvez rechercher via le nom, l'adresse mail ou le referer.
+                </span>
+              </div>
+              <div class="fr-search-bar">
+                <input
+                  class="fr-input"
+                  placeholder="Rechercher"
+                  type="search"
+                  v-model="searchQuery"
+                />
+                <button title="Rechercher" type="button" class="fr-btn"> Rechercher </button>
+              </div>
             </div>
           </div>
           <table class="fr-table">
@@ -256,6 +278,8 @@ export default {
       currentPage: 1,
       totalKeys: 0,
       itemsPerPage: 6,
+      isTooltipVisible: false,
+      selectedTag: "",
     };
   },
   computed: {
@@ -267,7 +291,9 @@ export default {
         const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
         const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
 
-        return appIdMatch || emailMatch || refererMatch;
+        const matchesTag = this.selectedTag === "" || key.role === this.selectedTag;
+
+        return (appIdMatch || emailMatch || refererMatch) && matchesTag;
       });
 
       // Pagination
@@ -284,7 +310,9 @@ export default {
         const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
         const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
 
-        return appIdMatch || emailMatch || refererMatch;
+        const matchesTag = this.selectedTag === "" || key.role === this.selectedTag;
+
+        return (appIdMatch || emailMatch || refererMatch) && matchesTag;
       });
 
       return Math.ceil(filtered.length / this.itemsPerPage);
@@ -332,9 +360,19 @@ export default {
       this.showMissingInfoModal = false; // Ferme le modal d'erreur
     },
 
-    // Méthode pour récupérer les clés depuis le serveur
+    showTooltip() {
+      this.isTooltipVisible = true;
+    },
 
-   
+    hideTooltip() {
+      this.isTooltipVisible = false;
+    },
+
+    toggleTag(role) {
+      // Si on clique sur le tag déjà actif, on le désactive
+      this.selectedTag = this.selectedTag === role ? "" : role;
+      this.currentPage = 1;
+    },
 
     // Méthode pour générer une nouvelle clé d'accès
     async generateApiKey() {
@@ -719,9 +757,58 @@ Votre service CaptchAdmin`);
 
 
 .fr-tile__title {
-  font-size: 1rem;  /* Réduction de la taille de police */
-  margin-bottom: 0.25rem;  /* Réduction de l'espacement entre les titres */
-  line-height: 1.2;  /* Resserrement de l'interligne */
+  font-size: 1rem;  
+  margin-bottom: 0.25rem;  
+  line-height: 1.2;  
+}
+
+.search-container {
+  display: flex;
+  align-items: center; 
+  gap: 8px; 
+}
+
+.tag-container {
+  margin-right: 25px;
+}
+
+.fr-tags-group .fr-tag{
+  vertical-align: middle;
+  margin-bottom: 0px;
+}
+
+.tooltip-container {
+  position: relative;
+}
+
+.tooltip-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.custom-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(21, 21, 21);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 14px;
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.tooltip-container:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 </style>

@@ -45,16 +45,22 @@ Ensuite vérifiez que npm est installé sur votre machine. (https://docs.npmjs.c
 Dans le terminale au dossier `dev/frontend` lancez la commande :
 
 ```bash
-npm install vite
+npm install @gouvfr/dsfr
 ```
 
 Puis 
 
 ```bash
+npm install vite
+```
+
+Ensuite 
+
+```bash
 npm run dev -- --host
 ```
 
-Enfin, copiez-collez le lien Network renvoyé. Exemple : http://192.0.0.2:5176/
+Enfin, copiez-collez dans un navigateur le lien Network renvoyé. Exemple : http://192.0.0.2:5176/
 
 
 Vous pouvez maintenant profiter de CaptchAdmin.

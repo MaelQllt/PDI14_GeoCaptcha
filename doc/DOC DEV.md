@@ -53,25 +53,19 @@ Pour l'installer vous pouvez simplement executer cette ligne:
 npm install vite
 ```
 
-## Autre installation utile
-
-Nous avons choisi d'utiliser l'API [geo.api.gouv.fr](https://geo.api.gouv.fr/decoupage-administratif/departements) pour récupérer les départements. Nous utilisons alors une requête Axios. Il faut donc que Axios soit installé:
-
-```
-npm install axios
-```
-
-Nous avons fait ce choix car l'API est mise à jour en cas de modification des départements et que cela simplifie la lecture du code. Néanmoins d'autres options sont envisageables.
-
 ## Lancement du projet sur Localhost
 
 Afin de lancer le projet nous allons utiliser, une fois encore, **npm**. Pour ce faire rendez vous dans votre terminal ouvert dans votre dossier frontend. Faites ensuite cette requête:
 
 ```
-npm run dev
+npm run dev -- --host
 ```
 
-Ainsi vous devriez obtenir un accès local au projet que vous pouvez désormais visualiser sur votre navigateur à l'adresse:
- http://localhost:5173/
+Ainsi vous devriez obtenir un accès local et network au projet, vous pouvez copier-coller le network sur votre navigateur.
+
+```js
+Local:   http://localhost:5176/
+Network: http://192.0.0.2:5176/
+```
 
 **Attention**: le port peut être un autre que 5173, suivez la réponse de votre terminal en priorité.

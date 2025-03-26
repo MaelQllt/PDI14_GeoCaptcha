@@ -1,4 +1,3 @@
-![CaptchAdmin](https://github.com/MaelQllt/PDI14_GeoCaptcha/blob/Mael/dev/frontend/src/assets/logo.png)
 # CaptchAdmin
 
 

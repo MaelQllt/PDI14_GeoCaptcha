@@ -359,12 +359,13 @@ export default {
 .generation {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+  align-items: left;
+  justify-content: left;
+  min-height: calc(100vh - 200px); /* Soustraire la hauteur approximative du header */
   text-align: left;
   margin-left: 8em;
   margin-right: 8em;
+  padding-top: 200px; /* Ajouter un padding en haut pour compenser le header */
 }
 
 form {

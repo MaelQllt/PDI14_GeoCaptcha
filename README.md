@@ -23,7 +23,7 @@ de l’interface est donc demandée par l’IGN.
 
 ## Documentation 
 
-La documentation complète est disponible ici (http://www.itowns-project.org/itowns/docs/). 
+La documentation complète est disponible ici (https://github.com/MaelQllt/PDI14_GeoCaptcha/blob/Mael/doc/DOC%20DEV.md). 
 
 
 ## Pour le lancer rapidement
@@ -40,7 +40,7 @@ VITE_API_ID=
 ```
 
 
-Ensuite vérifiez que npm est installé sur votre machine.
+Ensuite vérifiez que npm est installé sur votre machine. (https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 Dans le terminale au dossier `dev/frontend` lancez la commande :
 
@@ -48,13 +48,13 @@ Dans le terminale au dossier `dev/frontend` lancez la commande :
 npm install vite
 ```
 
-puis 
+Puis 
 
 ```bash
 npm run dev -- --host
 ```
 
-enfin, copiez-collez le lien Network renvoyé. Exemple : http://192.0.0.2:5176/
+Enfin, copiez-collez le lien Network renvoyé. Exemple : http://192.0.0.2:5176/
 
 
 Vous pouvez maintenant profiter de CaptchAdmin.

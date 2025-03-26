@@ -14,7 +14,7 @@
             <div class="legende">
               <div class="legend-item">
                 <span class="legend-square low"></span>
-                <span class="legend-text">GéoCaptcha trop compliqué</span>
+                <span class="legend-text">Mauvais GéoCaptcha</span>
               </div>
               <div class="legend-item">
                 <span class="legend-square medium"></span>
@@ -22,11 +22,11 @@
               </div>
               <div class="legend-item">
                 <span class="legend-square high"></span>
-                <span class="legend-text">GéoCaptcha facile</span>
+                <span class="legend-text">Bon Géocaptcha</span>
               </div>
               <div class="legend-item">
                 <span class="legend-square not-enough-attempts"></span>
-                <span class="legend-text">Il n'y a pas assez de tentatives pour qualifier le GéoCaptcha</span>
+                <span class="legend-text">Il n'y a pas assez de tentatives pour que les statistiques soient fiables</span>
               </div>
             </div>
           </div>
@@ -434,11 +434,11 @@ export default {
 }
 
 .not-enough-attempts {
-  background-color: #c7c2c2;
+  background-color: #eee9e9;
 }
 
 .not-enough-attempts:hover {
-  background-color: #6c6a6a;
+  background-color: #c7c2c2;
 }
 
 /* Cibler le dernier élément quand il y a un nombre impair d'éléments */

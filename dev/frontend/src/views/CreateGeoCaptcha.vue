@@ -88,7 +88,6 @@
                           <div class="fr-input-group">
                           <label class="fr-label" for="zipcode">Zipcode :</label>
                           <input type="text" id="zipcode" v-model="zipcode" class="fr-input" readonly /></div>
-
                         </div>
 
                         <div class="fr-input-group mode-format">
@@ -101,6 +100,16 @@
                           </select>
                         </div>
 
+                        <div class="button-container">
+                          <div v-if="selectedOption === '2'" class="tooltip-container">
+                              <button @mouseover="showTooltip" @mouseleave="hideTooltip" class="fr-btn--tertiary-no-outline fr-icon-information-line"></button>
+                              <span v-if="isTooltipVisible" class="custom-tooltip">
+                                En recliquant sur Aléatoire ci-haut, vous pourrez générer un nouveau GéoCaptcha aléatoire.
+                              </span>
+                            </div>
+
+                          <button type="submit" class="fr-btn btn-generer">Générer</button>
+                        </div>
                         <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
                           <h3 class="fr-alert__title">Succès de la création</h3>
                           <p v-if="isDepartement">{{ successMessage }}</p>
@@ -113,7 +122,7 @@
                           <p v-else>GéoCaptcha non enregistré.</p>
                         </div>
                       </div>
-                      <button type="submit" class="fr-btn btn-generer">Générer</button>
+                      
 
                       <div v-if="isModalOpen" class="modal-overlay">
                           <div class="fr-container fr-container--fluid fr-container-md">
@@ -187,6 +196,7 @@ export default {
       zipcodeError: "",
       modeError: "",
       imageTuile: "",
+      isTooltipVisible: false,
     };
   },
 
@@ -344,6 +354,14 @@ export default {
       } catch (err) {
         console.error("Erreur :", err);
       }
+    },
+
+    showTooltip() {
+      this.isTooltipVisible = true;
+    },
+
+    hideTooltip() {
+      this.isTooltipVisible = false;
     },
 
     openModal() {
@@ -530,6 +548,46 @@ form {
   flex-direction: column;
   align-items: center;
   gap: 20px;
+}
+
+
+.button-container {
+  display: flex;
+  align-items: center; /* Aligne les éléments verticalement */
+  gap: 10px; /* Espacement entre le tooltip et le bouton */
+}
+.tooltip-container {
+  position: relative;
+}
+
+.tooltip-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.custom-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(21, 21, 21);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 14px;
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.tooltip-container:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 .btn-generer {

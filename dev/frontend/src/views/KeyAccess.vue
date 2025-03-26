@@ -59,7 +59,7 @@
                 </ul>
               </div>
               <div class="tooltip-container">
-                <button @mouseover="showTooltip" @mouseleave="hideTooltip" class="fr-btn--tertiary-no-outline fr-icon-question-line"></button>
+                <button @mouseover="showTooltip" @mouseleave="hideTooltip" class="fr-btn--tertiary-no-outline fr-icon-information-line"></button>
                 <span v-if="isTooltipVisible" class="custom-tooltip">
                   Vous pouvez rechercher via le nom, l'adresse mail ou le referer.
                 </span>

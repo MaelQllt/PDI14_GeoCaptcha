@@ -32,6 +32,7 @@
 
       <!-- Contenus des onglets -->
 
+      <!-- Onglet Liste des utilisateurs-->
       <div
         id="tabpanel-404-panel"
         class="fr-tabs__panel"
@@ -74,20 +75,6 @@
               </div>
             </div>
           </div>
-          <table class="fr-table">
-            <tbody>
-              <tr class="table-contour" v-for="(key, index) in filteredKeys" :key="index">
-                <td><strong>Nom : </strong>{{ key.appId }}</td>
-                <td><strong>Adresse mail : </strong>{{ key.email }}</td>
-                <td><strong>Referer (URL) : </strong>{{ key.referer }}</td>
-                <td><strong>Rôle : </strong>{{ key.role }}</td>
-                <td>
-                  <button type="button" class="delete-btn fr-icon-delete-line fr-btn fr-btn--sm" @click="openModal(key.appId)">
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
           <div class="fr-grid-row fr-grid-row--gutters">
             <div
               v-for="(key, index) in filteredKeys"
@@ -112,7 +99,7 @@
 
           
 
-          <!-- Pagination Controls -->
+          <!-- Pagination pour visualiser tous les utilisateurs-->
           <div class="pagination" v-if="totalPages > 1">
             <button 
               @click="prevPage" 
@@ -164,6 +151,7 @@
         </div>
       </div>
 
+      <!-- Onglet Générer une clé d'accès -->
       <div
         id="tabpanel-405-panel"
         class="fr-tabs__panel"
@@ -171,7 +159,6 @@
         role="tabpanel"
         aria-labelledby="tabpanel-405"
       >
-        <!-- Contenu principal de la page -->
         <div class="main-content">
           <div class="key-generation">
           <h1 class="fr-h1">Générer une clé d'accès</h1>
@@ -223,6 +210,7 @@
             <button type="submit" class="fr-btn fr-btn--primary cle-generer">Générer la clé</button>
           </form>
           </div>
+
           <!-- Modal de confirmation de génération -->
           <div v-if="showConfirmationModal" class="modal-overlay">
             <div class="fr-container fr-container--fluid fr-container-md">
@@ -544,6 +532,14 @@ Votre service CaptchAdmin`);
 
 <style scoped>
 
+/* Styles des onglets à sélectionner */
+.fr-tabs__tab--selected {
+  background-color: #007bff;
+  color: white;
+}
+
+
+/* Style d'affichage es utilisateurs */
 .fr-table{
   width: 100%;
   border-collapse: separate;
@@ -565,17 +561,12 @@ Votre service CaptchAdmin`);
   margin-right: 50px;
   margin-top: 170px;  
 }
-/* Styles des onglets sélectionnés */
-.fr-tabs__tab--selected {
-  background-color: #007bff;
-  color: white;
-}
 
 /* Masquer les panels inactifs tout en maintenant leur espace */
 .fr-tabs__panel {
-  visibility: hidden; /* Utiliser visibility ou opacity pour masquer sans décalage */
-  opacity: 0; /* Si tu veux rendre le panel totalement invisible sans affecter son espace */
-  transition: opacity 0.1s ease, visibility 0.3s ease; /* Animation de transition */
+  visibility: hidden; 
+  opacity: 0; 
+  transition: opacity 0.1s ease, visibility 0.3s ease; 
   height: auto !important;
   display: none;
 }
@@ -584,9 +575,11 @@ Votre service CaptchAdmin`);
 .fr-tabs__panel--selected {
   visibility: visible;
   display: block; 
-  opacity: 1; /* Rendre le panel visible */
+  opacity: 1; 
 }
 
+
+/* Styles pour la recherche d'utilisateur */
 .key-list {
   margin: 1em;
 }
@@ -602,9 +595,43 @@ Votre service CaptchAdmin`);
   margin: 0;
 }
 
+/* Styles des boutons */
+
+#close{
+  background: none;
+  border: none;
+  color: #000;
+  cursor: pointer;
+}
+
+#close:hover {
+  color: #3a3a3a !important;
+}
+
+
+.fr-btn--reject {
+        background-color: #ff4140; 
+        color: #fff; 
+    }
+
+    .fr-btn--reject:hover {
+        background-color: #ce0500; 
+    }
+
+#cancel{
+  background-color: #ddd !important;
+  color: #3a3a3a;
+}
+
+#cancel:hover {
+  background-color: #c1c1c1 !important;
+  color: #3a3a3a;
+}
+
 .key-generation {
   padding: 1em;
 }
+
 .delete-btn {
   background-color: #ff4140;
   color: white;
@@ -664,13 +691,13 @@ Votre service CaptchAdmin`);
 .modal-actions {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end; /* Ajoute un alignement en bas */
+  align-items: flex-end; 
 }
 
 .modal-actions .btn-cancel {
   background-color: #ddd;
   color: #3a3a3a;
-  align-self: flex-end; /* Aligne le bouton "Fermer" en bas à droite */
+  align-self: flex-end; 
 }
 
 .modal-actions .btn-cancel:hover {
@@ -700,45 +727,8 @@ Votre service CaptchAdmin`);
   background-color: #c1c1c1;
 }
 
-#OK{
-  background-color: #7fc04b !important;
-}
 
-#OK:hover {
-  background-color: #68a532 !important;
-}
-
-#close{
-  background: none;
-  border: none;
-  color: #000;
-  cursor: pointer;
-}
-
-#close:hover {
-  color: #3a3a3a !important;
-}
-
-
-.fr-btn--reject {
-        background-color: #ff4140; /* Couleur personnalisée */
-        color: #fff; /* Couleur du texte */
-    }
-
-    .fr-btn--reject:hover {
-        background-color: #ce0500; /* Couleur au survol */
-    }
-
-#cancel{
-  background-color: #ddd !important;
-  color: #3a3a3a;
-}
-
-#cancel:hover {
-  background-color: #c1c1c1 !important;
-  color: #3a3a3a;
-}
-
+/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
@@ -768,6 +758,8 @@ Votre service CaptchAdmin`);
   gap: 8px; 
 }
 
+
+/* Tags */
 .tag-container {
   margin-right: 25px;
 }

@@ -7,8 +7,6 @@
 
         <!-- Graphiques et métriques -->
         <div class="metrics-overview">
-          <h2 class="fr-h2">Vue d'ensemble des métriques</h2>
-          
           <div class="metric-card">
             <h3>Légende</h3>
             <div class="legende">
@@ -32,8 +30,7 @@
           </div>
 
           <div class="metric-card">
-            <h3>Taux de Réussite</h3>
-            <p>{{ successRate }}%</p>
+            <h3>Logs</h3>
           </div>
         </div>
 

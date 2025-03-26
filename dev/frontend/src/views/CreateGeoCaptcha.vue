@@ -91,12 +91,12 @@
 
                         </div>
 
-                        <div class="fr-input-group">
+                        <div class="fr-input-group mode-format">
                           <label class="fr-label" for="mode">Mode :</label>
                           <select id="mode" v-model="mode" class="fr-select" required>
                             <option value="" disabled selected>Choisissez un mode</option>
-                            <option value="ortho">ortho</option>
-                            <option value="plan">plan</option>
+                            <option value="ortho">Ortho</option>
+                            <option value="plan">Plan</option>
                             <option value="scan">Scan</option>
                           </select>
                         </div>
@@ -242,9 +242,6 @@ export default {
         return;
       }
 
-      this.latitude = lat.toString().replace(',', '.');
-      this.longitude = lon.toString().replace(',', '.');
-
       // Si tout est valide, créer le GéoCaptcha
       this.createGeoCaptcha();
     },
@@ -259,7 +256,7 @@ export default {
         id: this.generateUniqueId(),
         x: tileCoords.x,
         y: tileCoords.y,
-        z: 17,
+        z: 15,
         zipcode: this.zipcode,
         mode: this.mode,
         ok: "1"
@@ -288,11 +285,7 @@ export default {
         console.log("Réponse de l'API :", result);
 
         this.successMessage = `GéoCaptcha créé avec succès ! ID : ${data.id}`;
-        this.isSuccess = true;
-        setTimeout(() => {
-          this.isSuccess = false;
-        }, 3000);
-        this.imageTuile = `https://tile.openstreetmap.org/${data.z}/${data.x}/${data.y}.png`
+        this.imageTuile = `https://tile.openstreetmap.org/${data.z}/${data.x}/${data.y}.png`;
         this.isModalOpen = true;
       } catch (error) {
         console.error("Erreur :", error);
@@ -301,6 +294,11 @@ export default {
 
     // Convertir latitude/longitude en coordonnées de tuile
     latLonToTile(lat, lon, z) {
+
+      if (typeof lat !== 'number' || typeof lon !== 'number' || typeof z !== 'number') {
+        throw new Error('Les paramètres doivent être des nombres');
+      }
+
       const x = Math.floor((lon + 180) / 360 * Math.pow(2, z));
       const y = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, z));
       console.log(x, y);
@@ -366,10 +364,10 @@ export default {
               this.longitudeMin !== null && this.longitudeMax !== null) {
             
             // Générer latitude aléatoire avec un point comme séparateur décimal
-            this.latitude = Number(this.getRandomInRange(this.latitudeMin, this.latitudeMax).toFixed(6));
+            this.latitude = Number(this.getRandomInRange(this.latitudeMin, this.latitudeMax).toFixed(6).replace(',', '.'));
 
             // Générer longitude aléatoire avec un point comme séparateur décimal
-            this.longitude = Number(this.getRandomInRange(this.longitudeMin, this.longitudeMax).toFixed(6));
+            this.longitude = Number(this.getRandomInRange(this.longitudeMin, this.longitudeMax).toFixed(6).replace(',', '.'));
 
             
             // Définir le zipcode en fonction du code du département
@@ -457,8 +455,11 @@ export default {
     },
 
     handleConserver() {
-      this.closeModal();
-      this.createGeoCaptcha();
+      this.isModalOpen = false;
+      this.isSuccess = true;
+      setTimeout(() => {
+        this.isSuccess = false;
+      }, 3000);
     }
   }
 }
@@ -483,6 +484,10 @@ export default {
 }
 
 .lat-format {
+  margin-top: 25px;
+}
+
+.mode-format {
   margin-top: 25px;
 }
 

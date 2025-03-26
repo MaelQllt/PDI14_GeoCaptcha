@@ -38,7 +38,7 @@
               </select>
             </div>
           </div>
-          <div v-for="item in filteredItems" :key="item.id" class="item" @click="selectGeocaptcha(item)">
+          <div v-for="item in filteredItems" :key="item.id" class="item" @click="selectGeocaptcha(item)" :class="getAccuracyClass(item.accuracy)">
             <img :src="logoSrc" alt="Logo Géocaptcha" class="geocaptcha-logo" />
             <div class="item-info">
               <p><strong>ID:</strong> {{ item.id }}</p>
@@ -223,6 +223,18 @@ export default {
       }
     },
 
+    getAccuracyClass(accuracy) {
+      if (accuracy<=60) {
+        return "low";
+      }
+      else if (accuracy>60 && accuracy<=80){
+        return "medium";
+      }
+      else {
+        return "high";
+      }
+    },
+
     // Fermer le modal
     closeModal() {
       this.isModalVisible = false;
@@ -356,6 +368,21 @@ export default {
 
 .item-info p {
   margin: 0;
+}
+
+/* Couleur des items en fonction de la précision */
+
+.low {
+  background-color:#ffb3b3;
+  border: 2px solid #ff4d4d;
+}
+
+.medium {
+  background-color: #ee760c;
+}
+
+.high {
+  background-color: #8de656;
 }
 
 /* Cibler le dernier élément quand il y a un nombre impair d'éléments */

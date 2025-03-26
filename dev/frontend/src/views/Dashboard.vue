@@ -10,8 +10,25 @@
           <h2 class="fr-h2">Vue d'ensemble des métriques</h2>
           
           <div class="metric-card">
-            <h3>Total des Géocaptchas Résolus</h3>
-            <p>{{ totalResolved }} géocaptchas</p>
+            <h3>Légende</h3>
+            <div class="legende">
+              <div class="legend-item">
+                <span class="legend-square low"></span>
+                <span class="legend-text">GéoCaptcha trop compliqué</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-square medium"></span>
+                <span class="legend-text">GéoCaptcha compliqué</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-square high"></span>
+                <span class="legend-text">GéoCaptcha facile</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-square not-enough-attempts"></span>
+                <span class="legend-text">Il n'y a pas assez de tentatives pour qualifier le GéoCaptcha</span>
+              </div>
+            </div>
           </div>
 
           <div class="metric-card">
@@ -234,7 +251,7 @@ export default {
 
     getAccuracyClass(accuracy,attempts) {
 
-      if (attempts<30) {
+      if (attempts>30) {
         if (accuracy<=60) {
           return "low";
         }
@@ -375,12 +392,29 @@ export default {
   margin: 0;
 }
 
+.fr-tile {
+  cursor: pointer;
+}
+
+.legend-square {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+.legend {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 /* Couleur des items en fonction de la précision */
 .low {
   background-color:#FFB3B3;
 }
 .low:hover {
-  background-color: #d13c3c;
+  background-color: #FF6666;
 }
 
 .medium {
@@ -388,7 +422,7 @@ export default {
 }
 
 .medium:hover {
-  background-color: orange;
+  background-color: #FFA500;
 }
 
 .high {
@@ -396,7 +430,7 @@ export default {
 }
 
 .high:hover {
-  background-color: #7fc04b;
+  background-color: #66CC66;
 }
 
 .not-enough-attempts {
@@ -404,7 +438,7 @@ export default {
 }
 
 .not-enough-attempts:hover {
-  background-color: #3a3a3a;
+  background-color: #6c6a6a;
 }
 
 /* Cibler le dernier élément quand il y a un nombre impair d'éléments */

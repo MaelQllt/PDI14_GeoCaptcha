@@ -7,28 +7,14 @@
 
         <!-- Graphiques et métriques -->
         <div class="metrics-overview">
-
           <h2 class="fr-h2">Vue d'ensemble des métriques</h2>
-
-          <div class="metric-card">
-            <h3>Logs</h3>
-            <div class="logs">
-              <ul>
-                <p>log</p>
-                <li v-for="(log, index) in logs" :key="index">
-                <strong>{{ log.timestamp }}:</strong> {{ log.message }}
-                </li>
-              </ul>
-            </div>
-          </div>
-
 
           <div class="metric-card">
             <h3>Légende</h3>
             <div class="legende">
               <div class="legend-item">
                 <span class="legend-square low"></span>
-                <span class="legend-text">Mauvais GéoCaptcha</span>
+                <span class="legend-text">GéoCaptcha trop compliqué</span>
               </div>
               <div class="legend-item">
                 <span class="legend-square medium"></span>
@@ -36,16 +22,19 @@
               </div>
               <div class="legend-item">
                 <span class="legend-square high"></span>
-                <span class="legend-text">Bon Géocaptcha</span>
+                <span class="legend-text">GéoCaptcha facile</span>
               </div>
               <div class="legend-item">
                 <span class="legend-square not-enough-attempts"></span>
-                <span class="legend-text">Il n'y a pas assez de tentatives pour que les statistiques soient fiables</span>
+                <span class="legend-text">Il n'y a pas assez de tentatives pour qualifier le GéoCaptcha</span>
               </div>
             </div>
           </div>
 
-
+          <div class="metric-card">
+            <h3>Taux de Réussite</h3>
+            <p>{{ successRate }}%</p>
+          </div>
         </div>
 
         <!-- Liste des géocaptchas analysés -->
@@ -72,7 +61,7 @@
             <div v-for="item in filteredItems" :key=item.id class="fr-col-12 fr-col-md-6 fr-col-lg-4" @click="selectGeocaptcha(item)">
               <div class="fr-tile" :class="getAccuracyClass(item.accuracy,item.attempts)" id ="tile-7451">
                 <div class="fr-tile__header">
-                  <img :src="logoSrc" alt="Logo Géocaptcha" class="geocaptcha-logo" />
+                  <img :src="getChallengeImageUrl(item.challengeId)" alt="Logo Géocaptcha" class="geocaptcha-logo" />
                 </div>
                 <div class="fr-tile__body">
                   <div class="infos">
@@ -161,10 +150,12 @@
 </template>
 
 <script>
+// import logo from "@/assets/logo.png"; // Importation de l'image
+
 export default {
   data() {
     return {
-      items: [],
+     items: [],
       loading: true,
       error: false,
       totalResolved: 0,
@@ -180,7 +171,6 @@ export default {
       apiId: import.meta.env.VITE_API_ID,
       firstObject: 1,
       nbObjects: 20,
-      logs: [],
     };
   },
   computed: {
@@ -352,11 +342,6 @@ export default {
           throw new Error("Erreur lors de la suppression du Géocaptcha");
         }
 
-        this.logs.push({
-          message: `GéoCaptcha ID ${this.selectedGeocaptcha.id} supprimé.`,
-          timestamp: new Date().toLocaleString()
-        });
-
         // Mise à jour de la liste des géocaptchas
         this.items = this.items.filter(item => item.id !== this.selectedGeocaptcha.id);
 
@@ -488,11 +473,11 @@ export default {
 }
 
 .not-enough-attempts {
-  background-color: #eee9e9;
+  background-color: #c7c2c2;
 }
 
 .not-enough-attempts:hover {
-  background-color: #c7c2c2;
+  background-color: #6c6a6a;
 }
 
 /* Cibler le dernier élément quand il y a un nombre impair d'éléments */
@@ -570,14 +555,14 @@ export default {
 
 .fr-modal__header {
   display: flex;
-  justify-content: space-between; /* Espacer le titre et le bouton */
-  align-items: center; /* Centrer verticalement */
-  margin-bottom: 1rem; /* Ajoute un petit espace sous l'en-tête */
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .fr-modal__title {
   margin: 0;
-  font-size: 1.5rem; /* Ajuste la taille du titre si nécessaire */
+  font-size: 1.5rem;
 }
 
 .fr-btn--close {
@@ -592,27 +577,26 @@ export default {
 }
 
 .fr-btn--reject {
-        background-color: #ff4140; /* Couleur personnalisée */
-        color: #fff; /* Couleur du texte */
+        background-color: #ff4140;
+        color: #fff;
     }
 
     .fr-btn--reject:hover {
-        background-color: #ce0500; /* Couleur au survol */
+        background-color: #ce0500;
     }
 
 .fr-btn--cancel {
-    background-color: #ddd; /* Couleur personnalisée */
-    color: #3a3a3a; /* Couleur du texte */
+    background-color: #ddd;
+    color: #3a3a3a;
 }
 
 .fr-btn--cancel:hover {
-    background-color: #c1c1c1; /* Couleur personnalisée */
-    color: #3a3a3a; /* Couleur du texte */
+    background-color: #c1c1c1;
+    color: #3a3a3a;
 }
 
 
-/* filtre */
-/* Ajout pour l'en-tête de liste avec filtre */
+
 .list-header {
   display: flex;
   justify-content: space-between;
@@ -629,19 +613,19 @@ export default {
   min-width: 200px;
 }
 
-/* Modifier le style du fr-label pour aligner le texte à droite */
+
 .fr-label {
   display: flex;
-  justify-content: flex-end; /* Aligne à droite */
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  text-align: right; /* Texte aligné à droite */
+  text-align: right;
 }
 
-/* Pour aligner l'icône et le texte */
+
 .fr-icon--sm {
-  margin-right: 0.3rem; /* Espace entre l'icône et le texte */
+  margin-right: 0.3rem;
 }
 
 .fr-select {
@@ -652,19 +636,9 @@ export default {
   font-size: 0.9rem;
 }
 
-/* S'assurer que le sélecteur DSFR s'intègre bien */
+
 .fr-select:focus {
   outline: 1px solid #7fc04b;
   outline-offset: 1px;
 }
-
-/*Liste des logs */
-
-.logs {
-  max-height: 200px; /* Définis une hauteur maximale */
-  overflow-y: auto; /* Ajoute une barre de défilement verticale si nécessaire */
-  border: 1px solid #ccc; /* Ajoute une bordure pour démarquer la section */
-   /* Ajoute un peu d’espace intérieur */
-}
 </style>
-

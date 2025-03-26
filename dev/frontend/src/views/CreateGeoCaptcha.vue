@@ -95,8 +95,8 @@
                           <label class="fr-label" for="mode">Mode :</label>
                           <select id="mode" v-model="mode" class="fr-select" required>
                             <option value="" disabled selected>Choisissez un mode</option>
-                            <option value="ortho">ortho</option>
-                            <option value="plan">plan</option>
+                            <option value="ortho">Ortho</option>
+                            <option value="plan-sur-plan">Plan</option>
                             <option value="scan">Scan</option>
                           </select>
                         </div>
@@ -242,8 +242,7 @@ export default {
         return;
       }
 
-      this.latitude = lat.toString().replace(',', '.');
-      this.longitude = lon.toString().replace(',', '.');
+      
 
       // Si tout est valide, créer le GéoCaptcha
       this.createGeoCaptcha();
@@ -259,7 +258,7 @@ export default {
         id: this.generateUniqueId(),
         x: tileCoords.x,
         y: tileCoords.y,
-        z: 17,
+        z: 15,
         zipcode: this.zipcode,
         mode: this.mode,
         ok: "1"
@@ -292,11 +291,29 @@ export default {
         setTimeout(() => {
           this.isSuccess = false;
         }, 3000);
-        this.imageTuile = `https://tile.openstreetmap.org/${data.z}/${data.x}/${data.y}.png`
+        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
         this.isModalOpen = true;
       } catch (error) {
         console.error("Erreur :", error);
       }
+    },
+    async getCaptchaImageTuile(layer, tileMatrix, col, row) {
+      try {
+        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${layer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`,
+            {
+              headers: {
+                "Accept": "image/png",
+                "x-api-key": import.meta.env.VITE_API_KEY,
+                "x-app-id": import.meta.env.VITE_API_ID,
+              }
+            }
+        );
+        if (!response.ok) throw new Error('Image non trouvée');
+        return URL.createObjectURL(await response.blob());
+      }catch (error){
+        console.log(error)
+      }
+
     },
 
     // Convertir latitude/longitude en coordonnées de tuile

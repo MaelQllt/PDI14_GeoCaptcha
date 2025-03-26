@@ -38,17 +38,26 @@
               </select>
             </div>
           </div>
-          <div v-for="item in filteredItems" :key="item.id" class="item" @click="selectGeocaptcha(item)" :class="getAccuracyClass(item.accuracy)">
-            <img :src="logoSrc" alt="Logo Géocaptcha" class="geocaptcha-logo" />
-            <div class="item-info">
-              <p><strong>ID:</strong> {{ item.id }}</p>
-              <p><strong>Essais:</strong> {{ item.attempts }}</p>
-              <p><strong>Succès:</strong> {{ item.successes }}</p>
-              <p><strong>Echecs:</strong> {{ item.failures }}</p>
-              <p><strong>Précision:</strong> {{ item.accuracy }}%</p>
+        </div>
+
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div v-for="item in filteredItems" :key=item.id class="fr-col-12 fr-col-md-6 fr-col-lg-4" @click="selectGeocaptcha(item)">
+              <div class="fr-tile" :class="getAccuracyClass(item.accuracy,item.attempts)" id ="tile-7451">
+                <div class="fr-tile__header">
+                  <img :src="logoSrc" alt="Logo Géocaptcha" class="geocaptcha-logo" />
+                </div>
+                <div class="fr-tile__body">
+                  <div class="infos">
+                    <p><strong>ID:</strong> {{ item.id }}</p>
+                    <p><strong>Essais:</strong> {{ item.attempts }}</p>
+                    <p><strong>Succès:</strong> {{ item.successes }}</p>
+                    <p><strong>Echecs:</strong> {{ item.failures }}</p>
+                  </div>
+                  <p><strong>Précision:</strong> {{ item.accuracy }}%</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
         <!-- Modal pour Détails du Géocaptcha -->
         <div v-if="isModalVisible" class="modal-overlay">
@@ -223,15 +232,21 @@ export default {
       }
     },
 
-    getAccuracyClass(accuracy) {
-      if (accuracy<=60) {
-        return "low";
-      }
-      else if (accuracy>60 && accuracy<=80){
-        return "medium";
+    getAccuracyClass(accuracy,attempts) {
+
+      if (attempts<30) {
+        if (accuracy<=60) {
+          return "low";
+        }
+        else if (accuracy>60 && accuracy<=80){
+          return "medium";
+        }
+        else {
+          return "high";
+        }
       }
       else {
-        return "high";
+        return "not-enough-attempts"
       }
     },
 
@@ -348,22 +363,12 @@ export default {
   text-align: left;
 }
 
-.item {
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
 
-.item-info {
+.infos {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 colonnes */
   gap: 0.5rem 1.5rem;
-  font-size: 0.9rem;
+  font-size: 0.9rem !important;
 }
 
 .item-info p {
@@ -371,18 +376,35 @@ export default {
 }
 
 /* Couleur des items en fonction de la précision */
-
 .low {
-  background-color:#ffb3b3;
-  border: 2px solid #ff4d4d;
+  background-color:#FFB3B3;
+}
+.low:hover {
+  background-color: #d13c3c;
 }
 
 .medium {
-  background-color: #ee760c;
+  background-color: #FFD9B3;
+}
+
+.medium:hover {
+  background-color: orange;
 }
 
 .high {
-  background-color: #8de656;
+  background-color: #B3FFB3;
+}
+
+.high:hover {
+  background-color: #7fc04b;
+}
+
+.not-enough-attempts {
+  background-color: #c7c2c2;
+}
+
+.not-enough-attempts:hover {
+  background-color: #3a3a3a;
 }
 
 /* Cibler le dernier élément quand il y a un nombre impair d'éléments */

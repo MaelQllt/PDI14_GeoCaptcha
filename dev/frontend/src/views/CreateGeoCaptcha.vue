@@ -320,10 +320,6 @@ export default {
     // Convertir latitude/longitude en coordonnées de tuile
     latLonToTile(lat, lon, z) {
 
-      if (typeof lat !== 'number' || typeof lon !== 'number' || typeof z !== 'number') {
-        throw new Error('Les paramètres doivent être des nombres');
-      }
-
       const x = Math.floor((lon + 180) / 360 * Math.pow(2, z));
       const y = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, z));
       console.log(x, y);
@@ -486,6 +482,15 @@ export default {
     handleConserver() {
       this.isModalOpen = false;
       this.isSuccess = true;
+      this.isDepartement = false;
+      this.latitude = "";
+      this.longitude = "";
+      this.zipcode = "";
+      this.mode = "";
+
+      this.latitudePlaceholder = "Entrez une latitude";
+      this.longitudePlaceholder = "Entrez une longitude";
+
       setTimeout(() => {
         this.isSuccess = false;
       }, 3000);

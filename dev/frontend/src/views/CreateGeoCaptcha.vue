@@ -398,7 +398,8 @@ export default {
             // Définir le zipcode en fonction du code du département
             this.zipcode = this.generateRandomZipcode(this.randomDepartement.code);
 
-            this.mode = "ortho"; // Mode par défaut
+            this.mode = Math.random() < 0.5 ? "ortho" : "scan";
+
           }
         });
       }

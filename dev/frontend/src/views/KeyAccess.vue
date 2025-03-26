@@ -52,7 +52,20 @@
               <button title="Rechercher" type="button" class="fr-btn"> Rechercher </button>
             </div>
           </div>
-
+          <table class="fr-table">
+            <tbody>
+              <tr class="table-contour" v-for="(key, index) in filteredKeys" :key="index">
+                <td><strong>Nom : </strong>{{ key.appId }}</td>
+                <td><strong>Adresse mail : </strong>{{ key.email }}</td>
+                <td><strong>Referer (URL) : </strong>{{ key.referer }}</td>
+                <td><strong>Rôle : </strong>{{ key.role }}</td>
+                <td>
+                  <button type="button" class="delete-btn fr-icon-delete-line fr-btn fr-btn--sm" @click="openModal(key.appId)">
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <div class="fr-grid-row fr-grid-row--gutters">
             <div
               v-for="(key, index) in filteredKeys"
@@ -60,20 +73,22 @@
               class="fr-col-12 fr-col-md-6 fr-col-lg-4"
             >
               <div class="fr-tile">
+                <div class="fr-tile__header">
+                  <p><strong class="fr-tile__title">Nom : </strong>{{ key.appId }}</p>
+                  <p><strong class="fr-tile__title">Adresse mail : </strong>{{ key.email }}</p>
+                  <p><strong class="fr-tile__title">Referer : </strong>{{ key.referer }}</p>
+                  <p><strong class="fr-tile__title">Rôle : </strong>{{ key.role }}</p>
+                </div>
                 <div class="fr-tile__body">
                   <button type="button" class="delete-btn fr-btn fr-btn--sm" @click="openModal(key.appId)">
                     Supprimer
                   </button>
                 </div>
-                <div class="fr-tile__header">
-                  <h3 class="fr-tile__title">Nom : {{ key.appId }}</h3>
-                  <h3 class="fr-tile__title">Adresse mail : {{ key.email }}</h3>
-                  <h3 class="fr-tile__title">Referer : {{ key.referer }}</h3>
-                  <h3 class="fr-tile__title">Rôle : {{ key.role }}</h3>
-                </div>
               </div>
             </div>
           </div>
+
+          
 
           <!-- Pagination Controls -->
           <div class="pagination" v-if="totalPages > 1">
@@ -94,7 +109,7 @@
           </div>
 
           <!-- Message si la liste des clés est vide -->
-          <div v-if="filteredKeys.length === 0" class="fr-alert fr-alert--info">
+          <div v-if="filteredKeys.length === 0" class="fr-alert fr-alert--error">
             Aucune clé d'accès trouvée.
           </div>
 
@@ -491,6 +506,22 @@ Votre service CaptchAdmin`);
 
 <style scoped>
 
+.fr-table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+  margin-bottom: 1em;  
+}
+
+.fr-table th, .fr-table td{
+  padding: 0.5em;
+  border-bottom: 2px solid #000000;
+}
+
+.table-contour{
+  outline: 1px solid #d2d2d2;
+}
+
 .fr-tabs{
   margin-left: 50px;
   margin-right: 50px;
@@ -536,13 +567,14 @@ Votre service CaptchAdmin`);
 .key-generation {
   padding: 1em;
 }
-
-.fr-grid-row .delete-btn {
+.delete-btn {
   background-color: #ff4140;
+  color: white;
 }
 
-.fr-grid-row .delete-btn:hover {
+.delete-btn:hover {
   background-color: #ce0500;
+  color: white;
 }
 
 .fr-input-group {
@@ -687,7 +719,7 @@ Votre service CaptchAdmin`);
 
 
 .fr-tile__title {
-  font-size: 0.9rem;  /* Réduction de la taille de police */
+  font-size: 1rem;  /* Réduction de la taille de police */
   margin-bottom: 0.25rem;  /* Réduction de l'espacement entre les titres */
   line-height: 1.2;  /* Resserrement de l'interligne */
 }

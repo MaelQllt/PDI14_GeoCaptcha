@@ -104,7 +104,13 @@
                         <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
                           <h3 class="fr-alert__title">Succès de la création</h3>
                           <p v-if="isDepartement">{{ successMessage }}</p>
-                          <p v-else>GéoCaptcha créé avec une localisation aléatoire en France.</p>
+                          <p v-else>GéoCaptcha créé avec une localisation en France.</p>
+                        </div>
+
+                        <div v-if="isRefuse" id="alert-1068" class="fr-alert fr-alert--info">
+                          <h3 class="fr-alert__title">Tuile refusée</h3>
+                          <p v-if="isDepartement">{{ successMessage }}</p>
+                          <p v-else>GéoCaptcha non enregistré.</p>
                         </div>
                       </div>
                       <button type="submit" class="fr-btn btn-generer">Générer</button>
@@ -163,6 +169,7 @@ export default {
       isModalOpen: false,
       isDepartement: false,
       isSuccess: false,
+      isRefuse: false,
       successMessage: "",
       latitude: "",
       longitude: "",
@@ -351,6 +358,10 @@ export default {
     closeModal() {
       this.isModalOpen = false;
       document.body.style.overflow = 'auto';
+      this.isRefuse = true;
+      setTimeout(() => {
+        this.isRefuse = false;
+      }, 3000);
     },
 
     openDepartement() {

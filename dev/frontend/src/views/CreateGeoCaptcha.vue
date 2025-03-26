@@ -285,11 +285,29 @@ export default {
         console.log("Réponse de l'API :", result);
 
         this.successMessage = `GéoCaptcha créé avec succès ! ID : ${data.id}`;
-        this.imageTuile = `https://tile.openstreetmap.org/${data.z}/${data.x}/${data.y}.png`;
+        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
         this.isModalOpen = true;
       } catch (error) {
         console.error("Erreur :", error);
       }
+    },
+    async getCaptchaImageTuile(layer, tileMatrix, col, row) {
+      try {
+        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${layer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`,
+            {
+              headers: {
+                "Accept": "image/png",
+                "x-api-key": import.meta.env.VITE_API_KEY,
+                "x-app-id": import.meta.env.VITE_API_ID,
+              }
+            }
+        );
+        if (!response.ok) throw new Error('Image non trouvée');
+        return URL.createObjectURL(await response.blob());
+      }catch (error){
+        console.log(error)
+      }
+
     },
 
     // Convertir latitude/longitude en coordonnées de tuile

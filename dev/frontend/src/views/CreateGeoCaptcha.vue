@@ -1,117 +1,163 @@
 <template>
   <div class="generation">
-    <h1 class="fr-h1">Créez vos GéoCaptchas</h1>
-    <form @submit.prevent="validateAndCreateGeoCaptcha">
-      <div class="fr-input-group">
-        <fieldset class="fr-fieldset" id="radio" aria-labelledby="radio-legend radio-messages">
-          <label-choix class="fr-fieldset__legend--regular fr-fieldset__legend" id="radio-legend">
-            Choix de la zone géographique :
-          </label-choix>
-          <div class="fr-fieldset__element">
-            <div class="fr-radio-group">
-              <input value="1" type="radio" id="radio-1" name="radio" @click="closeDepartement" :disabled="isSuccess">
-              <label class="fr-label" for="radio-1">
-                  Aléatoire
-              </label>
-            </div>
-          </div>
-          <div class="fr-fieldset__element">
-            <div class="fr-radio-group">
-              <input value="2" type="radio" id="radio-2" name="radio" @click="openDepartement" :disabled="isSuccess">
-              <label class="fr-label" for="radio-2">
-                  Département
-              </label>
-            </div>
-          </div>
-          <div class="fr-messages-group" id="radio-messages" aria-live="polite">
-          </div>
-        </fieldset>
-        <p v-if="!isDepartement">Le GéoCaptcha sera généré avec une localisation aléatoire en France.</p>
-        <p v-if="isDepartement">Le GéoCaptcha sera généré dans le département de France que vous aurez choisi.</p>
-        <select id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }" :required="isDepartement">
-          <option value="" disabled selected>Choisissez votre département</option>
-          <option v-for="dept in departements" :key="dept.code" :value="dept.code">
-            {{ dept.nom }} ({{ dept.code }})
-          </option>
-        </select>
-
-        <div v-if="!isDepartement && randomDepartement" class="fr-input-group">
-          <label class="fr-label" for="random-departement">Département aléatoire :</label>
-          <input type="text" id="random-departement" v-model="randomDepartement.nom" class="fr-input" readonly />
-        </div>
-
-        <div class="fr-input-group">
-          <label class="fr-label" for="latitude">Latitude :</label>
-          <input type="number" step="any" id="latitude" v-model="latitude" class="fr-input" :placeholder="latitudePlaceholder" required />
-          <p v-if="latitudeError" class="fr-error-text">{{ latitudeError }}</p>
-        </div>
-
-        <div class="fr-input-group">
-          <label class="fr-label" for="longitude">Longitude :</label>
-          <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" required />
-          <p v-if="longitudeError" class="fr-error-text">{{ longitudeError }}</p>
-        </div>
-
-        <!-- Nouveaux champs pour zipcode et mode -->
-        <div class="fr-input-group">
-          <label class="fr-label" for="zipcode">Zipcode :</label>
-          <input type="text" id="zipcode" v-model="zipcode" class="fr-input" placeholder="Entrez un code postal" required />
-        </div>
-
-        <div class="fr-input-group">
-          <label class="fr-label" for="mode">Mode :</label>
-          <select id="mode" v-model="mode" class="fr-select" required>
-            <option value="" disabled selected>Choisissez un mode</option>
-            <option value="ortho">ortho</option>
-            <option value="plan">plan</option>
-            <option value="scan">Scan</option>
-          </select>
-        </div>
-
-        <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
-          <h3 class="fr-alert__title">Succès de la création</h3>
-          <p v-if="isDepartement">{{ successMessage }}</p>
-          <p v-else>GéoCaptcha créé avec une localisation aléatoire en France.</p>
-        </div>
-      </div>
-      <button type="submit" class="fr-btn">Générer</button>
-
-      <div v-if="isModalOpen" class="modal-overlay">
-        <div class="modal-content" @click.stop>
-          <div class="fr-container fr-container--fluid fr-container-md">
-            <div class="fr-grid-row fr-grid-row--center">
-              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                <div class="fr-modal__body">
-                  <div class="fr-modal__content">
-                    <h1 id="modal-overlay-title" class="fr-modal__title">
-                      Vous avez généré ce GéoCaptcha :
-                    </h1>
-                    <div class="image-container">
-                      <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
-                      <p v-else>Chargement de l'image...</p>
-                    </div>
-                  </div>
-                  <div class="fr-modal__footer">
-                    <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
-                      <button type="button" id="button-6047" class="fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" @click="handleConserver">Conserver</button>
-                      <button type="button" id="button-6048" class="fr-btn" @click="closeModal">Supprimer</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
+      <h1 class="fr-h1">Générer un GéoCaptcha</h1>
   </div>
+    <div class="geo-captcha">
+      <div class="fr-container fr-container--fluid fr-mb-md-14v">
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-pt-10v fr-pt-md-14v fr-pb-6v fr-pb-md-10v">
+              <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-9 fr-col-lg-8"> 
+                  <label class="fr-label label_param" for="select-hint">
+                    <span class="fr-h4">Paramètres de génération</span> 
+                    <span class="fr-hint-text">En choisissant Zone Géographique vous pourrez obtenir un GéoCaptcha spécifique à un département.</span>
+                  </label>
+                    <form @submit.prevent="validateAndCreateGeoCaptcha">
+                      <div class="fr-input-group">
+
+                          <fieldset class="fr-segmented">
+                              <div class="fr-segmented__elements">
+                                <div class="fr-segmented__element">
+                                  <input value="1" v-model="selectedOption" @click="openDepartement" checked type="radio" id="segmented-2073-2" name="segmented-2073">
+                                  <label class="fr-icon-road-map-line fr-label" for="segmented-2073-2">
+                                    Zone Géographique précise
+                                  </label>
+                                </div>
+                                <div class="fr-segmented__element">
+                                  <input value="2" v-model="selectedOption" @click="closeDepartement" type="radio" id="segmented-2073-1" name="segmented-2073">
+                                  <label class="fr-icon-question-line fr-label" for="segmented-2073-1">
+                                    Aléatoire
+                                  </label>
+                                </div>
+                              </div>
+                            </fieldset>
+
+                        <p v-if="selectedOption === '2'" class="choix-zone">Le GéoCaptcha sera généré avec une localisation aléatoire en France.</p>
+                        <p v-if="selectedOption === '1'" class="choix-zone">Le GéoCaptcha sera généré dans le département de France que vous aurez choisi.</p>
+                        <select id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }" :required="isDepartement">
+                          <option value="" disabled selected>Choisissez votre département</option>
+                          <option v-for="dept in departements" :key="dept.code" :value="dept.code">
+                            {{ dept.nom }} ({{ dept.code }})
+                          </option>
+                        </select>
+
+                        <div v-if="selectedOption === '1'">
+                            <div class="fr-select-group">
+                              <label class="fr-label" for="select">Choix du département:</label>
+                                <select class="fr-select" id="select" name="select" v-model="selectedDepartement">
+                                  <option value="" selected disabled hidden>Sélectionner un département</option>
+                                  <option v-for="dept in departements" :key="dept.code" :value="dept.code">
+                                  {{ dept.code }} - {{ dept.nom }}
+                                </option>
+                              </select>
+                              <div class="fr-input-group">
+                                <label class="fr-label lat-format" for="latitude">Latitude :</label>
+                                <input type="number" step="any" id="latitude" v-model="latitude" class="fr-input" :placeholder="latitudePlaceholder" required />
+                                <p v-if="latitudeError" class="fr-error-text">{{ latitudeError }}</p>
+                              </div>
+
+                              <div class="fr-input-group">
+                                <label class="fr-label" for="longitude">Longitude :</label>
+                                <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" required />
+                                <p v-if="longitudeError" class="fr-error-text">{{ longitudeError }}</p>
+                              </div>
+
+                              <!-- Nouveaux champs pour zipcode et mode -->
+                              <div class="fr-input-group">
+                                <label class="fr-label" for="zipcode">Zipcode :</label>
+                                <input type="text" id="zipcode" v-model="zipcode" class="fr-input" placeholder="Entrez un code postal" required />
+                              </div>
+                          </div>
+                        </div>           
+
+                        <div v-if="selectedOption === '2'">
+
+                          <div class="fr-input-group">
+                          <label class="fr-label" for="random-departement">Département aléatoire :</label>
+                          <input type="text" id="random-departement" v-model="randomDepartement.nom" class="fr-input" readonly /></div>
+
+                          <div class="fr-input-group">
+                          <label class="fr-label lat-format" for="latitude">Latitude :</label>
+                          <input type="number" step="any" id="latitude" v-model="latitude" class="fr-input" :placeholder="latitudePlaceholder" readonly /></div>
+
+                          <div class="fr-input-group">
+                          <label class="fr-label" for="longitude">Longitude :</label>
+                          <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" readonly /></div>
+
+                          <div class="fr-input-group">
+                          <label class="fr-label" for="zipcode">Zipcode :</label>
+                          <input type="text" id="zipcode" v-model="zipcode" class="fr-input" readonly /></div>
+
+                        </div>
+
+                        <div class="fr-input-group">
+                          <label class="fr-label" for="mode">Mode :</label>
+                          <select id="mode" v-model="mode" class="fr-select" required>
+                            <option value="" disabled selected>Choisissez un mode</option>
+                            <option value="ortho">ortho</option>
+                            <option value="plan">plan</option>
+                            <option value="scan">Scan</option>
+                          </select>
+                        </div>
+
+                        <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
+                          <h3 class="fr-alert__title">Succès de la création</h3>
+                          <p v-if="isDepartement">{{ successMessage }}</p>
+                          <p v-else>GéoCaptcha créé avec une localisation aléatoire en France.</p>
+                        </div>
+                      </div>
+                      <button type="submit" class="fr-btn btn-generer">Générer</button>
+
+                      <div v-if="isModalOpen" class="modal-overlay">
+                          <div class="fr-container fr-container--fluid fr-container-md">
+                            <div class="fr-grid-row fr-grid-row--center">
+                              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                                <div class="fr-modal__body">
+                                  <div class="fr-modal__header">
+                                    <button @click="closeModal" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
+                                  </div>
+
+                                  <div class="fr-modal__content">
+                                    <h1 id="modal-6053-title" class="fr-modal__title">
+                                        <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                                        GéoCaptcha généré :
+                                    </h1>
+                                    <p>Voici un GéoCaptcha correspondant à la zone géographique choisi: </p>
+                                    <div class="image-container">
+                                      <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                                      <p v-else>Chargement de l'image...</p>
+                                    </div>
+                                  </div>
+                                  <div class="fr-modal__footer">
+                                    <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                                        <button @click="handleConserver" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>
+                                        <button @click="closeModal" type="button" id="button-6048" class="refuse-btn fr-btn fr-icon-close-circle-line fr-btn--icon-left fr-btn--tertiary">Refuser</button>
+                                    </div>
+                                  </div>
+                                  
+                                  
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                    </form>
+                  </div>
+                </div> 
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+      </div>
+
 </template>
 
 <script>
 export default {
   data() {
     return {
-      difficulty: 'easy',
+      selectedOption: "1",
       selectedDepartement: "",
       departements: [],
       isModalOpen: false,
@@ -196,13 +242,16 @@ export default {
         return;
       }
 
+      this.latitude = lat.toString().replace(',', '.');
+      this.longitude = lon.toString().replace(',', '.');
+
       // Si tout est valide, créer le GéoCaptcha
       this.createGeoCaptcha();
     },
 
     async createGeoCaptcha() {
       // Convertir les coordonnées latitude/longitude en coordonnées de tuile
-      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 17); // z = 17 (niveau de zoom)
+      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 17 (niveau de zoom)
       console.log("Coordonnées de la tuile :", tileCoords);
 
       // Préparer les données pour l'API
@@ -289,8 +338,15 @@ export default {
     },
 
     openDepartement() {
-      this.isDepartement = true;
-      this.randomDepartement = null;
+      
+      // Réinitialiser les champs
+      this.latitude = "";
+      this.longitude = "";
+      this.zipcode = "";
+      this.mode = "";
+
+      this.latitudePlaceholder = "Entrez une latitude";
+      this.longitudePlaceholder = "Entrez une longitude";
     },
 
     closeDepartement() {
@@ -302,8 +358,59 @@ export default {
       if (this.departements.length > 0) {
         const randomIndex = Math.floor(Math.random() * this.departements.length);
         this.randomDepartement = this.departements[randomIndex];
-        this.fetchDepartmentBoundary(this.randomDepartement.code);
+        
+        // Fetch department boundaries and generate random coordinates
+        this.fetchDepartmentBoundary(this.randomDepartement.code).then(() => {
+          // Générer des coordonnées aléatoires dans les limites du département
+          if (this.latitudeMin !== null && this.latitudeMax !== null && 
+              this.longitudeMin !== null && this.longitudeMax !== null) {
+            
+            // Générer latitude aléatoire avec un point comme séparateur décimal
+            this.latitude = Number(this.getRandomInRange(this.latitudeMin, this.latitudeMax).toFixed(6));
+
+            // Générer longitude aléatoire avec un point comme séparateur décimal
+            this.longitude = Number(this.getRandomInRange(this.longitudeMin, this.longitudeMax).toFixed(6));
+
+            
+            // Définir le zipcode en fonction du code du département
+            this.zipcode = this.generateRandomZipcode(this.randomDepartement.code);
+
+            this.mode = "ortho"; // Mode par défaut
+          }
+        });
       }
+    },
+
+    // Méthode utilitaire pour générer un nombre aléatoire dans un intervalle
+    getRandomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    },
+
+    generateRandomZipcode(departmentCode) {
+      // Vérifier si c'est un département d'outre-mer (DOM-TOM)
+      const domTomCodes = ['971', '972', '973', '974', '976'];
+      
+      if (domTomCodes.includes(departmentCode)) {
+        // Pour les DOM-TOM, utiliser les 3 premiers chiffres du code département
+        const prefix = departmentCode;
+        // Générer 2 chiffres aléatoires
+        const suffix = this.generateRandomNumbers(2);
+        return `${prefix}${suffix}`;
+      } else {
+        // Pour les départements métropolitains, utiliser les 2 premiers chiffres du code département
+        const prefix = departmentCode.padStart(2, '0');
+        // Générer 3 chiffres aléatoires
+        const suffix = this.generateRandomNumbers(3);
+        return `${prefix}${suffix}`;
+      }
+    },
+
+    // Méthode pour générer des nombres aléatoires
+    generateRandomNumbers(length) {
+      return Array.from(
+        { length }, 
+        () => Math.floor(Math.random() * 10)
+      ).join('');
     },
 
     async fetchDepartmentBoundary(codeDepartement) {
@@ -322,9 +429,12 @@ export default {
           this.latitudeMax = bounds.latMax;
           this.longitudeMin = bounds.lonMin;
           this.longitudeMax = bounds.lonMax;
+          
+          return bounds; // Retourner les limites
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des limites du département :', error);
+        throw error; // Relancer l'erreur pour la gestion dans l'appelant
       }
     },
 
@@ -356,16 +466,24 @@ export default {
 
 
 <style scoped>
-.generation {
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  justify-content: left;
-  min-height: calc(100vh - 200px); /* Soustraire la hauteur approximative du header */
-  text-align: left;
-  margin-left: 8em;
-  margin-right: 8em;
-  padding-top: 200px; /* Ajouter un padding en haut pour compenser le header */
+
+.fr-h1 {
+  margin-top: 170px; 
+  text-align: center;
+}
+
+.label_param{
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.choix-zone {
+  margin-top: 20px;
+  margin-bottom: -20px;
+}
+
+.lat-format {
+  margin-top: 25px;
 }
 
 form {
@@ -375,20 +493,10 @@ form {
   gap: 20px;
 }
 
-.fr-btn {
-  margin-top: 20px;
-  align-self: center;
-  background-color: #7fc04b;
-}
-
-.fr-btn:hover {
-  background-color: #68a532;
-}
-
-.fr-input:focus,
-.fr-select:focus {
-  outline: 2px solid #7fc04b;
-}
+.btn-generer {
+  display: block;
+  margin-left: auto;
+} 
 
 .modal-overlay {
   position: fixed;
@@ -396,38 +504,16 @@ form {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  width: 90%; /* Augmentez cette valeur selon vos besoins */
-  max-width: 1200px; /* Ajustez la largeur maximale */
-  max-height: 90vh; /* 90% de la hauteur de l'écran */
-  background: white;
-  border-radius: 8px;
-  padding: 2em;
-  overflow-y: auto; /* Permet le scrolling si le contenu est trop grand */
+  align-items: center;
+  z-index: 1000; /* S'assurer que la modale est au-dessus des autres éléments */
 }
 
 .image-container {
-  width: 100%;
-  height: 70vh; /* Ajustez la hauteur selon vos besoins */
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin: 1em 0;
-}
-
-.image-container img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .fr-modal__content {
@@ -451,43 +537,36 @@ form {
   position: relative;
 }
 
-
-
-
 .fr-modal__content img {
   object-fit: contain;
 }
+
 .modal-content {
   padding: 1em;
 }
 
-
-#button-6048 {
-  background-color: #f44336;
-  color: white;
+.accept-btn{
+  outline: 2px solid rgb(0,0,145);
 }
 
-#button-6048:hover {
-  background-color: #da190b;
+.accept-btn:hover{
+  outline: 2px solid rgb(18,18,255);
 }
 
-label-choix {
-  margin-top: 20px;
+.refuse-btn{
+  color: rgb(225,0,15);
+  outline: 2px solid rgb(225,0,15);
 }
+
+.refuse-btn{
+  color: rgb(255,41,47);
+  outline: 2px solid rgb(255,41,47);
+}
+
 
 .hidden {
   visibility: hidden;
   opacity: 0;
-}
-
-p {
-  width: 95%;
-}
-
-.fr-input-group {
-  min-width: 300px;
-  max-width: 500px;
-  width: 100%; /* Il prendra toute la place dispo mais restera dans les limites */
 }
 
 #alert-1068 {

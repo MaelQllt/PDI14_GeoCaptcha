@@ -8,6 +8,8 @@
         <!-- Graphiques et métriques -->
         <div class="metrics-overview">
 
+          <h2 class="fr-h2">Vue d'ensemble des métriques</h2>
+
           <div class="metric-card">
             <h3>Logs</h3>
             <div class="logs">
@@ -43,7 +45,7 @@
             </div>
           </div>
 
-          
+
         </div>
 
         <!-- Liste des géocaptchas analysés -->
@@ -112,8 +114,8 @@
 
                     <!-- Afficher les images du défi -->
                     <div>
-                      <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.backendId}`" alt="Backend" />
-                      <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.frontendId}`" alt="Frontend" />
+                      <img :src="backendImageUrl" alt="Backend" />
+                      <img :src="frontendImageUrl" alt="Frontend" />
                     </div>
                   </div>
 
@@ -159,8 +161,6 @@
 </template>
 
 <script>
-import logo from "@/assets/logo.png"; // Importation de l'image
-
 export default {
   data() {
     return {
@@ -169,7 +169,9 @@ export default {
       error: false,
       totalResolved: 0,
       successRate: 0,
-      logoSrc: logo,
+      backendImageUrl: null,
+      frontendImageUrl: null,
+      logoSrc: null,
       selectedGeocaptcha: null,
       isModalVisible: false,
       isConfirmationModalVisible: false,
@@ -199,6 +201,31 @@ export default {
     }
   },
   methods: {
+    getChallengeImageUrl(challengeId) {
+      return `https://qlf-geocaptcha.ign.fr/api/v1/challenge/${challengeId}`;
+    },
+
+    getImageUrl(filename) {
+      if (!filename) return '';
+      return `https://qlf-geocaptcha.ign.fr/api/v1/admin/tile/${filename}`;
+    },
+    async loadImage(url) {
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'accept': 'image/png',
+              'x-api-key': this.apiKey,
+              'x-app-id': this.apiId
+            }
+          });
+
+          if (!response.ok) throw new Error('Image non trouvée');
+          return URL.createObjectURL(await response.blob());
+        } catch (error) {
+          console.error('Erreur chargement image:', error);
+          return 'https://via.placeholder.com/400x300?text=Image+non+disponible';
+        }
+    },
     // Appliquer le filtre
     applyFilter() {
       console.log("Filtre appliqué:", this.filterOption);
@@ -226,12 +253,14 @@ export default {
 
         this.items = data.sessions.map(session => ({
           id: session._id,
+          challengeId: session.challengeId,
           attempts: session.attempts,
           successes: session.success ? 1 : 0,
           failures: session.success ? 0 : 1,
           accuracy: session.success ? 100 : 0,
-          challenge: session.captcha.challenge,
           ip: session.ip,
+          imgFrontend: session.captcha.challenge.frontendId,
+          imgBackend: session.captcha.challenge.backendId,
           referer: session.referer,
           createdAt: session.createdAt,
         }));
@@ -254,6 +283,16 @@ export default {
         // Stocker les informations du géocaptcha sélectionné
         this.selectedGeocaptcha = item;
         this.isModalVisible = true; // Afficher le modal
+        this.backendImageUrl = null;
+        this.frontendImageUrl = null;
+        this.logoSrc   = this.getChallengeImageUrl(item.challengeId);
+
+        if (item.imgBackend) {
+          this.backendImageUrl = await this.loadImage(this.getImageUrl(item.imgBackend));
+        }
+        if (item.imgFrontend) {
+          this.frontendImageUrl = await this.loadImage(this.getImageUrl(item.imgFrontend));
+        }
       } catch (error) {
         console.error("Erreur lors de la sélection du géocaptcha:", error);
       }

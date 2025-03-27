@@ -780,6 +780,7 @@
             this.latitude = '';  // Réinitialise les valeurs
             this.longitude = '';
             this.zipcode = ''; // Réinitialise également le zipcode
+            clearAllDrawings()
             return null;
         }
 

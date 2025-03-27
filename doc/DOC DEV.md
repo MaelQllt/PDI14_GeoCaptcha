@@ -1,6 +1,7 @@
 # Documentation Développeur
 
-&#x20;  &#x20;
+[![GitHub release](https://img.shields.io/badge/release-v1.0.0-blue)](https://github.com/MaelQllt/PDI14_GeoCaptcha) [![Generic badge](https://img.shields.io/badge/npm-yellow.svg)](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) [![Generic badge](https://img.shields.io/badge/Vue-blue.svg)](https://vuejs.org/) [![Generic badge](https://img.shields.io/badge/Réalisé_par-Etudiants_de_l'ENSG-brightgreen.svg)](https://ensg.eu/fr) [![Generic badge](https://img.shields.io/badge/GéoCaptcha-IGN-brightgreen.svg)](https://github.com/IGNF/GeocaptchaAPI) 
+
 
 La **MARS** (Mission Architecture Réseau et Sécurité) de l'**IGN** (Institut National de l'information géographiques et forestière) a développé un système de Captcha innovant basé sur des données géographiques appelé: GéoCaptcha.
 
@@ -42,17 +43,40 @@ Une fois le serveur lancé, les exemples sont disponibles à l'adresse : [http:/
 
 **Attention**: le port peut être un autre que 8080, suivez la réponse de votre terminal en priorité.
 
-## Installation de Vite
+## Autres installations
+
+### Installation de Vite
 
 Etant donné que nous travaillons en Vue, la visualisation de notre frontend via [Vite](https://vitejs.fr/guide/) correspond exactement à nos besoins.
 
-Pour l'installer vous pouvez simplement exécuter cette ligne:
+Pour l'installer vous pouvez simplement exécuter cette ligne :
 
 ```
 npm install vite
 ```
 
-## Lancement du projet sur Localhost
+### Installation de OpenLayers
+
+Nous avons choisi OpenLayers pour ses nombreux avantages :
+Open-source, librairie cartographique permettant de répondre à des besoins avancés.
+
+Pour l'installer vous pouvez simplement exécuter cette ligne :
+
+```
+npm install ol
+```
+
+### Installation de Turf
+
+Ayant besoin de gérer des données GeoJSON, turf est la meilleure option pour ce besoin.
+
+Pour l'installer vous pouvez simplement exécuter cette ligne :
+
+```
+npm install @turf/turf
+```
+
+## Lancement du projet sur le Network
 
 Afin de lancer le projet nous allons utiliser, une fois encore, **npm**. Pour ce faire rendez vous dans votre terminal ouvert dans votre dossier frontend. Faites ensuite cette requête:
 
@@ -67,7 +91,7 @@ Local:   http://localhost:5176/
 Network: http://192.0.0.2:5176/
 ```
 
----
+Attention: le port peut être un autre que 5176, suivez la réponse de votre terminal en priorité.
 
 ## Guide Technique
 

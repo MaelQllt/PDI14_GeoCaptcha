@@ -11,7 +11,7 @@
                   <div class="fr-col-12 fr-col-md-9 fr-col-lg-8"> 
                     <label class="fr-label label_param" for="select-hint">
                       <span class="fr-h4">Paramètres de génération</span> 
-                      <span class="fr-hint-text">En choisissant Zone Géographique vous pourrez obtenir un GéoCaptcha spécifique à un département.</span>
+                      <span class="fr-hint-text">En choisissant Coordonnées précises, vous pourrez générer un GéoCaptcha en France métropolitaine et dans les DOM-TOM.</span>
                     </label>
                       <form @submit.prevent="validateAndCreateGeoCaptcha">
                         <div class="fr-input-group">
@@ -110,8 +110,13 @@
                                 <div class="row mt-3">
                                     <div class="col-auto">
                                     <span class="tag-group">
-                                        <button class="fr-tag" :aria-pressed="selectedShape === 'Box'" type="button" @click="toggleShape">Sélectionner</button>
-                                        <input type="button" value="Annuler" class="fr-tag" @click="undoDraw"/>
+                                        <div class="tooltip-tag-container">
+                                            <button @mouseover="showTooltip" @mouseleave="hideTooltip" class="fr-btn--tertiary-no-outline fr-icon-information-line"></button>
+                                            <span v-if="isTooltipVisible" class="custom-tooltip">
+                                            Cliquez une fois pour commencer à sélectionner une zone. Tirez la zone. Cliquez une deuxième fois.
+                                            </span>
+                                        </div>
+                                        <input type="button" value="Annuler la sélection" class="fr-tag tag-undo" @click="undoDraw"/>
                                     </span>
                                     </div>
                                 </div>
@@ -519,7 +524,7 @@
             });
             }
         });
-        
+
         this.isDepartement = false;
         this.selectRandomDepartement();
     },
@@ -767,6 +772,7 @@
         const validPoint = this.isPointInFrance(randomLon, randomLat);
 
         if (!validPoint) {
+            alert("❌ Impossible de générer un GéoCaptcha en dehors de la France. Veuillez sélectionner une zone en France.");
             this.showAlert = true; 
             setTimeout(() => {
                 this.showAlert = false;
@@ -878,15 +884,28 @@ form {
   gap: 20px;
 }
 
+.tag-undo{
+    margin-left: auto !important;
+}
 
 .button-container {
   display: flex;
-  align-items: center; /* Aligne les éléments verticalement */
-  gap: 10px; /* Espacement entre le tooltip et le bouton */
+  align-items: center; 
+  gap: 10px; 
 }
 
 .tooltip-container {
   position: relative;
+}
+
+.tooltip-tag-container {
+    position: relative;
+    justify-content: center;
+}
+
+.tooltip-tag-container:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 .tooltip-button {
@@ -912,6 +931,7 @@ form {
   visibility: visible;
   opacity: 1;
   transition: opacity 0.3s ease-in-out;
+  z-index: 1001;
 }
 
 .tooltip-container:hover .custom-tooltip {

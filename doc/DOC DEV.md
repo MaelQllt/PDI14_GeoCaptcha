@@ -1,6 +1,6 @@
 # Documentation Développeur
 
-[![GitHub release](https://img.shields.io/badge/release-v1.0.0-blue)](https://github.com/MaelQllt/PDI14_GeoCaptcha) [![Generic badge](https://img.shields.io/badge/npm-yellow.svg)](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) [![Generic badge](https://img.shields.io/badge/Vue-blue.svg)](https://vuejs.org/) [![Generic badge](https://img.shields.io/badge/Réalisé_par-Etudiants_de_l'ENSG-brightgreen.svg)](https://ensg.eu/fr) [![Generic badge](https://img.shields.io/badge/GéoCaptcha-IGN-brightgreen.svg)](https://github.com/IGNF/GeocaptchaAPI) 
+[![GitHub release](https://img.shields.io/badge/release-v0.0.1-blue)](https://github.com/MaelQllt/PDI14_GeoCaptcha) [![Generic badge](https://img.shields.io/badge/npm-yellow.svg)](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) [![Generic badge](https://img.shields.io/badge/Vue-blue.svg)](https://vuejs.org/) [![Generic badge](https://img.shields.io/badge/Réalisé_par-Etudiants_de_l'ENSG-brightgreen.svg)](https://ensg.eu/fr) [![Generic badge](https://img.shields.io/badge/GéoCaptcha-IGN-brightgreen.svg)](https://github.com/IGNF/GeocaptchaAPI) 
 
 
 La **MARS** (Mission Architecture Réseau et Sécurité) de l'**IGN** (Institut National de l'information géographiques et forestière) a développé un système de Captcha innovant basé sur des données géographiques appelé: GéoCaptcha.

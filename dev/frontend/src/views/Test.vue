@@ -11,7 +11,7 @@
                   <div class="fr-col-12 fr-col-md-9 fr-col-lg-8"> 
                     <label class="fr-label label_param" for="select-hint">
                       <span class="fr-h4">Paramètres de génération</span> 
-                      <span class="fr-hint-text">En choisissant Coordonnées précises, vous pourrez générer un GéoCaptcha en France métropolitaine et dans les DOM-TOM.</span>
+                      <span class="fr-hint-text">En choisissant un mode, vous pourrez générer un GéoCaptcha en France métropolitaine et dans les DOM-TOM.</span>
                     </label>
                       <form @submit.prevent="validateAndCreateGeoCaptcha">
                         <div class="fr-input-group">
@@ -732,7 +732,7 @@
 
       async loadGeoJson() {
       try {
-        const response = await fetch("/regions.geojson"); // Charge le fichier depuis /public
+        const response = await fetch("/regions-avec-outre-mer.geojson"); // Charge le fichier depuis /public
         this.franceGeoJson = await response.json();
       } catch (error) {
         console.error("Erreur de chargement du GeoJSON :", error);

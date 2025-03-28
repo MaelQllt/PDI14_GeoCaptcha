@@ -140,5 +140,7 @@ Le projet est organisé selon l'architecture suivante:
 
 ---
 
+https://github.com/gregoiredavid/france-geojson/blob/master/regions-avec-outre-mer.geojson
+
 Cette documentation est amenée à évoluer avec le projet. Bonne contribution ! 
 

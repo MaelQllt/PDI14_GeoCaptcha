@@ -112,6 +112,7 @@
                 <span class="action-audit action-create">CREATE</span>
                 <span class="route-audit">/key-access</span>
                 <span class="description-audit">Création de l'utilsateur ID: ensg2025</span>
+                <span class="time-audit">23:39 - 28/03/2025</span>
                 </div>
             </div>
             <div class="fr-container">
@@ -119,6 +120,7 @@
                 <span class="action-audit action-delete">DELETE</span>
                 <span class="route-audit">/key-access</span>
                 <span class="description-audit">Suppression de l'utilsateur ID: ensg2025</span>
+                <span class="time-audit">23:39 - 28/03/2025</span>
                 </div>
             </div>
             <div class="fr-container">
@@ -126,6 +128,7 @@
                 <span class="action-audit action-update">UPDATE</span>
                 <span class="route-audit">/key-access</span>
                 <span class="description-audit">Mise à jour de l'utilsateur ID: ensg2025</span>
+                <span class="time-audit">23:39 - 28/03/2025</span>
                 </div>
             </div>
         </div>
@@ -240,6 +243,11 @@ export default {
 .description-audit {
   flex-grow: 1;
     color: #666;
+}
+
+.time-audit {
+    margin-right: 10px;
+  color: #666;
 }
 
 </style>

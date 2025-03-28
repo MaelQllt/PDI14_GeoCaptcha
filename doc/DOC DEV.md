@@ -57,7 +57,7 @@ npm install vite
 
 ### Installation de OpenLayers
 
-Nous avons choisi OpenLayers pour ses nombreux avantages :
+Nous avons choisi [OpenLayers](https://openlayers.org/) pour ses nombreux avantages :
 Open-source, librairie cartographique permettant de répondre à des besoins avancés.
 
 Pour l'installer vous pouvez simplement exécuter cette ligne :
@@ -68,7 +68,7 @@ npm install ol
 
 ### Installation de Turf
 
-Ayant besoin de gérer des données GeoJSON, turf est la meilleure option pour ce besoin.
+Ayant besoin de gérer des données GeoJSON, [Turf](https://turfjs.org/) est la meilleure option pour ce besoin.
 
 Pour l'installer vous pouvez simplement exécuter cette ligne :
 
@@ -91,7 +91,7 @@ Local:   http://localhost:5176/
 Network: http://192.0.0.2:5176/
 ```
 
-Attention: le port peut être un autre que 5176, suivez la réponse de votre terminal en priorité.
+**Attention**: le port peut être un autre que 5176, suivez la réponse de votre terminal en priorité.
 
 ## Guide Technique
 
@@ -100,10 +100,10 @@ Attention: le port peut être un autre que 5176, suivez la réponse de votre ter
 Le projet est organisé selon l'architecture suivante:
 
 - **dev/** : Contient le code
-    - **frontend/** : Contient l'interface utilisateur basée sur Vue.js et DSFR
-    - **src/** : Code source Vue.js
+    - **frontend/** : Contient l'interface utilisateur basée sur Vue et DSFR
+    - **src/** : Code source Vue
         - **assets/** : Images et autre ajout visuel
-        - **components/** : Composants réutilisables (header et footer)
+        - **components/** : Composants réutilisables (header, footer et dark mode)
         - **views/** : Pages principales
         - **router/** : Gestion des routes
     - **package.json** : Gestion des dépendances et scripts
@@ -140,5 +140,5 @@ Le projet est organisé selon l'architecture suivante:
 
 ---
 
-Cette documentation est amenée à évoluer avec le projet. Bonne contribution ! 🚀
+Cette documentation est amenée à évoluer avec le projet. Bonne contribution ! 
 

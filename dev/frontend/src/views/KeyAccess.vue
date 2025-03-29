@@ -134,13 +134,13 @@
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
               <div class="fr-modal__body">
                 <div class="fr-modal__header">
+                  <button @click="closeEditModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
+                </div>
+                <div class="fr-modal__content">
                   <h2 class="fr-modal__title">
                     <span class="fr-icon-edit-line fr-icon--lg" aria-hidden="true"></span>
                     Modifier l'utilisateur
                   </h2>
-                  <button @click="closeEditModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
-                </div>
-                <div class="fr-modal__content">
                   <form @submit.prevent="saveChanges">
                     <div class="fr-input-group">
                       <label class="fr-label" for="edit-key-name">Nom :</label>
@@ -180,7 +180,10 @@
                         <option value='private'>Private</option>
                       </select>
                     </div>
-                    <button type="submit" class="fr-btn fr-btn--primary">Enregistrer les modifications</button>
+                    <div class="fr.modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
+                      <button type="submit" class="fr-btn fr-btn--primary btn-enregistrer">Enregistrer les modifications</button>
+                    </div>
+                    
                   </form>
                 </div>
               </div>
@@ -197,13 +200,13 @@
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
               <div class="fr-modal__body">
                 <div class="fr-modal__header">
+                  <button @click="closeModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
+                </div>
+                <div class="fr-modal__content">
                   <h2 class="fr-modal__title">
                     <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
                     Confirmation de suppression
                   </h2>
-                  <button @click="closeModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
-                </div>
-                <div class="fr-modal__content">
                   <p>Êtes-vous sûr de vouloir supprimer cette clé ?</p>
                 </div>
                 <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
@@ -806,14 +809,8 @@ margin: 0;
 #close{
 background: none;
 border: none;
-color: #000;
 cursor: pointer;
 }
-
-#close:hover {
-color: #3a3a3a !important;
-}
-
 
 .fr-btn--reject {
       background-color: #ff4140; 
@@ -849,17 +846,12 @@ color: white;
 }
 
 .edit-btn {
-  background-color: #000091;
-  color: white;
   margin-left: 10px;
 }
 
-.edit-btn:hover {
-  background-color: #1212ff;
-  color: white;
+.btn-enregistrer{
+  margin-left: 0 auto;
 }
-
-
 
 .fr-btn--disabled {
 opacity: 0.5;

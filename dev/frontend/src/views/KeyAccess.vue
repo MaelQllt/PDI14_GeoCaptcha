@@ -92,6 +92,9 @@
                 <button type="button" class="delete-btn fr-btn fr-btn--sm" @click="openModal(key.appId)">
                   Supprimer
                 </button>
+                <button type="button" class="edit-btn fr-btn fr-btn--sm" @click="openEditModal(key)">
+                  Modifier
+                </button>
               </div>
             </div>
           </div>
@@ -123,6 +126,69 @@
         </div>
 
       </div>
+
+      <!-- Modal de modification -->
+      <div v-if="showEditModal" class="modal-overlay">
+        <div class="fr-container fr-container--fluid fr-container-md">
+          <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+              <div class="fr-modal__body">
+                <div class="fr-modal__header">
+                  <h2 class="fr-modal__title">
+                    <span class="fr-icon-edit-line fr-icon--lg" aria-hidden="true"></span>
+                    Modifier l'utilisateur
+                  </h2>
+                  <button @click="closeEditModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
+                </div>
+                <div class="fr-modal__content">
+                  <form @submit.prevent="saveChanges">
+                    <div class="fr-input-group">
+                      <label class="fr-label" for="edit-key-name">Nom :</label>
+                      <input
+                        type="text"
+                        id="edit-key-name"
+                        v-model="editedUser.appId"
+                        class="fr-input"
+                        placeholder="Nom associé à la clé d'accès (minimum 5 caractères)"
+                        minlength="5"
+                        required
+                      />
+                    </div>
+                    <div class="fr-input-group">
+                      <label class="fr-label" for="edit-email">Adresse mail associée :</label>
+                      <input type="email" id="edit-email" v-model="editedUser.email" class="fr-input" placeholder="exemple@xyz.fr" required/>
+                      <span v-if="editedUser.email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) et être de la forme exemple@xyz.fr</span>
+                    </div>
+                    <div class="fr-input-group">
+                      <label class="fr-label" for="edit-key-referer">Referer :</label>
+                      <input
+                        type="text"
+                        id="edit-key-referer"
+                        v-model="editedUser.referer"
+                        class="fr-input"
+                        placeholder="Exemple : http(s)://application-client1.fr"
+                        @input="validateReferer"
+                        required
+                      />
+                      <span v-if="editedUser.referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) et être de la forme http(s)://application-client1.fr</span>
+                    </div>
+                    <div class="fr-select-group">
+                      <label class="fr-label" for="edit-select">Rôle :</label>
+                      <select id="edit-select" name="edit-select" v-model="editedUser.role" class="fr-select" required>
+                        <option value="" disabled selected hidden>Choisissez un rôle</option>
+                        <option value='admin'>Admin</option>
+                        <option value='private'>Private</option>
+                      </select>
+                    </div>
+                    <button type="submit" class="fr-btn fr-btn--primary">Enregistrer les modifications</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
       <!-- Modal de confirmation de suppression -->
       <div v-if="showModal" class="modal-overlay">
@@ -280,6 +346,13 @@ data() {
     itemsPerPage: 6,
     isTooltipVisible: false,
     selectedTag: "",
+    showEditModal: false,
+    editedUser: {
+      appId: "",
+      email: "",
+      referer: "",
+      role: ""
+    },
   };
 },
 computed: {
@@ -398,6 +471,69 @@ methods: {
     this.selectedTag = this.selectedTag === role ? "" : role;
     this.currentPage = 1;
   },
+
+  openEditModal(user) {
+    this.editedUser = { ...user };
+    this.showEditModal = true;
+  },
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.editedUser = {
+      appId: "",
+      email: "",
+      referer: "",
+      role: ""
+    };
+  },
+
+  async saveChanges() {
+  try {
+    const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": this.apiKey,
+        "x-app-id": this.apiId
+      },
+      body: JSON.stringify({
+        appId: this.editedUser.appId,
+        email: this.editedUser.email,
+        referer: this.editedUser.referer,
+        role: this.editedUser.role
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erreur HTTP : ${response.status} - ${errorText}`);
+    }
+
+    const subject = encodeURIComponent("Modification de votre profil utilisateur");
+      const body = encodeURIComponent(`Bonjour,
+
+Nous avons procédé à une modification de votre profil utilisateur. Voici vos nouvelles informations :
+
+Nom : ${this.editedUser.appId}
+Adresse mail : ${this.editedUser.email}
+Referer : ${this.editedUser.referer}
+Rôle : ${this.editedUser.role}
+
+Si vous n'êtes pas à l'origine de cette action ou si vous avez des questions, veuillez nous contacter.
+
+Cordialement,
+Votre service CaptchAdmin`);
+
+      window.location.href = `mailto:${this.editedUser.email}?subject=${subject}&body=${body}`;
+
+    auditService.logUpdate('/key-access', `Modification de l'utilisateur: ${this.editedUser.appId}`);
+    await this.fetchKeys();
+    this.closeEditModal();
+  } catch (error) {
+    console.error("Erreur:", error);
+    auditService.logError('/key-access', `Échec lors de la modification de l'utilisateur: ${this.editedUser.appId}`);
+  }
+},
 
   // Méthode pour générer une nouvelle clé d'accès
   async generateApiKey() {
@@ -712,6 +848,18 @@ background-color: #ce0500;
 color: white;
 }
 
+.edit-btn {
+  background-color: #000091;
+  color: white;
+  margin-left: 10px;
+}
+
+.edit-btn:hover {
+  background-color: #1212ff;
+  color: white;
+}
+
+
 
 .fr-btn--disabled {
 opacity: 0.5;
@@ -749,25 +897,26 @@ margin: 15px;
 /* Modal */
 
 .modal-overlay {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.5);
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Assurez-vous que ce z-index est plus élevé que celui du header */
 }
 
 .modal-content {
-background-color: #fff;
-padding: 2rem;
-border-radius: 8px;
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-max-width: 500px;
-width: 100%;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  z-index: 1001; /* Assurez-vous que ce z-index est plus élevé que celui du header */
 }
 
 .modal-actions {

@@ -39,62 +39,7 @@
         :class="{ 'fr-tabs__panel--selected': activeTab === 'tabpanel-404' }"
         role="tabpanel"
         aria-labelledby="tabpanel-404"
-      >
-      <!--
-        <div class="search-container">
-          <div class="fr-search-bar" id="search-1337" role="search">
-            <label class="fr-label" for="search-1337-input">
-              Rechercher
-            </label>
-            <input class="fr-input" aria-describedby="search-1337-input-messages" placeholder="Rechercher un GéoCaptcha via son ID" id="search-1337-input" type="search">
-            <div class="fr-messages-group" id="search-1337-input-messages" aria-live="polite"></div>
-            <button title="Rechercher" type="button" id="search-btn-1338" class="fr-btn">Rechercher</button>
-          </div>
-
-          <button @click="toggleInfo" type="button" class="fr-btn fr-icon-filter-line fr-btn--tertiary-no-outline"></button>
-
-          <span v-if="showInfo" class="tooltip-info" role="tooltip">
-            <h6 class="fr-h6">Trier:</h6>
-            <fieldset class="fr-fieldset" id="checkboxes-inline" aria-labelledby="checkboxes-inline-legend checkboxes-inline-messages">
-              <div class="fr-fieldset__element fr-fieldset__element--inline">
-                  <div class="fr-checkbox-group fr-checkbox-group--sm">
-                      <input name="checkboxes-inline-1" id="checkboxes-inline-1" type="checkbox" aria-describedby="checkboxes-inline-1-messages">
-                      <label class="fr-label" for="checkboxes-inline-1">
-                          Taux de Réussite
-                      </label>
-                      <div class="fr-messages-group" id="checkboxes-inline-1-messages" aria-live="polite">
-                      </div>
-                  </div>
-              </div>
-              <div class="fr-fieldset__element fr-fieldset__element--inline">
-                  <div class="fr-checkbox-group fr-checkbox-group--sm">
-                      <input name="checkboxes-inline-2" id="checkboxes-inline-2" type="checkbox" aria-describedby="checkboxes-inline-2-messages">
-                      <label class="fr-label" for="checkboxes-inline-2">
-                          Orde Alphabétique ID
-                      </label>
-                      <div class="fr-messages-group" id="checkboxes-inline-2-messages" aria-live="polite">
-                      </div>
-                  </div>
-              </div>
-              <div class="fr-fieldset__element fr-fieldset__element--inline">
-                  <div class="fr-checkbox-group fr-checkbox-group--sm">
-                      <input name="checkboxes-inline-3" id="checkboxes-inline-3" type="checkbox" aria-describedby="checkboxes-inline-3-messages">
-                      <label class="fr-label" for="checkboxes-inline-3">
-                          Autre
-                      </label>
-                      <div class="fr-messages-group" id="checkboxes-inline-3-messages" aria-live="polite">
-                      </div>
-                  </div>
-              </div>
-              <div class="fr-messages-group" id="checkboxes-inline-messages" aria-live="polite">
-              </div>
-          </fieldset>
-          </span>
-
-        </div>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing, incididunt, ut labore et dolore magna aliqua. Vitae sapien pellentesque habitant morbi tristique senectus et. Diam maecenas sed enim ut. Accumsan lacus vel facilisis volutpat est. Ut aliquam purus sit amet luctus. Lorem ipsum dolor sit amet consectetur adipiscing elit ut.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing, incididunt, ut labore et dolore magna aliqua. Vitae sapien pellentesque habitant morbi tristique senectus et. Diam maecenas sed enim ut. Accumsan lacus vel facilisis volutpat est. Ut aliquam purus sit amet luctus. Lorem ipsum dolor sit amet consectetur adipiscing elit ut.</p>
-    -->
+      > 
     </div>
 
       <div
@@ -106,55 +51,208 @@
       >
       <h1>Piste d'audit</h1>
 
-        <div class="audit-container">
-            <div class="fr-container">
-                <div class="box-audit box-create">
-                <span class="action-audit action-create">CREATE</span>
-                <span class="route-audit">/key-access</span>
-                <span class="description-audit">Création de l'utilsateur ID: ensg2025</span>
-                <span class="time-audit">23:39 - 28/03/2025</span>
-                </div>
+      <div class="audit-container">
+      
+        <div class="fr-input-group">
+
+            <div class="filtre">
+                <select id="filter-route" v-model="filterRoute" class="fr-select filtre-route">
+                <option value="">Filtre par route</option>
+                <option v-for="route in uniqueRoutes" :key="route" :value="route">{{ route }}</option>
+                </select>
+            
+            
+                <button class="fr-btn-tertiary-no-outline fr-icon-refresh-line btn-refresh" @click="clearFilters"></button>
             </div>
-            <div class="fr-container">
-                <div class="box-audit box-delete">
-                <span class="action-audit action-delete">DELETE</span>
-                <span class="route-audit">/key-access</span>
-                <span class="description-audit">Suppression de l'utilsateur ID: ensg2025</span>
-                <span class="time-audit">23:39 - 28/03/2025</span>
-                </div>
-            </div>
-            <div class="fr-container">
-                <div class="box-audit box-update">
-                <span class="action-audit action-update">UPDATE</span>
-                <span class="route-audit">/key-access</span>
-                <span class="description-audit">Mise à jour de l'utilsateur ID: ensg2025</span>
-                <span class="time-audit">23:39 - 28/03/2025</span>
-                </div>
-            </div>
+            <button class="fr-btn fr-btn--danger delete-log" @click="confirmDeleteLogs" :disabled="logs.length === 0">Tout effacer</button>
+
         </div>
-
-
+    
+        <div v-if="filteredLogs.length === 0" class="fr-container">
+        <div class="box-audit box-info">
+            <span class="action-audit action-info">INFO</span>
+            <span class="description-audit">Aucune entrée d'audit ne correspond aux filtres.</span>
+        </div>
+        </div>
+        
+        <div v-for="(log, index) in filteredLogs" :key="index" class="fr-container">
+        <div :class="['box-audit', getBoxClass(log.action)]">
+            <span :class="['action-audit', getActionClass(log.action)]">{{ log.action }}</span>
+            <span class="route-audit">{{ log.route }}</span>
+            <span class="description-audit">{{ log.description }}</span>
+            <span class="time-audit">{{ log.timestamp }}</span>
+        </div>
+        </div>
+        
+        <div class="fr-pagination" v-if="filteredLogs.length > 0">
+        <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line" 
+                :disabled="currentPage === 1" 
+                @click="currentPage--">
+        </button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line" 
+                :disabled="currentPage === totalPages" 
+                @click="currentPage++">
+        </button>
+        </div>
       </div>
+
+      <div class="modal-overlay" v-if="showDeleteModal">
+        <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                        <button @click="showDeleteModal = false" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                        <h1 id="modal-6053-title" class="fr-modal__title">
+                            <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                            Confirmation de suppression
+                        </h1>
+                        <p>Êtes-vous sûr de vouloir supprimer tous les logs d'audit ? Cette action est irréversible.</p>
+                        </div>
+                        <div class="fr-modal__footer">
+                            <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                                <button class="fr-btn fr-btn--secondary" @click="showDeleteModal = false">Annuler</button>
+                                <button class="fr-btn fr-btn--danger" @click="deleteLogs">Confirmer la suppression</button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+          </div>
     </div>
   </div>
+  </div>
+  </div>
+  
 </template>
 
 <script>
+
+import { auditService } from '@/services/audit-service';
+
 export default {
   name: 'DashboardPage',
   data() {
     return {
       activeTab: "tabpanel-404",
-      showInfo: false,
+      logs: [],
+      filterAction: '',
+      filterRoute: '',
+      currentPage: 1,
+      logsPerPage: 10,
+      showDeleteModal: false,
     };
+  },
+  computed: {
+    filteredLogs() {
+      let filtered = this.logs;
+      
+      if (this.filterAction) {
+        filtered = filtered.filter(log => log.action === this.filterAction);
+      }
+      
+      if (this.filterRoute) {
+        filtered = filtered.filter(log => log.route === this.filterRoute);
+      }
+      
+      // Tri par date (du plus récent au plus ancien)
+      filtered.sort((a, b) => new Date(b.rawTimestamp) - new Date(a.rawTimestamp));
+      
+      // Pagination
+      const start = (this.currentPage - 1) * this.logsPerPage;
+      const end = start + this.logsPerPage;
+      
+      return filtered.slice(start, end);
+    },
+    totalPages() {
+      let filtered = this.logs;
+      
+      if (this.filterAction) {
+        filtered = filtered.filter(log => log.action === this.filterAction);
+      }
+      
+      if (this.filterRoute) {
+        filtered = filtered.filter(log => log.route === this.filterRoute);
+      }
+      
+      return Math.ceil(filtered.length / this.logsPerPage) || 1;
+    },
+    uniqueRoutes() {
+      const routes = new Set();
+      this.logs.forEach(log => routes.add(log.route));
+      return Array.from(routes);
+    }
   },
   methods: {
     switchTab(tabId) {
       this.activeTab = tabId;
     },
-    toggleInfo() {
-      this.showInfo = !this.showInfo;
+    getBoxClass(action) {
+      switch (action) {
+        case 'CREATE': return 'box-create';
+        case 'UPDATE': return 'box-update';
+        case 'DELETE': return 'box-delete';
+        case 'ERROR': return 'box-error';
+        case 'NAVIGATE': return 'box-navigate';
+        default: return 'box-info';
+      }
     },
+    getActionClass(action) {
+      switch (action) {
+        case 'CREATE': return 'action-create';
+        case 'UPDATE': return 'action-update';
+        case 'DELETE': return 'action-delete';
+        case 'ERROR': return 'action-error';
+        case 'NAVIGATE': return 'action-navigate';
+        default: return 'action-info';
+      }
+    },
+    clearFilters() {
+      this.filterAction = '';
+      this.filterRoute = '';
+      this.currentPage = 1;
+    },
+    loadLogs() {
+      this.logs = auditService.getLogs();
+    },
+
+    confirmDeleteLogs() {
+      this.showDeleteModal = true;
+    },
+    // Méthode pour supprimer tous les logs
+    deleteLogs() {
+      auditService.clearLogs();
+      this.logs = [];
+      this.showDeleteModal = false;
+      
+      // Ajouter une entrée d'audit pour la suppression
+      const deleteAudit = {
+        action: 'INFO',
+        route: 'audit',
+        description: 'Tous les logs ont été supprimés',
+        timestamp: new Date().toLocaleString(),
+        rawTimestamp: new Date()
+      };
+      
+      this.logs = [deleteAudit];
+      this.currentPage = 1;
+    },
+  },
+    mounted() {
+        window.scrollTo(0, 0);
+        this.loadLogs();
+    },
+  created() {
+    this.loadLogs();
+    
+    // Rafraîchir les logs toutes les 5 secondes
+    this.refreshInterval = setInterval(this.loadLogs, 5000);
+  },
+  beforeDestroy() {
+    clearInterval(this.refreshInterval);
   },
 };
 </script>
@@ -182,6 +280,27 @@ export default {
 .fr-tabs__panel--selected {
   visibility: visible;
   opacity: 1;
+}
+
+.fr-input-group {
+  display: flex;
+  align-items: center; /* Aligner verticalement */
+  width: 100%; /* S'assure que tout s'étale correctement */
+}
+
+.filtre {
+  display: flex;
+  align-items: center; /* Aligner verticalement */
+  gap: 8px; /* Espacement entre le select et le bouton */
+}
+
+.filtre-route {
+    width: 250px;
+    margin-right: 10px;
+}
+
+.delete-log {
+    margin-left: auto;
 }
 
 .audit-container {
@@ -215,7 +334,24 @@ export default {
   background-color: #eef;
 }
 
+.box-error {
+    border: 1px solid orange;
+    background-color: #ffe;
+}
+
+.box-navigate {
+  border: 1px solid purple;
+  background-color: #fef;
+}
+
+.box-info {
+  border: 1px solid gray;
+  background-color: #f5f5f5;
+}
+
 .action-audit{
+  width: 85px;
+  text-align: center; 
   color: white;
   font-weight: bold;
   padding: 5px 10px;
@@ -235,6 +371,18 @@ export default {
   background-color: rgb(97, 175, 254);
 }
 
+.action-error {
+  background-color: orange;
+}
+
+.action-navigate {
+  background-color: purple;
+}
+
+.action-info {
+  background-color: gray;
+}
+
 .route-audit {
   font-weight: bold;
     color: #333;
@@ -248,6 +396,53 @@ export default {
 .time-audit {
     margin-right: 10px;
   color: #666;
+}
+
+.fr-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-weight: bold;
+}
+
+.fr-btn--danger {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.fr-btn--danger:hover {
+  background-color: #c82333;
+}
+
+.fr-btn--danger:disabled {
+  background-color: #e99a9a;
+  cursor: not-allowed;
+}
+
+/* Styles pour la modale */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 </style>

@@ -252,6 +252,9 @@
 
 
 <script>
+
+import { auditService } from '@/services/audit-service';
+
 export default {
   data() {
     return {
@@ -365,11 +368,11 @@ export default {
 
     // Ouvrir le modal de confirmation pour générer une clé
     openConfirmationModal() {
-      if (this.isFormValid) {
-        this.showConfirmationModal = true; // Affiche le modal de confirmation
-      } else {
-        this.showMissingInfoModal = true; // Affiche le modal d'erreur si les champs sont invalides
+      if (!this.keyName || !this.email || !this.isValidReferer) {
+        this.showMissingInfoModal = true; // Affiche le modal d'erreur si les champs sont vides
+        return;
       }
+      this.showConfirmationModal = true; // Affiche le modal de confirmation
     },
 
     // Fermer le modal de confirmation pour générer une clé
@@ -449,6 +452,9 @@ Votre service CaptchAdmin`);
 
         window.location.href = `mailto:${this.email}?subject=${subject}&body=${body}`;
 
+        // Log de l'action de génération de clé
+        auditService.logCreate('/key-access', `Création de la clé d'accès pour l'utilisateur: ${this.keyName}`);
+
         await this.fetchKeys();
         
         // Réinitialisation des champs
@@ -461,7 +467,9 @@ Votre service CaptchAdmin`);
       } catch (error) {
         console.error("Erreur lors de la génération de la clé", error);
         this.errorMessage = error.message || "Une erreur est survenue lors de la génération de la clé.";
+        auditService.logError('/key-access', `Échec de la génération de la clé d'accès pour l'utilisateur: ${this.keyName}`);
       }
+      
     },
 
     // Méthode pour supprimer la clé d'accès après confirmation
@@ -487,26 +495,20 @@ Votre service CaptchAdmin`);
           throw new Error("Erreur lors de la suppression de la clé.");
         }
 
-        // Si l'email existe, envoyer une notification
-        if (userEmail) {
-          const subject = encodeURIComponent("Suppression de votre clé d'accès");
-          const body = encodeURIComponent(`Bonjour,
+        const userToDelete = this.apiKeys.find(key => key.appId === id);
+        const userName = userToDelete ? userToDelete.appId : id;
+        
+        // Log de l'action de suppression
+        auditService.logDelete('/key-access', `Suppression de la clé d'accès pour l'utilisateur: ${userName}`);
 
-Nous vous informons que votre clé d'accès "${userName}" a été supprimée.
-
-Si vous n'êtes pas à l'origine de cette action ou si vous avez des questions, veuillez nous contacter.
-
-Cordialement,
-Votre service CaptchAdmin`);
-
-          window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
-        }
-
-        await this.fetchKeys();
-        this.closeModal();
+        await  this.fetchKeys();  // Recharge la liste après suppression
+        this.closeModal();  // Ferme le modal après suppression
       } catch (error) {
         console.error("Erreur:", error);
+        auditService.logError('/key-access', `Échec de suppression de l'utilisateur: ${this.keyToDelete}`);
       }
+
+        
     },
 
     prevPage() {

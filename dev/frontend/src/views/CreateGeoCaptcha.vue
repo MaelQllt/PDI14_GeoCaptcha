@@ -242,6 +242,7 @@ import { fromLonLat, toLonLat } from "ol/proj";
 import OSM from "ol/source/OSM.js";
 import VectorSource from "ol/source/Vector.js";
 import * as turf from "@turf/turf";
+import { auditService } from '@/services/audit-service';
 
 export default {
   name: "OpenLayersMap",
@@ -411,6 +412,9 @@ export default {
         throw new Error("Erreur lors de la création du GéoCaptcha");
       }
 
+      // Log de création d'un GéoCaptcha
+      auditService.logCreate('/geo-captcha', `Création d'un GéoCaptcha'`);
+
       const result = await response.json();
       console.log("Réponse de l'API :", result);
 
@@ -419,7 +423,10 @@ export default {
       this.isModalOpen = true;
     } catch (error) {
       console.error("Erreur :", error);
+      auditService.logError('/geo-captcha', `Échec de création d'un GéoCaptcha`);
     }
+
+    
   },
 
   async getCaptchaImageTuile(layer, tileMatrix, col, row) {

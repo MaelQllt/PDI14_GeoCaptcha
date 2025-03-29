@@ -78,6 +78,7 @@
                               <div class="fr-input-group">
                                 <label class="fr-label" for="zipcode">Zipcode :</label>
                                 <input type="text" id="zipcode" v-model="zipcode" class="fr-input" placeholder="Entrez un code postal" required />
+                                <p v-if="zipcodeError" class="fr-error-text">{{ zipcodeError }}</p>
                               </div>
                           </div>
                         </div>           
@@ -135,9 +136,9 @@
                                   <label class="fr-label" for="longitude">Longitude :</label>
                                   <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" readonly /></div>
       
-                                  <div class="fr-input-group">
+                                  <!-- <div class="fr-input-group">
                                   <label class="fr-label" for="zipcode">Zipcode :</label>
-                                  <input type="text" id="zipcode" v-model="zipcode" class="fr-input" readonly /></div>
+                                  <input type="text" id="zipcode" v-model="zipcode" class="fr-input" readonly /></div> -->
 
                                   <div v-if="showAlert" id="alert-1070" class="fr-alert fr-alert--error">
                                       <h3 class="fr-alert__title">Erreur</h3>
@@ -319,64 +320,87 @@ export default {
 
   methods: {
 
-      validateAndCreateGeoCaptcha() {
-          this.latitudeError = "";
-          this.longitudeError = "";
-          this.zipcodeError = "";
-          this.modeError = "";
+    validateAndCreateGeoCaptcha() {
+      this.latitudeError = "";
+      this.longitudeError = "";
+      this.zipcodeError = "";
+      this.modeError = "";
 
-          // Cas "Sur la carte"
-          if (this.selectedOption === '3') {
-              if (!this.randomPoint) {
-              alert("Veuillez dessiner une boîte et générer un point aléatoire sur la carte.");
-              return;
-              }
-              
-              // Si un point aléatoire existe, utilisez ses coordonnées
-              this.latitude = this.randomPoint[1];
-              this.longitude = this.randomPoint[0];
-              
-          }
+      // Cas "Sur la carte"
+      if (this.selectedOption === '3') {
+        if (!this.randomPoint) {
+          alert("Veuillez dessiner une boîte et générer un point aléatoire sur la carte.");
+          return;
+        }
 
-          // Vérifications communes pour toutes les options
-          if (!this.latitude || !this.longitude || !this.zipcode || !this.mode) {
-              if (!this.latitude) this.latitudeError = "La latitude est obligatoire.";
-              if (!this.longitude) this.longitudeError = "La longitude est obligatoire.";
-              if (!this.zipcode) this.zipcodeError = "Le zipcode est obligatoire.";
-              if (!this.mode) this.modeError = "Le mode est obligatoire.";
-              return;
-          }
+        // Si un point aléatoire existe, utilisez ses coordonnées
+        this.latitude = this.randomPoint[1];
+        this.longitude = this.randomPoint[0];
+      }
 
-          // Convertir les valeurs en nombres décimaux
-          const lat = parseFloat(this.latitude);
-          const lon = parseFloat(this.longitude);
+      // Vérifications communes pour toutes les options
+      if (!this.latitude || !this.longitude || !this.zipcode || !this.mode) {
+        if (!this.latitude) this.latitudeError = "La latitude est obligatoire.";
+        if (!this.longitude) this.longitudeError = "La longitude est obligatoire.";
+        if (!this.zipcode) this.zipcodeError = "Le zipcode est obligatoire.";
+        if (!this.mode) this.modeError = "Le mode est obligatoire.";
+        return;
+      }
 
-          // Vérifier que les valeurs sont des nombres valides
-          if (isNaN(lat)) {
-              this.latitudeError = "La latitude doit être un nombre valide.";
-              return;
-          }
-          if (isNaN(lon)) {
-              this.longitudeError = "La longitude doit être un nombre valide.";
-              return;
-          }
+      // Convertir les valeurs en nombres décimaux
+      const lat = parseFloat(this.latitude);
+      const lon = parseFloat(this.longitude);
 
-          // Pour les options "Coordonnées précises" et "Aléatoire", gardez les vérifications de limites
-          if (this.selectedOption === '1' || this.selectedOption === '2') {
-              if (lat < this.latitudeMin || lat > this.latitudeMax) {
-              this.latitudeError = `La latitude doit être entre ${this.latitudeMin} et ${this.latitudeMax}.`;
-              return;
-              }
+      // Vérifier que les valeurs sont des nombres valides
+      if (isNaN(lat)) {
+        this.latitudeError = "La latitude doit être un nombre valide.";
+        return;
+      }
+      if (isNaN(lon)) {
+        this.longitudeError = "La longitude doit être un nombre valide.";
+        return;
+      }
 
-              if (lon < this.longitudeMin || lon > this.longitudeMax) {
-              this.longitudeError = `La longitude doit être entre ${this.longitudeMin} et ${this.longitudeMax}.`;
-              return;
-              }
-          }
+      // Vérification de la longueur du code postal
+      if (this.zipcode.length !== 5) {
+        this.zipcodeError = "Le code postal doit comporter exactement 5 chiffres.";
+        return;
+      }
 
-          // Si tout est valide, créer le GéoCaptcha
-          this.createGeoCaptcha();
-          },
+      // Pour les options "Coordonnées précises" et "Aléatoire", gardez les vérifications de limites
+      if (this.selectedOption === '1' || this.selectedOption === '2') {
+        if (lat < this.latitudeMin || lat > this.latitudeMax) {
+          this.latitudeError = `La latitude doit être entre ${this.latitudeMin} et ${this.latitudeMax}.`;
+          return;
+        }
+
+        if (lon < this.longitudeMin || lon > this.longitudeMax) {
+          this.longitudeError = `La longitude doit être entre ${this.longitudeMin} et ${this.longitudeMax}.`;
+          return;
+        }
+
+        const departmentCode = this.selectedDepartement;
+        let expectedPrefix;
+
+        // Gérer les cas spéciaux pour la Corse et les DOM-TOM
+        if (departmentCode === '2A' || departmentCode === '2B') {
+          expectedPrefix = '20';
+        } else if (['971', '972', '973', '974', '976'].includes(departmentCode)) {
+          expectedPrefix = departmentCode + '00';
+        } else {
+          expectedPrefix = departmentCode.padStart(2, '0');
+        }
+
+        if (!this.zipcode.startsWith(expectedPrefix)) {
+          this.zipcodeError = `Le code postal doit commencer par ${expectedPrefix}.`;
+          return;
+        }
+      }
+
+      // Si tout est valide, créer le GéoCaptcha
+      this.createGeoCaptcha();
+    },
+
 
   async createGeoCaptcha() {
     // Convertir les coordonnées latitude/longitude en coordonnées de tuile
@@ -678,6 +702,7 @@ export default {
         view: new View({
           center: fromLonLat([2.45407, 46.80335]),
           zoom: 5.75,
+          maxZoom: 15, // Limite le zoom maximal à 15
         }),
       });
 

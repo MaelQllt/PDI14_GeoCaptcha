@@ -76,6 +76,16 @@ Pour l'installer vous pouvez simplement exécuter cette ligne :
 npm install @turf/turf
 ```
 
+### Installation d'Axios
+
+Nous avons besoin d'Axios pour gérer les logs.
+
+Pour l'installer vous pouvez simplement exécuter cette ligne :
+
+```
+npm install axios
+```
+
 ## Lancement du projet sur le Network
 
 Afin de lancer le projet nous allons utiliser, une fois encore, **npm**. Pour ce faire rendez vous dans votre terminal ouvert dans votre dossier frontend. Faites ensuite cette requête:

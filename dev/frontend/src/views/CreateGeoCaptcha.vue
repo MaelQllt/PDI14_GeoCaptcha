@@ -424,7 +424,7 @@ export default {
       this.isModalOpen = true;
     } catch (error) {
       console.error("Erreur :", error);
-      auditService.logError('/geo-captcha', `Échec de création d'un GéoCaptcha`);
+      auditService.logError('/geo-captcha', `Échec lors de la création d'un GéoCaptcha`);
     }
 
     

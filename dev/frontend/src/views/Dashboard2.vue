@@ -218,11 +218,9 @@ export default {
     loadLogs() {
       this.logs = auditService.getLogs();
     },
-
     confirmDeleteLogs() {
       this.showDeleteModal = true;
     },
-    // Méthode pour supprimer tous les logs
     deleteLogs() {
       auditService.clearLogs();
       this.logs = [];
@@ -241,10 +239,19 @@ export default {
       this.currentPage = 1;
     },
   },
-    mounted() {
-        window.scrollTo(0, 0);
-        this.loadLogs();
+  watch: {
+    // Add watchers for the filter properties
+    filterRoute() {
+      this.currentPage = 1;  // Reset to page 1 when route filter changes
     },
+    filterAction() {
+      this.currentPage = 1;  // Reset to page 1 when action filter changes
+    }
+  },
+  mounted() {
+    window.scrollTo(0, 0);
+    this.loadLogs();
+  },
   created() {
     this.loadLogs();
     

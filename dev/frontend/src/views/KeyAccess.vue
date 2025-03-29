@@ -149,10 +149,10 @@
                         id="edit-key-name"
                         v-model="editedUser.appId"
                         class="fr-input"
-                        placeholder="Nom associé à la clé d'accès (minimum 5 caractères)"
-                        minlength="5"
-                        required
+                        disabled
+                        readonly
                       />
+                      <span class="fr-hint-text">Le nom d'utilisateur ne peut pas être modifié</span>
                     </div>
                     <div class="fr-input-group">
                       <label class="fr-label" for="edit-email">Adresse mail associée :</label>
@@ -183,7 +183,6 @@
                     <div class="fr.modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
                       <button type="submit" class="fr-btn fr-btn--primary btn-enregistrer">Enregistrer les modifications</button>
                     </div>
-                    
                   </form>
                 </div>
               </div>
@@ -521,6 +520,8 @@ Nom : ${this.editedUser.appId}
 Adresse mail : ${this.editedUser.email}
 Referer : ${this.editedUser.referer}
 Rôle : ${this.editedUser.role}
+
+Votre clé d'accès reste inchangée.
 
 Si vous n'êtes pas à l'origine de cette action ou si vous avez des questions, veuillez nous contacter.
 

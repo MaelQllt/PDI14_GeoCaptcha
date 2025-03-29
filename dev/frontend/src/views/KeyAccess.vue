@@ -89,11 +89,11 @@
                 <p><strong class="fr-tile__title">Rôle : </strong>{{ key.role }}</p>
               </div>
               <div class="fr-tile__body">
-                <button type="button" class="delete-btn fr-btn fr-btn--sm" @click="openModal(key.appId)">
-                  Supprimer
-                </button>
                 <button type="button" class="edit-btn fr-btn fr-btn--sm" @click="openEditModal(key)">
                   Modifier
+                </button>
+                <button type="button" class="delete-btn fr-btn fr-btn--sm" @click="openModal(key.appId)">
+                  Supprimer
                 </button>
               </div>
             </div>
@@ -157,7 +157,7 @@
                     <div class="fr-input-group">
                       <label class="fr-label" for="edit-email">Adresse mail associée :</label>
                       <input type="email" id="edit-email" v-model="editedUser.email" class="fr-input" placeholder="exemple@xyz.fr" required/>
-                      <span v-if="editedUser.email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) et être de la forme exemple@xyz.fr</span>
+                      <span v-if="editedUser.email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme exemple@xyz.fr</span>
                     </div>
                     <div class="fr-input-group">
                       <label class="fr-label" for="edit-key-referer">Referer :</label>
@@ -170,7 +170,7 @@
                         @input="validateReferer"
                         required
                       />
-                      <span v-if="editedUser.referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) et être de la forme http(s)://application-client1.fr</span>
+                      <span v-if="editedUser.referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme http(s)://application-client1.fr</span>
                     </div>
                     <div class="fr-select-group">
                       <label class="fr-label" for="edit-select">Rôle :</label>
@@ -250,7 +250,7 @@
           <div class="fr-input-group">
             <label class="fr-label" for="email">Adresse mail associée :</label>
             <input type="email" id="email" v-model="email" class="fr-input" placeholder="exemple@xyz.fr" required/>
-            <span v-if="email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) et être de la forme exemple@xyz.fr</span>
+            <span v-if="email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme exemple@xyz.fr</span>
           </div>
 
           <div class="fr-input-group">
@@ -264,7 +264,7 @@
               @input="validateReferer"
               required
             />
-            <span v-if="referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) et être de la forme http(s)://application-client1.fr</span>
+            <span v-if="referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme http(s)://application-client1.fr</span>
           </div>
 
 
@@ -846,7 +846,7 @@ color: white;
 }
 
 .edit-btn {
-  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .btn-enregistrer{

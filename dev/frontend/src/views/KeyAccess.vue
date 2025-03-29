@@ -244,6 +244,9 @@
 
 
 <script>
+
+import { auditService } from '@/services/audit-service';
+
 export default {
   data() {
     return {
@@ -415,6 +418,9 @@ Votre service CaptchAdmin`);
 
         window.location.href = `mailto:${this.email}?subject=${subject}&body=${body}`;
 
+        // Log de l'action de génération de clé
+        auditService.logCreate('/key-access', `Création de la clé d'accès pour l'utilisateur: ${this.keyName}`);
+
         await this.fetchKeys();
         
         // Réinitialisation des champs
@@ -427,7 +433,9 @@ Votre service CaptchAdmin`);
       } catch (error) {
         console.error("Erreur lors de la génération de la clé", error);
         this.errorMessage = error.message || "Une erreur est survenue lors de la génération de la clé.";
+        auditService.logError('/key-access', `Échec de la génération de la clé d'accès pour l'utilisateur: ${this.keyName}`);
       }
+      
     },
 
     // Méthode pour supprimer la clé d'accès après confirmation
@@ -448,11 +456,20 @@ Votre service CaptchAdmin`);
           throw new Error("Erreur lors de la suppression de la clé.");
         }
 
+        const userToDelete = this.apiKeys.find(key => key.appId === id);
+        const userName = userToDelete ? userToDelete.appId : id;
+        
+        // Log de l'action de suppression
+        auditService.logDelete('/key-access', `Suppression de la clé d'accès pour l'utilisateur: ${userName}`);
+
         await  this.fetchKeys();  // Recharge la liste après suppression
         this.closeModal();  // Ferme le modal après suppression
       } catch (error) {
         console.error("Erreur:", error);
+        auditService.logError('/key-access', `Échec de suppression de l'utilisateur: ${this.keyToDelete}`);
       }
+
+        
     },
 
     // New pagination methods

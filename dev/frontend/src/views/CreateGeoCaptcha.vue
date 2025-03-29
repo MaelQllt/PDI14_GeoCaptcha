@@ -413,7 +413,7 @@ export default {
       }
 
       // Log de création d'un GéoCaptcha
-      auditService.logCreate('/geo-captcha', `Création d'un GéoCaptcha'`);
+      auditService.logCreate('/geo-captcha', `Création d'un GéoCaptcha`);
 
       const result = await response.json();
       console.log("Réponse de l'API :", result);

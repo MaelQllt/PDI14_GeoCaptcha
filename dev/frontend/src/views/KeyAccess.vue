@@ -181,6 +181,7 @@
             <div class="fr-input-group">
               <label class="fr-label" for="email">Adresse mail associée :</label>
               <input type="email" id="email" v-model="email" class="fr-input" placeholder="exemple@xyz.fr" required/>
+              <span v-if="email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) et être de la forme exemple@xyz.fr</span>
             </div>
 
             <div class="fr-input-group">
@@ -190,11 +191,11 @@
                 id="key-referer"
                 v-model="referer"
                 class="fr-input"
-                placeholder="Exemple : http(s)://application-client1.eu"
+                placeholder="Exemple : http(s)://application-client1.fr"
                 @input="validateReferer"
                 required
               />
-              <span v-if="referer && !isValidReferer" class="fr-error">Le format de l'URL est incorrect. Exemple : http(s)://application-client1.eu</span>
+              <span v-if="referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) et être de la forme http(s)://application-client1.fr</span>
             </div>
 
 
@@ -207,7 +208,14 @@
               </select>
             </div>
 
-            <button type="submit" class="fr-btn fr-btn--primary cle-generer">Générer la clé</button>
+            <button 
+              type="submit" 
+              class="fr-btn fr-btn--primary cle-generer" 
+              :disabled="!isFormValid"
+              :class="{ 'fr-btn--disabled': !isFormValid }"
+            >
+              Générer la clé
+            </button>
           </form>
           </div>
 
@@ -252,15 +260,16 @@ export default {
       email: "",
       referer: "",
       isValidReferer: true,
+      isValidEmail: true,
       role: "",
       apiKeys: [],
       searchQuery: "",
-      showModal: false, // Contrôle l'affichage du modal de suppression
-      keyToDelete: null, // Stocke l'ID de la clé à supprimer
-      showConfirmationModal: false, // Contrôle l'affichage du modal de confirmation pour la génération de clé
-      showMissingInfoModal: false, // Contrôle l'affichage du modal si l'utilisateur n'a pas rempli les infos
-      apiKey : import.meta.env.VITE_API_KEY,
-      apiId : import.meta.env.VITE_API_ID,
+      showModal: false,
+      keyToDelete: null,
+      showConfirmationModal: false,
+      showMissingInfoModal: false,
+      apiKey: import.meta.env.VITE_API_KEY,
+      apiId: import.meta.env.VITE_API_ID,
       firstObject: 1,
       nbObjects: 20,
       currentPage: 1,
@@ -271,6 +280,19 @@ export default {
     };
   },
   computed: {
+    // Nouvelle propriété calculée pour déterminer si le formulaire est valide
+    isFormValid() {
+      return (
+        this.keyName && 
+        this.keyName.length >= 5 && 
+        this.email && 
+        this.isValidEmail && 
+        this.referer && 
+        this.isValidReferer && 
+        this.role
+      );
+    },
+    
     filteredKeys() {
       const filtered = this.apiKeys.filter(key => {
         const searchQueryLower = this.searchQuery.toLowerCase();
@@ -307,16 +329,28 @@ export default {
     }
   },
   methods: {
-
     switchTab(tabId) {
       this.activeTab = tabId;
       this.fetchKeys();
     },
 
     validateReferer() {
-    const regex = /^(https?:\/\/)[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/?\s*$/;
-    this.isValidReferer = regex.test(this.referer);
+      // Regex pour vérifier que le referer se termine par .xx (exactement 2 caractères)
+      const regex = /^(https?:\/\/)[a-zA-Z0-9-]+\.[a-zA-Z]{2}\/?\s*$/;
+      this.isValidReferer = regex.test(this.referer);
     },
+
+    validateEmail() {
+      // Regex pour valider que l'email se termine par .xx (exactement 2 caractères)
+      const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(?:[a-zA-Z]{2}|com)$/;
+      this.isValidEmail = regex.test(this.email);
+    },
+
+    validateKeyName() {
+      // On pourrait ajouter une validation spécifique pour le nom de la clé si nécessaire
+      return this.keyName && this.keyName.length >= 5;
+    },
+
     // Ouvrir le modal et définir la clé à supprimer
     openModal(id) {
       this.keyToDelete = id;
@@ -331,11 +365,11 @@ export default {
 
     // Ouvrir le modal de confirmation pour générer une clé
     openConfirmationModal() {
-      if (!this.keyName || !this.email || !this.isValidReferer) {
-        this.showMissingInfoModal = true; // Affiche le modal d'erreur si les champs sont vides
-        return;
+      if (this.isFormValid) {
+        this.showConfirmationModal = true; // Affiche le modal de confirmation
+      } else {
+        this.showMissingInfoModal = true; // Affiche le modal d'erreur si les champs sont invalides
       }
-      this.showConfirmationModal = true; // Affiche le modal de confirmation
     },
 
     // Fermer le modal de confirmation pour générer une clé
@@ -431,11 +465,16 @@ Votre service CaptchAdmin`);
     },
 
     // Méthode pour supprimer la clé d'accès après confirmation
-    async deleteKey() {  // Retirez le paramètre id de la fonction
-      const id = this.keyToDelete;  // Utilisez l'ID stocké dans keyToDelete
+    async deleteKey() {
+      const id = this.keyToDelete;
       if (!id) return;
 
       try {
+        // Trouver l'email de l'utilisateur avant de supprimer la clé
+        const userToDelete = this.apiKeys.find(key => key.appId === id);
+        const userEmail = userToDelete?.email;
+        const userName = userToDelete?.appId;
+        
         const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser/${id}`,
             { method: "DELETE",
                   headers: {
@@ -448,83 +487,105 @@ Votre service CaptchAdmin`);
           throw new Error("Erreur lors de la suppression de la clé.");
         }
 
-        await  this.fetchKeys();  // Recharge la liste après suppression
-        this.closeModal();  // Ferme le modal après suppression
+        // Si l'email existe, envoyer une notification
+        if (userEmail) {
+          const subject = encodeURIComponent("Suppression de votre clé d'accès");
+          const body = encodeURIComponent(`Bonjour,
+
+Nous vous informons que votre clé d'accès "${userName}" a été supprimée.
+
+Si vous n'êtes pas à l'origine de cette action ou si vous avez des questions, veuillez nous contacter.
+
+Cordialement,
+Votre service CaptchAdmin`);
+
+          window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
+        }
+
+        await this.fetchKeys();
+        this.closeModal();
       } catch (error) {
         console.error("Erreur:", error);
       }
     },
 
-    // New pagination methods
     prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  },
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  },
-
-  // Ajoutez cette nouvelle méthode pour récupérer les clés supplémentaires
-  async fetchMoreKeys() {
-    try {
-      const response = await fetch(
-        `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=21&nbObjects=20`,
-        {
-          headers: {
-            "Accept": "application/json",
-            "x-api-key": this.apiKey,
-            "x-app-id": this.apiId
-          },
-        }
-      );
-      const resultat = await response.json();
-      const additionalKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
-      
-      // Ajouter les clés supplémentaires à la liste existante
-      this.apiKeys = [...this.apiKeys, ...additionalKeys];
-      this.totalKeys = this.apiKeys.length;
-    } catch (error) {
-      console.error("Erreur lors de la récupération des clés supplémentaires", error);
-    }
-  },
-
-  async fetchKeys() {
-    try {
-      const response = await fetch(
-        `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=1&nbObjects=20`,
-        {
-          headers: {
-            "Accept": "application/json",
-            "x-api-key": this.apiKey,
-            "x-app-id": this.apiId
-          },
-        }
-      );
-      const resultat = await response.json();
-      this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
-      this.totalKeys = this.apiKeys.length;
-
-      // Si moins de 20 clés, pas besoin de chercher plus
-      if (this.apiKeys.length === 20) {
-        await this.fetchMoreKeys();
+      if (this.currentPage > 1) {
+        this.currentPage--;
       }
-    } catch (error) {
-      console.error("Erreur lors de la récupération des clés", error);
-    }
+    },
+    
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+
+    async fetchMoreKeys() {
+      try {
+        const response = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=21&nbObjects=20`,
+          {
+            headers: {
+              "Accept": "application/json",
+              "x-api-key": this.apiKey,
+              "x-app-id": this.apiId
+            },
+          }
+        );
+        const resultat = await response.json();
+        const additionalKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
+        
+        this.apiKeys = [...this.apiKeys, ...additionalKeys];
+        this.totalKeys = this.apiKeys.length;
+      } catch (error) {
+        console.error("Erreur lors de la récupération des clés supplémentaires", error);
+      }
+    },
+
+    async fetchKeys() {
+      try {
+        const response = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=1&nbObjects=20`,
+          {
+            headers: {
+              "Accept": "application/json",
+              "x-api-key": this.apiKey,
+              "x-app-id": this.apiId
+            },
+          }
+        );
+        const resultat = await response.json();
+        this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
+        this.totalKeys = this.apiKeys.length;
+
+        // Si moins de 20 clés, pas besoin de chercher plus
+        if (this.apiKeys.length === 20) {
+          await this.fetchMoreKeys();
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des clés", error);
+      }
+    },
   },
-},
+  
   mounted() {
     window.scrollTo(0, 0);
-    this.fetchKeys(); // Appel de la méthode pour récupérer les clés dès le chargement de la page
+    this.fetchKeys();
   },
 
   watch: {
     // Reset to first page when search query changes
     searchQuery() {
       this.currentPage = 1;
+    },
+    // Valider l'email à chaque changement
+    email() {
+      this.validateEmail();
+    },
+    // Valider le referer à chaque changement
+    referer() {
+      this.validateReferer();
     }
   }
 };
@@ -640,6 +701,18 @@ Votre service CaptchAdmin`);
 .delete-btn:hover {
   background-color: #ce0500;
   color: white;
+}
+
+
+.fr-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Pour une meilleure indication visuelle */
+.cle-generer {
+  transition: opacity 0.3s ease;
 }
 
 .fr-input-group {

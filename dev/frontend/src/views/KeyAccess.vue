@@ -252,6 +252,9 @@
 
 
 <script>
+
+import { auditService } from '@/services/audit-service';
+
 export default {
 data() {
   return {
@@ -449,6 +452,8 @@ Votre service CaptchAdmin`);
 
       window.location.href = `mailto:${this.email}?subject=${subject}&body=${body}`;
 
+      auditService.logCreate('/key-access', `Création de la clé d'accès pour l'utilisateur: ${this.keyName}`);
+
       await this.fetchKeys();
       
       // Réinitialisation des champs
@@ -461,6 +466,7 @@ Votre service CaptchAdmin`);
     } catch (error) {
       console.error("Erreur lors de la génération de la clé", error);
       this.errorMessage = error.message || "Une erreur est survenue lors de la génération de la clé.";
+      auditService.logCreate('/key-access', `Échec lors de la création de la clé d'accès pour l'utilisateur: ${this.keyName}`);
     }
   },
 
@@ -502,10 +508,13 @@ Votre service CaptchAdmin`);
         window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
       }
 
+      auditService.logDelete('/key-access', `Suppression de la clé d'accès pour l'utilisateur: ${userName}`);
+
       await this.fetchKeys();
       this.closeModal();
     } catch (error) {
       console.error("Erreur:", error);
+      auditService.logError('/key-access', `Échec lors de la suppression de la clé d'accès pour l'utilisateur: ${this.keyToDelete}`);
     }
   },
 

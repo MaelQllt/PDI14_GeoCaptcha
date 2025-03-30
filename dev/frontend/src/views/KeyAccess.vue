@@ -413,8 +413,8 @@ methods: {
   },
 
   validateReferer() {
-    // Regex pour vérifier que le referer se termine par .xx (exactement 2 caractères)
-    const regex = /^(https?:\/\/)[a-zA-Z0-9-]+\.[a-zA-Z]{2}\/?\s*$/;
+    // Regex pour vérifier que le referer se termine par .xx (2 caractères) ou .com
+    const regex = /^(https?:\/\/)[a-zA-Z0-9-]+(\.[a-zA-Z]{2}|\.com)\/?\s*$/;
     this.isValidReferer = regex.test(this.referer);
   },
 

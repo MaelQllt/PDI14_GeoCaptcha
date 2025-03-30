@@ -368,7 +368,7 @@ export default {
       }
 
       // Pour les options "Coordonnées précises" et "Aléatoire", gardez les vérifications de limites
-      if (this.selectedOption === '1' || this.selectedOption === '2') {
+      if (this.selectedOption === '1') {
         if (lat < this.latitudeMin || lat > this.latitudeMax) {
           this.latitudeError = `La latitude doit être entre ${this.latitudeMin} et ${this.latitudeMax}.`;
           return;
@@ -400,6 +400,8 @@ export default {
       // Si tout est valide, créer le GéoCaptcha
       this.createGeoCaptcha();
     },
+
+
 
 
   async createGeoCaptcha() {
@@ -597,7 +599,7 @@ export default {
   generateRandomZipcode(departmentCode) {
     // Vérifier si c'est un département d'outre-mer (DOM-TOM)
     const domTomCodes = ['971', '972', '973', '974', '976'];
-    
+
     if (domTomCodes.includes(departmentCode)) {
       // Pour les DOM-TOM, utiliser les 3 premiers chiffres du code département
       const prefix = departmentCode;
@@ -605,8 +607,11 @@ export default {
       const suffix = this.generateRandomNumbers(2);
       return `${prefix}${suffix}`;
     } else if (departmentCode === '2A' || departmentCode === '2B') {
-  return this.generateRandomNumbers(5); // Générer 5 chiffres aléatoires
-
+      // Pour la Corse (2A et 2B), utiliser le préfixe '20'
+      const prefix = '20';
+      // Générer 3 chiffres aléatoires
+      const suffix = this.generateRandomNumbers(3);
+      return `${prefix}${suffix}`;
     } else {
       // Pour les départements métropolitains, utiliser les 2 premiers chiffres du code département
       const prefix = departmentCode.padStart(2, '0');
@@ -615,6 +620,7 @@ export default {
       return `${prefix}${suffix}`;
     }
   },
+
 
   // Méthode pour générer des nombres aléatoires
   generateRandomNumbers(length) {

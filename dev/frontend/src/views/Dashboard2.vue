@@ -52,7 +52,7 @@
       <h1>Piste d'audit</h1>
 
       <div class="audit-container">
-      
+        <div class="fr-container">
         <div class="fr-input-group">
 
             <div class="filtre">
@@ -65,7 +65,7 @@
                 <button class="fr-btn-tertiary-no-outline fr-icon-refresh-line btn-refresh" @click="clearFilters"></button>
             </div>
             <button class="fr-btn fr-btn--danger delete-log" @click="confirmDeleteLogs" :disabled="logs.length === 0">Tout effacer</button>
-
+        </div>
         </div>
     
         <div v-if="filteredLogs.length === 0" class="fr-container">
@@ -95,6 +95,7 @@
                 @click="currentPage++">
         </button>
         </div>
+        
       </div>
 
       <div class="modal-overlay" v-if="showDeleteModal">
@@ -293,6 +294,7 @@ export default {
   display: flex;
   align-items: center; /* Aligner verticalement */
   width: 100%; /* S'assure que tout s'étale correctement */
+  margin-bottom: 20px; /* Espacement entre le groupe d'input et le reste du contenu */
 }
 
 .filtre {

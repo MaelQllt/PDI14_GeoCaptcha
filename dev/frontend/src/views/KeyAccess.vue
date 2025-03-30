@@ -530,12 +530,12 @@ Votre service CaptchAdmin`);
 
       window.location.href = `mailto:${this.editedUser.email}?subject=${subject}&body=${body}`;
 
-    auditService.logUpdate('/key-access', `Modification des informations de l'utilisateur: ${this.editedUser.appId}`);
+    auditService.logUpdate('/key-access', `Modification du profil de l'utilisateur: ${this.editedUser.appId}`);
     await this.fetchKeys();
     this.closeEditModal();
   } catch (error) {
     console.error("Erreur:", error);
-    auditService.logError('/key-access', `Échec lors de la modification des informations de l'utilisateur: ${this.editedUser.appId}`);
+    auditService.logError('/key-access', `Échec lors de la modification du profil de l'utilisateur: ${this.editedUser.appId}`);
   }
 },
 

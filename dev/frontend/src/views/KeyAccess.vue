@@ -748,24 +748,6 @@ background-color: #007bff;
 color: white;
 }
 
-
-/* Style d'affichage es utilisateurs */
-.fr-table{
-width: 100%;
-border-collapse: separate;
-border-spacing: 0 15px;
-margin-bottom: 1em;  
-}
-
-.fr-table th, .fr-table td{
-padding: 0.5em;
-border-bottom: 2px solid #000000;
-}
-
-.table-contour{
-outline: 1px solid #d2d2d2;
-}
-
 .fr-tabs{
 margin-left: 50px;
 margin-right: 50px;
@@ -776,15 +758,12 @@ margin-top: 170px;
 .fr-tabs__panel {
 visibility: hidden; 
 opacity: 0; 
-transition: opacity 0.1s ease, visibility 0.3s ease; 
-height: auto !important;
-display: none;
+transition: opacity 0.1s ease, visibility 0.3s ease;
 }
 
 /* Afficher le panel sélectionné */
 .fr-tabs__panel--selected {
 visibility: visible;
-display: block; 
 opacity: 1; 
 }
 

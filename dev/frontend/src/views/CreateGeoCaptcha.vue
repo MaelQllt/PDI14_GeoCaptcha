@@ -156,7 +156,7 @@
                           <select id="mode" v-model="mode" class="fr-select" required>
                             <option value="" disabled selected>Choisissez un mode</option>
                             <option value="ortho">Ortho</option>
-                            <option value="plan">Plan</option>
+                            <option value="plan-sur-plan">Plan</option>
                             <option value="scan">Scan</option>
                           </select>
                         </div>
@@ -321,6 +321,7 @@ export default {
   methods: {
 
     validateAndCreateGeoCaptcha() {
+      console.log("mode", this.mode);
       this.latitudeError = "";
       this.longitudeError = "";
       this.zipcodeError = "";
@@ -444,6 +445,9 @@ export default {
 
       const result = await response.json();
       console.log("Réponse de l'API :", result);
+
+      if (data.mode === 'plan-sur-plan') {
+        data.mode = 'plan'; };
 
       this.successMessage = `GéoCaptcha créé avec succès ! ID : ${data.id}`;
       this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
@@ -584,7 +588,10 @@ export default {
           // Définir le zipcode en fonction du code du département
           this.zipcode = this.generateRandomZipcode(this.randomDepartement.code);
 
-          this.mode = Math.random() < 0.5 ? "ortho" : "scan";
+          // Générer un mode aléatoire parmi "ortho", "scan", et "plan"
+          const modes = ["ortho", "scan", "plan-sur-plan"];
+          this.mode = modes[Math.floor(Math.random() * modes.length)];
+
 
         }
       });
@@ -832,7 +839,10 @@ export default {
       const departementCode = this.findDepartementByCoordinates(this.longitude, this.latitude);
       if (departementCode) {
           this.zipcode = this.generateRandomZipcode(departementCode);
-          this.mode = Math.random() < 0.5 ? "ortho" : "scan"; // Ajouter un mode aléatoire
+          // Générer un mode aléatoire parmi "ortho", "scan", et "plan"
+          const modes = ["ortho", "scan", "plan-sur-plan"];
+          this.mode = modes[Math.floor(Math.random() * modes.length)];
+
       }
       
       return [this.longitude, this.latitude];

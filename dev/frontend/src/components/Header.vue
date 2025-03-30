@@ -80,11 +80,11 @@ function setActiveButton(button) {
 </script>
 
 <style scoped>
-@import "@gouvfr/dsfr/dist/dsfr.min.css"; /* Importation du DSFR */
+@import "@gouvfr/dsfr/dist/dsfr.min.css"; 
 
 /* HEADER FIXÉ */
 .fr-header {
-  position: fixed; /* Fixe le header en haut */
+  position: fixed; 
   top: 0;
   left: 0;
   width: 100%;
@@ -97,18 +97,37 @@ function setActiveButton(button) {
 
 /* Effet au survol */
 .fr-btn:hover {
-  background-color: rgb(18,18,255)!important; /* Arrière-plan vert transparent */
-  color: #ffffff !important; /* Texte vert transparent */
+  background-color: rgb(18,18,255)!important; 
+  color: #ffffff !important; 
 }
 
 /* Effet au clic (focus) */
 .fr-btn:active {
-  background-color: rgb(220,220,252) !important; /* Arrière-plan vert transparent quand on clique */
+  background-color: rgb(220,220,252) !important; 
 }
 
 /* Style pour le bouton actif */
 .fr-btn.active {
-  background-color: rgb(0,0,145) !important; /* Couleur de fond vert pour le bouton actif */
-  color: #fff !important; /* Texte en blanc pour le bouton actif */
+  background-color: rgb(0,0,145) !important; 
+  color: #fff !important; 
+}
+
+/* STYLES EN MODE SOMBRE */
+:root[data-fr-theme="dark"] .fr-btn {
+  color: #ffffff !important;
+}
+
+:root[data-fr-theme="dark"] .fr-btn:hover {
+  background-color: rgb(177,177,249) !important; 
+  color: #ffffff !important;
+}
+
+:root[data-fr-theme="dark"] .fr-btn:active {
+  background-color: rgb(198,198,251) !important; 
+}
+
+:root[data-fr-theme="dark"] .fr-btn.active {
+  background-color: rgb(133,133,246) !important; 
+  color: rgb(0,0,145) !important;
 }
 </style>

@@ -814,12 +814,12 @@ cursor: pointer;
 }
 
 .fr-btn--reject {
-      background-color: #ff4140; 
+      background-color: red; 
       color: #fff; 
   }
 
   .fr-btn--reject:hover {
-      background-color: #ce0500; 
+      background-color: #c82333; 
   }
 
 #cancel{
@@ -837,12 +837,12 @@ padding: 1em;
 }
 
 .delete-btn {
-background-color: #ff4140;
+background-color: red;
 color: white;
 }
 
 .delete-btn:hover {
-background-color: #ce0500;
+background-color: #c82333;
 color: white;
 }
 
@@ -934,12 +934,12 @@ width: 48%;
 }
 
 .modal-actions .btn-delete {
-background-color: #e1000f;
+background-color: red;
 color: white;
 }
 
 .modal-actions .btn-delete:hover {
-background-color: #c9191e;
+background-color: #c82333;
 }
 
 .modal-actions .btn-cancel {

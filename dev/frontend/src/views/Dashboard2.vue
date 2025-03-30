@@ -452,6 +452,57 @@ export default {
   z-index: 1000;
 }
 
+:root[data-fr-theme="dark"] .box-create {
+  border: 1px solid rgb(73, 204, 144);
+  background-color: rgba(73, 204, 144, 0.1);
+  color: #e0e0e0;
+}
+
+:root[data-fr-theme="dark"] .box-delete {
+  border: 1px solid #ff6b6b;
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #e0e0e0;
+}
+
+:root[data-fr-theme="dark"] .box-update {
+  border: 1px solid rgb(97, 175, 254);
+  background-color: rgba(97, 175, 254, 0.2);
+  color: #e0e0e0;
+}
+
+:root[data-fr-theme="dark"] .box-error {
+  border: 1px solid orange;
+  background-color: rgba(255, 165, 0, 0.2);
+  color: #e0e0e0;
+}
+
+:root[data-fr-theme="dark"] .box-navigate {
+  border: 1px solid #c183ff;
+  background-color: rgba(128, 0, 128, 0.2);
+  color: #e0e0e0;
+}
+
+:root[data-fr-theme="dark"] .box-info {
+  border: 1px solid #aaa;
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+:root[data-fr-theme="dark"] .route-audit {
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+:root[data-fr-theme="dark"] .description-audit {
+  flex-grow: 1;
+  color: #cfcfcf;
+}
+
+:root[data-fr-theme="dark"] .time-audit {
+  margin-right: 10px;
+  color: #cfcfcf;
+}
+
 </style>
 
   

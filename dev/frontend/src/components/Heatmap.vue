@@ -1,17 +1,17 @@
 <template>
-    <div id="map" ref="map" style="width: 100%; height: 500px;"></div>
-  </template>
-  
-  <script>
+  <div id="map" ref="map" style="width: 100%; height: 500px;"></div>
+</template>
+
+<script>
 import 'ol/ol.css';
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
+import XYZ from 'ol/source/XYZ';
 import Heatmap from 'ol/layer/Heatmap';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { fromLonLat, toLonLat } from "ol/proj";
+import { fromLonLat } from 'ol/proj';
 
 export default {
   name: 'Heatmap',
@@ -108,7 +108,13 @@ export default {
           target: this.$refs.map,
           layers: [
             new TileLayer({
-              source: new OSM(),
+              source: new XYZ({
+                url: 'https://data.geopf.fr/wmts?' +
+                     'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=PM' +
+                     '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png' +
+                     '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
+                attributions: 'Carte © IGN/Geoplateforme'
+              }),
             }),
           ],
           view: new View({
@@ -138,7 +144,13 @@ export default {
         target: this.$refs.map,
         layers: [
           new TileLayer({
-            source: new OSM(),
+            source: new XYZ({
+              url: 'https://data.geopf.fr/wmts?' +
+                   'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=PM' +
+                   '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png' +
+                   '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
+              attributions: 'Carte © IGN/Geoplateforme'
+            }),
           }),
           heatmapLayer,
         ],
@@ -152,14 +164,13 @@ export default {
 };
 </script>
 
-  
-  <style scoped>
-  #map {
-    width: 100%;
-    height: 500px;
-    margin-bottom: 50px;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  </style>
+<style scoped>
+#map {
+  width: 100%;
+  height: 500px;
+  margin-bottom: 50px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+</style>

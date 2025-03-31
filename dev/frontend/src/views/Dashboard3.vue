@@ -27,7 +27,7 @@
             aria-controls="tabpanel-405-panel"
             @click="switchTab('tabpanel-405')"
           >
-            Piste d'audit
+            Logs
           </button>
         </li>
       </ul>
@@ -57,6 +57,42 @@
           />
           <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
         </div>
+        <div class="filter-tags">
+          <ul class="fr-tags-group">
+            <li>
+              <button
+                class="fr-tag"
+                :class="{ 'fr-tag--selected': selectedTag === 'all', 'fr-tag--checked': selectedTag === 'all' }"
+                :aria-pressed="selectedTag === 'all'"
+                @click="setFilter('all')"
+              >
+                Tous
+              </button>
+            </li>
+            <li>
+              <button
+                class="fr-tag"
+                :class="{ 'fr-tag--selected': selectedTag === 'success', 'fr-tag--checked': selectedTag === 'success' }"
+                :aria-pressed="selectedTag === 'success'"
+                @click="setFilter('success')"
+              >
+                Réussis
+              </button>
+            </li>
+            <li>
+              <button
+                class="fr-tag"
+                :class="{ 'fr-tag--selected': selectedTag === 'failed', 'fr-tag--checked': selectedTag === 'failed' }"
+                :aria-pressed="selectedTag === 'failed'"
+                @click="setFilter('failed')"
+              >
+                Échoués
+              </button>
+            </li>
+          </ul>
+        </div>
+
+
         <div class="trier-metrics">
           <label class="fr-label" for="filter-select">
             <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
@@ -69,7 +105,9 @@
           </select>
           <button class="fr-icon-arrow-up-down-line " @click="toggleSortOrder"></button>
         </div>
+        
       </div>
+
 
 
     </div>
@@ -77,7 +115,7 @@
 
   <div class="fr-grid-row fr-grid-row--gutters">
     <div v-for="(kingpin, index) in filteredAndSortedStats" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-      <div class="fr-tile" :class="getAccuracyClass(kingpin.successRate)">
+      <div class="fr-tile" :class="getAccuracyClass(kingpin.successRate)" @click="openKingpinModal(kingpin)">
         <div class="fr-tile__header">
           <p><strong class="fr-tile__title">Nom: </strong> {{ kingpin.name }}</p>
         </div>
@@ -114,13 +152,13 @@
                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                   <div class="fr-modal__body">
                     <div class="fr-modal__header">
+                      <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
                       <h2 id="modal-6053-title" class="fr-modal__title">
                         <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
                         Détails du Géocaptcha
                       </h2>
-                      <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
                       <div>
                         <p><strong>ID:</strong> {{ selectedGeocaptcha.id }}</p>
                         <p><strong>IP:</strong> {{ selectedGeocaptcha.ip }}</p>
@@ -130,12 +168,6 @@
                         <p><strong>Précision:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
                         <p><strong>Referer:</strong> {{ selectedGeocaptcha.referer }}</p>
                         <p><strong>Date de création:</strong> {{ selectedGeocaptcha.createdAt }}</p>
-                      </div>
-
-                      <!-- Afficher les images du défi -->
-                      <div>
-                        <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.backendId}`" alt="Backend" />
-                        <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.frontendId}`" alt="Frontend" />
                       </div>
                     </div>
 
@@ -157,13 +189,13 @@
                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                   <div class="fr-modal__body">
                     <div class="fr-modal__header">
+                      <button @click="closeConfirmationModal" class="fr-btn--close fr-btn">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
                       <h2 id="modal-6053-title" class="fr-modal__title">
                         <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
                         Confirmation
                       </h2>
-                      <button @click="closeConfirmationModal" class="fr-btn--close fr-btn">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
                       <p>Êtes-vous sûr de vouloir rejeter ce géocaptcha ?</p>
                     </div>
                     <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
@@ -185,7 +217,7 @@
         role="tabpanel"
         aria-labelledby="tabpanel-405"
       >
-      <h1>Piste d'audit</h1>
+      <h1>Logs</h1>
 
       <div class="audit-container">
         <div class="fr-container">
@@ -310,6 +342,8 @@ export default {
       searchQuery: '',
       sortKey: 'name', 
       sortOrder: 'asc',
+      selectedTag: 'all',
+      selectedTags: new Set(),
     };
   },
   computed: {
@@ -367,12 +401,19 @@ export default {
       return this.items;
     },
     filteredAndSortedStats() {
-    // Filtrer par recherche
     let filtered = this.kingpinStats.filter(stat => {
+      console.log("Filtrage par nom:", stat.name, this.searchQuery);
       return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
     });
 
-    // Trier
+    if (this.selectedTag === 'success') {
+      filtered = filtered.filter(stat => stat.successRate > 70);
+    } else if (this.selectedTag === 'failed') {
+      filtered = filtered.filter(stat => stat.successRate <= 50);
+    }
+
+    console.log("Données filtrées:", filtered);
+
     return filtered.sort((a, b) => {
       const modifier = this.sortOrder === 'asc' ? 1 : -1;
 
@@ -414,6 +455,31 @@ export default {
       
   },
   methods: {
+
+    openKingpinModal(kingpin) {
+    this.selectedGeocaptcha = {
+      id: kingpin.name, // Utilisez un identifiant unique si disponible
+      ip: 'N/A', // Remplacez par les données réelles si disponibles
+      attempts: kingpin.total,
+      successes: Math.round(kingpin.successRate * kingpin.total / 100),
+      failures: kingpin.total - Math.round(kingpin.successRate * kingpin.total / 100),
+      accuracy: kingpin.successRate,
+      referer: 'N/A', // Remplacez par les données réelles si disponibles
+      createdAt: 'N/A', // Remplacez par les données réelles si disponibles
+      challenge: {
+        backendId: 'N/A', // Remplacez par les données réelles si disponibles
+        frontendId: 'N/A' // Remplacez par les données réelles si disponibles
+      }
+    };
+    this.isModalVisible = true;
+  },
+    toggleTagSelection(tag) {
+    if (this.selectedTags.has(tag)) {
+      this.selectedTags.delete(tag);
+    } else {
+      this.selectedTags.add(tag);
+    }
+  },
     switchTab(tabId) {
       this.activeTab = tabId;
     },
@@ -544,79 +610,106 @@ export default {
     applyFilter() {
       console.log("Filtre appliqué:", this.filterOption);
     },
+
+    setFilter(tag) {
+    this.selectedTag = tag;
+    this.filterOption = tag;
+  },
     toggleSortOrder() {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
   },
 
     // Récupérer les données des géocaptchas
     async fetchData() {
-      try {
-        const response = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
-          {
-            headers: {
-              "Accept": "application/json",
-              "x-api-key": this.apiKey,
-              "x-app-id": this.apiId
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des données");
+    try {
+      const response = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=1&nbObjects=20`,
+        {
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": this.apiKey,
+            "x-app-id": this.apiId
+          },
         }
+      );
 
-        const data = await response.json();
-
-        this.items = data.sessions.map(session => ({
-          id: session._id,
-          attempts: session.attempts,
-          successes: session.success ? 1 : 0,
-          failures: session.success ? 0 : 1,
-          accuracy: session.success ? 100 : 0,
-          challenge: session.captcha.challenge,
-          ip: session.ip,
-          referer: session.referer,
-          createdAt: session.createdAt,
-        }));
-
-        // Calculer les métriques
-        this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
-        const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
-        const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
-        this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
-
-        // Ajouter une entrée d'audit
-        const auditEntry = {
-          action: 'INFO',
-          route: '/geocaptcha',
-          description: `Chargement de ${this.items.length} géocaptchas`,
-          timestamp: new Date().toLocaleString(),
-          rawTimestamp: new Date()
-        };
-        
-        if (auditService && typeof auditService.addLog === 'function') {
-          auditService.addLog(auditEntry);
-        }
-
-      } catch (error) {
-        this.error = true;
-        console.error("Erreur:", error);
-        
-        // Ajouter une entrée d'audit en cas d'erreur
-        const auditEntry = {
-          action: 'ERROR',
-          route: '/geocaptcha',
-          description: `Erreur lors du chargement des géocaptchas: ${error.message}`,
-          timestamp: new Date().toLocaleString(),
-          rawTimestamp: new Date()
-        };
-        
-        if (auditService && typeof auditService.addLog === 'function') {
-          auditService.addLog(auditEntry);
-        }
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des données");
       }
-    },
+
+      const data = await response.json();
+      console.log("Données récupérées de l'API:", data); // Vérifiez les données récupérées
+
+      // Accédez à data.sessions pour itérer sur les sessions
+      const sessions = data.sessions;
+
+      // Regrouper les sessions par challengeId
+      const aggregatedData = {};
+      sessions.forEach(session => {
+        const challengeId = session.challengeId;
+        if (!aggregatedData[challengeId]) {
+          aggregatedData[challengeId] = {
+            id: session._id,
+            attempts: 0,
+            successes: 0,
+            failures: 0,
+            accuracy: 0,
+            challenge: session.captcha.challenge,
+            ip: session.ip,
+            referer: session.referer,
+            createdAt: session.createdAt,
+          };
+        }
+        aggregatedData[challengeId].attempts += session.attempts;
+        if (session.success) {
+          aggregatedData[challengeId].successes++;
+        } else {
+          aggregatedData[challengeId].failures++;
+        }
+        aggregatedData[challengeId].accuracy = (aggregatedData[challengeId].successes / aggregatedData[challengeId].attempts) * 100;
+      });
+
+      // Convertir l'objet agrégé en tableau
+      this.items = Object.values(aggregatedData);
+      console.log("Données agrégées:", this.items); // Vérifiez les données agrégées
+
+      // Calculer les métriques
+      this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
+      const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
+      const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
+      this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+      // Ajouter une entrée d'audit
+      const auditEntry = {
+        action: 'INFO',
+        route: '/geocaptcha',
+        description: `Chargement de ${this.items.length} géocaptchas`,
+        timestamp: new Date().toLocaleString(),
+        rawTimestamp: new Date()
+      };
+
+      if (auditService && typeof auditService.addLog === 'function') {
+        auditService.addLog(auditEntry);
+      }
+
+    } catch (error) {
+      this.error = true;
+      console.error("Erreur:", error);
+
+      // Ajouter une entrée d'audit en cas d'erreur
+      const auditEntry = {
+        action: 'ERROR',
+        route: '/geocaptcha',
+        description: `Erreur lors du chargement des géocaptchas: ${error.message}`,
+        timestamp: new Date().toLocaleString(),
+        rawTimestamp: new Date()
+      };
+
+      if (auditService && typeof auditService.addLog === 'function') {
+        auditService.addLog(auditEntry);
+      }
+    }
+  },
 
     // Sélectionner un géocaptcha
     async selectGeocaptcha(item) {
@@ -750,11 +843,12 @@ export default {
   mounted() {
     window.scrollTo(0, 0);
     this.loadLogs();
-    this.fetchData();
-    this.loadData(); 
+    //this.loadData();
+    this.fetchData(); 
   },
   created() {
     this.loadLogs();
+    //this.loadData();
     this.fetchData(); 
     
     // Rafraîchir les logs toutes les 5 secondes
@@ -795,7 +889,7 @@ export default {
 
 .select-group-metrics {
   display: flex;
-  align-items: flex-end; /* Aligner les éléments en bas */
+  align-items: flex-end; 
   margin-bottom: 20px;
   justify-content: space-between;
 }
@@ -1078,6 +1172,23 @@ export default {
   margin-right: 10px;
   color: #cfcfcf;
 }
+
+.fr-tag--checked {
+  position: relative;
+}
+
+.fr-tag--checked::after {
+  content: '✔';
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+}
+
+
 
 </style>
 

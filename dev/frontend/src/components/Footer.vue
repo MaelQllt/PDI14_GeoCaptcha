@@ -18,7 +18,7 @@
           -->
           
           <div class="fr-footer__content">
-              <p class="fr-footer__content-desc">Interface administrateur des GéoCaptchas réalisé par des étudiants de l'ENSG. Les GéoCaptchas sont des défis Captcha innovants développés par la MARS (Mission Architecture Réseau et Sécurité) et qui sont basé sur des données géographiques.</p>
+              <p class="fr-footer__content-desc">Interface administrateur des GéoCaptchas réalisé par des étudiants de l'ENSG. Les GéoCaptchas sont des défis Captcha innovants développés par la MARS (Mission Architecture Réseau et Sécurité) et qui sont basés sur des données géographiques.</p>
               <ul class="fr-footer__content-list">
                   <li class="fr-footer__content-item">
                       <a title="géocaptcha.fr - nouvelle fenêtre" id="footer__content-link-6957" href="https://qlf-geocaptcha.ign.fr/api/v1/#" target="_blank" rel="noopener external" class="fr-footer__content-link">géocaptcha.ign.fr</a>

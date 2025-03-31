@@ -134,5 +134,6 @@
   #map {
     width: 100%;
     height: 500px;
+    padding-bottom: 50px;
   }
   </style>

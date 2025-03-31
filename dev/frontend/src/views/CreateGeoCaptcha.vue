@@ -44,7 +44,7 @@
                             </fieldset>
 
                         <p v-if="selectedOption === '2'" class="choix-zone">Le GéoCaptcha sera généré avec une localisation aléatoire en France.</p>
-                        <p v-if="selectedOption === '3'" class="choix-zone">Sélectionner une zone. Un GéoCaptcha sera créé à l'intérieur de la zone choisi.</p>
+                        <p v-if="selectedOption === '3'" class="choix-zone">Sélectionnez une zone où un GéoCaptcha sera généré. Cliquez une première fois pour initier la sélection, étendez la zone, puis cliquez à nouveau pour valider.</p>
                         <p v-if="selectedOption === '1'" class="choix-zone">Le GéoCaptcha sera généré dans le département de France que vous aurez choisi.</p>
                         <select v-if="selectedOption === '1' || selectedOption === '2'" id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }" :required="isDepartement">
                           <option value="" disabled selected>Choisissez votre département</option>
@@ -111,12 +111,6 @@
                               <div class="row mt-3">
                                   <div class="col-auto">
                                   <span class="tag-group">
-                                      <div class="tooltip-tag-container">
-                                          <button @mouseover="showTooltip" @mouseleave="hideTooltip" class="fr-btn--tertiary-no-outline fr-icon-information-line"></button>
-                                          <span v-if="isTooltipVisible" class="custom-tooltip">
-                                          Cliquez une fois pour commencer à sélectionner une zone. Tirez la zone. Cliquez une deuxième fois.
-                                          </span>
-                                      </div>
                                       <input type="button" value="Annuler la sélection" class="fr-tag tag-undo" @click="undoDraw"/>
                                   </span>
                                   </div>
@@ -163,12 +157,9 @@
 
                         <div class="button-container">
                           <div v-if="selectedOption === '2'" class="tooltip-container">
-                              <button @mouseover="showTooltip" @mouseleave="hideTooltip" class="fr-btn--tertiary-no-outline fr-icon-information-line"></button>
-                              <span v-if="isTooltipVisible" class="custom-tooltip">
-                                En recliquant sur Aléatoire ci-haut, vous pourrez générer un nouveau GéoCaptcha aléatoire.
-                              </span>
-                            </div>
-
+                            <!-- Bouton radio supprimé -->
+                            <label @click="closeDepartement" class="fr-icon-refresh-line"></label>
+                          </div>
                           <button type="submit" class="fr-btn btn-generer">Générer</button>
                         </div>
 
@@ -518,6 +509,7 @@ export default {
     return { x, y };
   },
 
+
   // Générer un ID unique
   generateUniqueId() {
     return Math.floor(Math.random() * 100000).toString();
@@ -537,6 +529,34 @@ export default {
       console.error("Erreur :", err);
     }
   },
+
+  fillRandomValues() {
+  if (this.departements.length > 0) {
+    const randomIndex = Math.floor(Math.random() * this.departements.length);
+    this.randomDepartement = this.departements[randomIndex];
+    
+    // Fetch department boundaries and generate random coordinates
+    this.fetchDepartmentBoundary(this.randomDepartement.code).then(() => {
+      // Générer des coordonnées aléatoires dans les limites du département
+      if (this.latitudeMin !== null && this.latitudeMax !== null &&
+          this.longitudeMin !== null && this.longitudeMax !== null) {
+          
+        // Générer latitude aléatoire avec un point comme séparateur décimal
+        this.latitude = Number(this.getRandomInRange(this.latitudeMin, this.latitudeMax).toFixed(6).replace(',', '.'));
+        
+        // Générer longitude aléatoire avec un point comme séparateur décimal
+        this.longitude = Number(this.getRandomInRange(this.longitudeMin, this.longitudeMax).toFixed(6).replace(',', '.'));
+        
+        // Définir le zipcode en fonction du code du département
+        this.zipcode = this.generateRandomZipcode(this.randomDepartement.code);
+        
+        // Générer un mode aléatoire parmi "ortho", "scan", et "plan"
+        const modes = ["ortho", "scan", "plan-sur-plan"];
+        this.mode = modes[Math.floor(Math.random() * modes.length)];
+      }
+    });
+  }
+},
 
   showTooltip() {
     this.isTooltipVisible = true;
@@ -1170,4 +1190,9 @@ font-size: 0.875rem;
 margin-top: 0.25rem;
 }
 
+
+.fr-icon-refresh-line:hover {
+  color: rgb(0,0,145);
+  cursor: pointer;  
+}
 </style>

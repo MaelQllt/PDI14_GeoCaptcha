@@ -41,21 +41,21 @@
                 class="w-full p-2 border border-gray-300 rounded"
               >
             </div>
-            <div class="mb-3">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Afficher uniquement</label>
-              <div class="flex space-x-4">
-                <label class="inline-flex items-center">
-                  <input type="radio" v-model="successFilter" value="all" class="form-radio">
-                  <span class="ml-2">Tous</span>
-                </label>
-                <label class="inline-flex items-center">
-                  <input type="radio" v-model="successFilter" value="success" class="form-radio">
-                  <span class="ml-2">Réussis</span>
-                </label>
-                <label class="inline-flex items-center">
-                  <input type="radio" v-model="successFilter" value="failed" class="form-radio">
-                  <span class="ml-2">Échoués</span>
-                </label>
+            <div class="fr-mb-3w">
+              <label class="fr-label">Afficher uniquement</label>
+              <div class="fr-radio-group">
+                <div class="fr-radio-rich">
+                  <input type="radio" v-model="successFilter" value="all" id="radio-all" name="radio-group" class="fr-radio">
+                  <label for="radio-all">Tous</label>
+                </div>
+                <div class="fr-radio-rich">
+                  <input type="radio" v-model="successFilter" value="success" id="radio-success" name="radio-group" class="fr-radio">
+                  <label for="radio-success">Réussis</label>
+                </div>
+                <div class="fr-radio-rich">
+                  <input type="radio" v-model="successFilter" value="failed" id="radio-failed" name="radio-group" class="fr-radio">
+                  <label for="radio-failed">Échoués</label>
+                </div>
               </div>
             </div>
             <div class="mb-3">
@@ -204,29 +204,29 @@
       },
       
       filteredAndSortedStats() {
-        // Filtrer par recherche
-        let filtered = this.kingpinStats.filter(stat => {
-          return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-        });
-        
-        // Filtrer par réussite
-        if (this.successFilter === 'success') {
-          filtered = filtered.filter(stat => stat.successes > 0);
-        } else if (this.successFilter === 'failed') {
-          filtered = filtered.filter(stat => stat.successes < stat.total);
-        }
-        
-        // Trier
-        return filtered.sort((a, b) => {
-          const modifier = this.sortOrder === 'asc' ? 1 : -1;
-          
-          if (this.sortKey === 'name') {
-            return modifier * a.name.localeCompare(b.name);
-          } else {
-            return modifier * (a[this.sortKey] - b[this.sortKey]);
-          }
-        });
-      },
+    // Filtrer par recherche
+    let filtered = this.kingpinStats.filter(stat => {
+      return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+    });
+
+    // Filtrer par réussite
+    if (this.successFilter === 'success') {
+      filtered = filtered.filter(stat => stat.successRate > 70);
+    } else if (this.successFilter === 'failed') {
+      filtered = filtered.filter(stat => stat.successRate <= 50);
+    }
+
+    // Trier
+    return filtered.sort((a, b) => {
+      const modifier = this.sortOrder === 'asc' ? 1 : -1;
+
+      if (this.sortKey === 'name') {
+        return modifier * a.name.localeCompare(b.name);
+      } else {
+        return modifier * (a[this.sortKey] - b[this.sortKey]);
+      }
+    });
+  },
       
       totalKingpins() {
         return this.kingpinStats.length;

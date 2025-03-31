@@ -244,6 +244,7 @@ import OSM from "ol/source/OSM.js";
 import VectorSource from "ol/source/Vector.js";
 import * as turf from "@turf/turf";
 import { auditService } from '@/services/audit-service';
+import {XYZ} from 'ol/source';
 
 export default {
   name: "OpenLayersMap",
@@ -760,29 +761,48 @@ export default {
   },
 
 
-    initializeMap() {
-      this.source = new VectorSource({ wrapX: false });
-      const raster = new TileLayer({
-        source: new OSM(),
-      });
-
-      this.vectorLayer = new VectorLayer({
-        source: this.source,
-      });
-
-      this.map = new Map({
-        controls: defaultControls().extend([new FullScreen()]),
-        layers: [raster, this.vectorLayer],
-        target: "map",
-        view: new View({
-          center: fromLonLat([2.45407, 46.80335]),
-          zoom: 5.75,
-          maxZoom: 15, // Limite le zoom maximal à 15
-        }),
-      });
-
-      this.addInteraction();
-    },
+  initializeMap() {
+  this.source = new VectorSource({ wrapX: false });
+  
+  // Orthophotos IGN (fond)
+  const orthoIGN = new TileLayer({
+    source: new XYZ({
+      url: 'https://data.geopf.fr/wmts?' +
+           'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=PM' +
+           '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/jpeg' +
+           '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
+      attributions: 'Carte © IGN/Geoplateforme'
+    })
+  });
+  
+  // Plan IGN (avec transparence)
+  const planIGN = new TileLayer({
+    source: new XYZ({
+      url: 'https://data.geopf.fr/wmts?' +
+           'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=PM' +
+           '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png' +
+           '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
+      attributions: 'Carte © IGN/Geoplateforme'
+    }),
+  });
+  
+  this.vectorLayer = new VectorLayer({
+    source: this.source
+  });
+  
+  this.map = new Map({
+    controls: defaultControls().extend([new FullScreen()]),
+    layers: [orthoIGN, planIGN, this.vectorLayer], // Ordre des couches: ortho, plan, vecteur
+    target: "map",
+    view: new View({
+      center: fromLonLat([2.45407, 46.80335]),
+      zoom: 5.75,
+      maxZoom: 15
+    })
+  });
+  
+  this.addInteraction();
+},
 
     addInteraction() {
       if (this.selectedShape === "None") return;
@@ -829,14 +849,20 @@ export default {
         this.vectorLayer.getSource().removeFeature(features[features.length - 1]);
         this.boxCoordinates = [];
         this.randomPoint = null; // Réinitialiser le point aléatoire
+        this.latitude = "";
+        this.longitude = "";
+        this.zipcode = "";
       }
     },
 
+
     clearAllDrawings() {
+      console.log("Effacement de tous les dessins");
       this.vectorLayer.getSource().clear();
       this.boxCoordinates = [];
       this.randomPoint = null;
     },
+
 
     async loadGeoJson() {
     try {

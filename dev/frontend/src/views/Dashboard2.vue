@@ -60,7 +60,7 @@
         </div>
 
         <div class="fr-grid-row fr-grid-row--gutters">
-            <div v-for="item in filteredItems" :key="item.id" class="fr-col-12 fr-col-md-6 fr-col-lg-4" @click="selectGeocaptcha(item)">
+            <div v-for="item in paginatedItems" :key="item.id" class="fr-col-12 fr-col-md-6 fr-col-lg-4" @click="selectGeocaptcha(item)">
               <div class="fr-tile" :class="getAccuracyClass(item.accuracy, item.attempts)" id="tile-7451">
                 <div class="fr-tile__header">
                     <p><strong class="fr-tile__title">ID:</strong> {{ item.id }}</p>                  
@@ -82,7 +82,23 @@
             </div>
         </div>
 
-        
+        <!-- Pagination des métriques -->
+        <div class="fr-pagination" v-if="filteredItems.length > 0">
+          <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line" 
+                  :disabled="currentMetricsPage === 1" 
+                  @click="handlePageChange(currentMetricsPage - 1)">
+          </button>
+          <span class="page-info">{{ currentMetricsPage }} / {{ totalMetricsPages }}</span>
+          <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line" 
+                  :disabled="currentMetricsPage === totalMetricsPages" 
+                  @click="handlePageChange(currentMetricsPage + 1)">
+          </button>
+        </div>
+
+        <!-- Vous pouvez ajouter un indicateur de chargement qui s'affiche uniquement pendant le chargement initial -->
+        <div v-if="loading" class="loading-indicator">
+          Chargement de tous les géocaptchas...
+        </div>
 
           <!-- Modal pour Détails du Géocaptcha -->
           <div v-if="isModalVisible" class="modal-overlay">
@@ -277,8 +293,14 @@ export default {
       apiId: import.meta.env.VITE_API_ID,
       firstObject: 1,
       nbObjects: 20,
+      hasMoreData: true,
+      isLoadingMore: false,
+      allSessions: [],
 
       gaugeValue: 71,
+      // Ajout pour la pagination des métriques
+      currentMetricsPage: 1,
+      metricsPerPage: 6,
     };
   },
   computed: {
@@ -335,6 +357,15 @@ export default {
       }
       return this.items;
     },
+    // Ajout de la pagination pour les métriques
+    paginatedItems() {
+      const start = (this.currentMetricsPage - 1) * this.metricsPerPage;
+      const end = start + this.metricsPerPage;
+      return this.filteredItems.slice(start, end);
+    },
+    totalMetricsPages() {
+    return Math.ceil(this.filteredItems.length / this.metricsPerPage) || 1;
+    },
   },
   methods: {
     switchTab(tabId) {
@@ -364,6 +395,8 @@ export default {
       this.filterAction = '';
       this.filterRoute = '';
       this.currentPage = 1;
+      // Réinitialiser également la page des métriques
+      this.currentMetricsPage = 1;
     },
     loadLogs() {
       this.logs = auditService.getLogs();
@@ -395,77 +428,228 @@ export default {
     // Appliquer le filtre
     applyFilter() {
       console.log("Filtre appliqué:", this.filterOption);
+      // Réinitialiser la page courante lors de l'application d'un filtre
+      this.currentMetricsPage = 1;
     },
 
     // Récupérer les données des géocaptchas
     async fetchData() {
-      try {
-        const response = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
-          {
-            headers: {
-              "Accept": "application/json",
-              "x-api-key": this.apiKey,
-              "x-app-id": this.apiId
-            },
-          }
-        );
+  try {
+    this.loading = true;
+    this.error = false;
+    
+    // Réinitialiser les données lors d'un nouveau chargement initial
+    this.allSessions = [];
+    this.firstObject = 1;
+    this.hasMoreData = true;
+    
+    // Charger toutes les sessions d'un coup
+    await this.loadAllSessions();
+    
+  } catch (error) {
+    this.error = true;
+    console.error("Erreur:", error);
+    
+    // Ajouter une entrée d'audit en cas d'erreur
+    const auditEntry = {
+      action: 'ERROR',
+      route: '/geocaptcha',
+      description: `Erreur lors du chargement des géocaptchas: ${error.message}`,
+      timestamp: new Date().toLocaleString(),
+      rawTimestamp: new Date()
+    };
+    
+    if (auditService && typeof auditService.addLog === 'function') {
+      auditService.addLog(auditEntry);
+    }
+  } finally {
+    this.loading = false;
+  }
+},
 
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des données");
+async loadAllSessions() {
+  // Afficher un indicateur de chargement
+  this.isLoadingMore = true;
+  
+  try {
+    // Continuer à charger les données tant qu'il y en a
+    while (this.hasMoreData) {
+      const response = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
+        {
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": this.apiKey,
+            "x-app-id": this.apiId
+          },
         }
+      );
 
-        const data = await response.json();
-
-        this.items = data.sessions.map(session => ({
-          id: session._id,
-          attempts: session.attempts,
-          successes: session.success ? 1 : 0,
-          failures: session.success ? 0 : 1,
-          accuracy: session.success ? 100 : 0,
-          challenge: session.captcha.challenge,
-          ip: session.ip,
-          referer: session.referer,
-          createdAt: session.createdAt,
-        }));
-
-        // Calculer les métriques
-        this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
-        const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
-        const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
-        this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
-
-        // Ajouter une entrée d'audit
-        const auditEntry = {
-          action: 'INFO',
-          route: '/geocaptcha',
-          description: `Chargement de ${this.items.length} géocaptchas`,
-          timestamp: new Date().toLocaleString(),
-          rawTimestamp: new Date()
-        };
-        
-        if (auditService && typeof auditService.addLog === 'function') {
-          auditService.addLog(auditEntry);
-        }
-
-      } catch (error) {
-        this.error = true;
-        console.error("Erreur:", error);
-        
-        // Ajouter une entrée d'audit en cas d'erreur
-        const auditEntry = {
-          action: 'ERROR',
-          route: '/geocaptcha',
-          description: `Erreur lors du chargement des géocaptchas: ${error.message}`,
-          timestamp: new Date().toLocaleString(),
-          rawTimestamp: new Date()
-        };
-        
-        if (auditService && typeof auditService.addLog === 'function') {
-          auditService.addLog(auditEntry);
-        }
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des données");
       }
-    },
+
+      const data = await response.json();
+      
+      // Si on reçoit moins de sessions que demandé, il n'y a plus de données
+      if (data.sessions.length < this.nbObjects) {
+        this.hasMoreData = false;
+      }
+      
+      // Transformer les données et les ajouter à allSessions
+      const newSessions = data.sessions.map(session => ({
+        id: session._id,
+        attempts: session.attempts,
+        successes: session.success ? 1 : 0,
+        failures: session.success ? 0 : 1,
+        accuracy: session.success ? 100 : 0,
+        challenge: session.captcha.challenge,
+        ip: session.ip,
+        referer: session.referer,
+        createdAt: session.createdAt,
+      }));
+      
+      // Ajouter les nouvelles sessions à notre tableau complet
+      this.allSessions = [...this.allSessions, ...newSessions];
+      
+      // Mettre à jour l'index de la première session pour la prochaine requête
+      this.firstObject += data.sessions.length;
+    }
+    
+    // Une fois toutes les données chargées, mettre à jour items pour l'affichage
+    this.items = this.allSessions;
+    
+    // Calculer les métriques
+    this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
+    const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
+    const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
+    this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+    // Ajouter une entrée d'audit
+    const auditEntry = {
+      action: 'INFO',
+      route: '/geocaptcha',
+      description: `Chargement complet de ${this.allSessions.length} géocaptchas`,
+      timestamp: new Date().toLocaleString(),
+      rawTimestamp: new Date()
+    };
+    
+    if (auditService && typeof auditService.addLog === 'function') {
+      auditService.addLog(auditEntry);
+    }
+    
+  } catch (error) {
+    this.error = true;
+    console.error("Erreur lors du chargement des sessions:", error);
+    
+    // Ajouter une entrée d'audit en cas d'erreur
+    const auditEntry = {
+      action: 'ERROR',
+      route: '/geocaptcha',
+      description: `Erreur lors du chargement complet des géocaptchas: ${error.message}`,
+      timestamp: new Date().toLocaleString(),
+      rawTimestamp: new Date()
+    };
+    
+    if (auditService && typeof auditService.addLog === 'function') {
+      auditService.addLog(auditEntry);
+    }
+  } finally {
+    this.isLoadingMore = false;
+  }
+},
+
+async loadMoreSessions() {
+  if (!this.hasMoreData || this.isLoadingMore) return;
+  
+  try {
+    this.isLoadingMore = true;
+    
+    const response = await fetch(
+      `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
+      {
+        headers: {
+          "Accept": "application/json",
+          "x-api-key": this.apiKey,
+          "x-app-id": this.apiId
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des données");
+    }
+
+    const data = await response.json();
+    
+    // Si on reçoit moins de sessions que demandé, il n'y a plus de données
+    if (data.sessions.length < this.nbObjects) {
+      this.hasMoreData = false;
+    }
+    
+    // Transformer les données et les ajouter à allSessions
+    const newSessions = data.sessions.map(session => ({
+      id: session._id,
+      attempts: session.attempts,
+      successes: session.success ? 1 : 0,
+      failures: session.success ? 0 : 1,
+      accuracy: session.success ? 100 : 0,
+      challenge: session.captcha.challenge,
+      ip: session.ip,
+      referer: session.referer,
+      createdAt: session.createdAt,
+    }));
+    
+    // Ajouter les nouvelles sessions à notre tableau complet
+    this.allSessions = [...this.allSessions, ...newSessions];
+    
+    // Mettre à jour items pour l'affichage
+    this.items = this.allSessions;
+    
+    // Mettre à jour l'index de la première session pour la prochaine requête
+    this.firstObject += data.sessions.length;
+    
+    // Calculer les métriques
+    this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
+    const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
+    const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
+    this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+    // Ajouter une entrée d'audit
+    const auditEntry = {
+      action: 'INFO',
+      route: '/geocaptcha',
+      description: `Chargement de ${newSessions.length} géocaptchas supplémentaires (total: ${this.allSessions.length})`,
+      timestamp: new Date().toLocaleString(),
+      rawTimestamp: new Date()
+    };
+    
+    if (auditService && typeof auditService.addLog === 'function') {
+      auditService.addLog(auditEntry);
+    }
+
+  } catch (error) {
+    this.error = true;
+    console.error("Erreur lors du chargement de sessions supplémentaires:", error);
+    
+    // Ajouter une entrée d'audit en cas d'erreur
+    const auditEntry = {
+      action: 'ERROR',
+      route: '/geocaptcha',
+      description: `Erreur lors du chargement des géocaptchas supplémentaires: ${error.message}`,
+      timestamp: new Date().toLocaleString(),
+      rawTimestamp: new Date()
+    };
+    
+    if (auditService && typeof auditService.addLog === 'function') {
+      auditService.addLog(auditEntry);
+    }
+  } finally {
+    this.isLoadingMore = false;
+  }
+},
+
+
 
     // Sélectionner un géocaptcha
     async selectGeocaptcha(item) {
@@ -566,6 +750,11 @@ export default {
           auditService.addLog(auditEntry);
         }
 
+        // Vérifier si la page actuelle est maintenant vide (après suppression)
+        if (this.paginatedItems.length === 0 && this.currentMetricsPage > 1) {
+          this.currentMetricsPage--; // Revenir à la page précédente
+        }
+
         // Fermeture des modaux
         this.closeModal();
         this.closeConfirmationModal();
@@ -586,6 +775,10 @@ export default {
         }
       }
     },
+
+    async handlePageChange(newPage) {
+      this.currentMetricsPage = newPage;
+},
   },
   watch: {
     // Add watchers for the filter properties
@@ -594,6 +787,9 @@ export default {
     },
     filterAction() {
       this.currentPage = 1;  // Reset to page 1 when action filter changes
+    },
+    filterOption() {
+      this.currentMetricsPage = 1; // Reset metrics page when filter option changes
     }
   },
   mounted() {
@@ -847,6 +1043,19 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+.loading-indicator {
+  text-align: center;
+  padding: 10px;
+  color: #666;
+  font-style: italic;
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
 
 </style>

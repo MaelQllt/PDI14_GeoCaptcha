@@ -82,6 +82,8 @@
             </div>
         </div>
 
+        
+
           <!-- Modal pour Détails du Géocaptcha -->
           <div v-if="isModalVisible" class="modal-overlay">
             <div class="fr-container fr-container--fluid fr-container-md">
@@ -597,7 +599,6 @@ export default {
   mounted() {
     window.scrollTo(0, 0);
     this.loadLogs();
-    this.fetchData(); 
   },
   created() {
     this.loadLogs();

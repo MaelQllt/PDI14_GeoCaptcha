@@ -419,6 +419,10 @@ export default {
     };
     console.log("Données envoyées à l'API :", data);
 
+    if (data.mode === 'plan-sur-plan') {
+      data.mode = 'plan';
+    }
+
     try {
       this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
       this.isModalOpen = true;

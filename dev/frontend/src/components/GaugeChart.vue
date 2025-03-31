@@ -70,11 +70,11 @@
         const value = this.value;
         
         // Définir les plages de couleurs
-        if (value < 50) {
+        if (value < 60) {
           return `rgb(255, 0, 0)`;
-        } else if (value < 70) {
-          return `rgb(255, 165, 0)`;
-        } else if (value < 80) {
+        } else if (value < 75) {
+          return `rgb(255, 140, 0)`;
+        } else if (value < 85) {
           return `rgb(255, 200, 0)`;
         } else {
           return `rgb(73, 204, 144)`;

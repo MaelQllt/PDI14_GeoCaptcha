@@ -27,7 +27,7 @@
             aria-controls="tabpanel-405-panel"
             @click="switchTab('tabpanel-405')"
           >
-            Piste d'audit
+            Logs
           </button>
         </li>
       </ul>
@@ -54,6 +54,42 @@
           />
           <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
         </div>
+        <div class="filter-tags">
+          <ul class="fr-tags-group">
+            <li>
+              <button
+                class="fr-tag"
+                :class="{ 'fr-tag--selected': selectedTag === 'all', 'fr-tag--checked': selectedTag === 'all' }"
+                :aria-pressed="selectedTag === 'all'"
+                @click="setFilter('all')"
+              >
+                Tous
+              </button>
+            </li>
+            <li>
+              <button
+                class="fr-tag"
+                :class="{ 'fr-tag--selected': selectedTag === 'success', 'fr-tag--checked': selectedTag === 'success' }"
+                :aria-pressed="selectedTag === 'success'"
+                @click="setFilter('success')"
+              >
+                Réussis
+              </button>
+            </li>
+            <li>
+              <button
+                class="fr-tag"
+                :class="{ 'fr-tag--selected': selectedTag === 'failed', 'fr-tag--checked': selectedTag === 'failed' }"
+                :aria-pressed="selectedTag === 'failed'"
+                @click="setFilter('failed')"
+              >
+                Échoués
+              </button>
+            </li>
+          </ul>
+        </div>
+
+
         <div class="trier-metrics">
           <label class="fr-label" for="filter-select">
             <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
@@ -66,7 +102,9 @@
           </select>
           <button class="fr-icon-arrow-up-down-line " @click="toggleSortOrder"></button>
         </div>
+        
       </div>
+
 
 
     </div>
@@ -74,7 +112,7 @@
 
   <div class="fr-grid-row fr-grid-row--gutters">
     <div v-for="(kingpin, index) in filteredAndSortedStats" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-      <div class="fr-tile" :class="getAccuracyClass(kingpin.successRate)">
+      <div class="fr-tile" :class="getAccuracyClass(kingpin.successRate)" @click="openKingpinModal(kingpin)">
         <div class="fr-tile__header">
           <p><strong class="fr-tile__title">Nom: </strong> {{ kingpin.name }}</p>
         </div>
@@ -111,13 +149,13 @@
                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                   <div class="fr-modal__body">
                     <div class="fr-modal__header">
+                      <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
                       <h2 id="modal-6053-title" class="fr-modal__title">
                         <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
                         Détails du Géocaptcha
                       </h2>
-                      <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
                       <div>
                         <p><strong>ID:</strong> {{ selectedGeocaptcha.id }}</p>
                         <p><strong>IP:</strong> {{ selectedGeocaptcha.ip }}</p>
@@ -127,12 +165,6 @@
                         <p><strong>Précision:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
                         <p><strong>Referer:</strong> {{ selectedGeocaptcha.referer }}</p>
                         <p><strong>Date de création:</strong> {{ selectedGeocaptcha.createdAt }}</p>
-                      </div>
-
-                      <!-- Afficher les images du défi -->
-                      <div>
-                        <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.backendId}`" alt="Backend" />
-                        <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.frontendId}`" alt="Frontend" />
                       </div>
                     </div>
 
@@ -154,13 +186,13 @@
                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                   <div class="fr-modal__body">
                     <div class="fr-modal__header">
+                      <button @click="closeConfirmationModal" class="fr-btn--close fr-btn">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
                       <h2 id="modal-6053-title" class="fr-modal__title">
                         <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
                         Confirmation
                       </h2>
-                      <button @click="closeConfirmationModal" class="fr-btn--close fr-btn">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
                       <p>Êtes-vous sûr de vouloir rejeter ce géocaptcha ?</p>
                     </div>
                     <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
@@ -182,7 +214,7 @@
         role="tabpanel"
         aria-labelledby="tabpanel-405"
       >
-      <h1>Piste d'audit</h1>
+      <h1>Logs</h1>
 
       <div class="audit-container">
         <div class="fr-container">
@@ -305,6 +337,8 @@ export default {
       searchQuery: '',
       sortKey: 'name', 
       sortOrder: 'asc',
+      selectedTag: 'all',
+      selectedTags: new Set(),
     };
   },
   computed: {
@@ -362,12 +396,16 @@ export default {
       return this.items;
     },
     filteredAndSortedStats() {
-    // Filtrer par recherche
     let filtered = this.kingpinStats.filter(stat => {
       return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
     });
 
-    // Trier
+    if (this.filterOption === 'success') {
+      filtered = filtered.filter(stat => stat.successRate > 70);
+    } else if (this.filterOption === 'failed') {
+      filtered = filtered.filter(stat => stat.successRate <= 50);
+    }
+
     return filtered.sort((a, b) => {
       const modifier = this.sortOrder === 'asc' ? 1 : -1;
 
@@ -408,6 +446,31 @@ export default {
       },
   },
   methods: {
+
+    openKingpinModal(kingpin) {
+    this.selectedGeocaptcha = {
+      id: kingpin.name, // Utilisez un identifiant unique si disponible
+      ip: 'N/A', // Remplacez par les données réelles si disponibles
+      attempts: kingpin.total,
+      successes: Math.round(kingpin.successRate * kingpin.total / 100),
+      failures: kingpin.total - Math.round(kingpin.successRate * kingpin.total / 100),
+      accuracy: kingpin.successRate,
+      referer: 'N/A', // Remplacez par les données réelles si disponibles
+      createdAt: 'N/A', // Remplacez par les données réelles si disponibles
+      challenge: {
+        backendId: 'N/A', // Remplacez par les données réelles si disponibles
+        frontendId: 'N/A' // Remplacez par les données réelles si disponibles
+      }
+    };
+    this.isModalVisible = true;
+  },
+    toggleTagSelection(tag) {
+    if (this.selectedTags.has(tag)) {
+      this.selectedTags.delete(tag);
+    } else {
+      this.selectedTags.add(tag);
+    }
+  },
     switchTab(tabId) {
       this.activeTab = tabId;
     },
@@ -538,6 +601,11 @@ export default {
     applyFilter() {
       console.log("Filtre appliqué:", this.filterOption);
     },
+
+    setFilter(tag) {
+    this.selectedTag = tag;
+    this.filterOption = tag;
+  },
     toggleSortOrder() {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
   },
@@ -789,7 +857,7 @@ export default {
 
 .select-group-metrics {
   display: flex;
-  align-items: flex-end; /* Aligner les éléments en bas */
+  align-items: flex-end; 
   margin-bottom: 20px;
   justify-content: space-between;
 }
@@ -1072,6 +1140,23 @@ export default {
   margin-right: 10px;
   color: #cfcfcf;
 }
+
+.fr-tag--checked {
+  position: relative;
+}
+
+.fr-tag--checked::after {
+  content: '✔';
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+}
+
+
 
 </style>
 

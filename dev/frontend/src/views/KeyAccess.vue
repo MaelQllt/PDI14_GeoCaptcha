@@ -156,9 +156,20 @@
                     </div>
                     <div class="fr-input-group">
                       <label class="fr-label" for="edit-email">Adresse mail associée :</label>
-                      <input type="email" id="edit-email" v-model="editedUser.email" class="fr-input" placeholder="exemple@xyz.fr" required/>
-                      <span v-if="editedUser.email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme exemple@xyz.fr</span>
+                      <input 
+                        type="email" 
+                        id="edit-email" 
+                        v-model="editedUser.email" 
+                        class="fr-input" 
+                        placeholder="exemple@xyz.fr" 
+                        @input="email = editedUser.email; validateEmail()"
+                        required
+                      />
+                      <span v-if="editedUser.email && !isValidEmail" class="fr-error">
+                        L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme exemple@xyz.fr
+                      </span>
                     </div>
+
                     <div class="fr-input-group">
                       <label class="fr-label" for="edit-key-referer">Referer :</label>
                       <input
@@ -167,10 +178,12 @@
                         v-model="editedUser.referer"
                         class="fr-input"
                         placeholder="Exemple : http(s)://application-client1.fr"
-                        @input="validateReferer"
+                        @input="referer = editedUser.referer; validateReferer()"
                         required
                       />
-                      <span v-if="editedUser.referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme http(s)://application-client1.fr</span>
+                      <span v-if="editedUser.referer && !isValidReferer" class="fr-error">
+                        L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme http(s)://application-client1.fr
+                      </span>
                     </div>
                     <div class="fr-select-group">
                       <label class="fr-label" for="edit-select">Rôle :</label>
@@ -181,7 +194,14 @@
                       </select>
                     </div>
                     <div class="fr.modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
-                      <button type="submit" class="fr-btn fr-btn--primary btn-enregistrer">Enregistrer les modifications</button>
+                      <button 
+                        type="submit" 
+                        class="fr-btn fr-btn--primary btn-enregistrer"
+                        :disabled="!isValidEmail || !isValidReferer || !editedUser.role"
+                        :class="{ 'fr-btn--disabled': !isValidEmail || !isValidReferer || !editedUser.role }"
+                      >
+                        Enregistrer les modifications
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -475,9 +495,17 @@ methods: {
   },
 
   openEditModal(user) {
-    this.editedUser = { ...user };
-    this.showEditModal = true;
-  },
+  this.editedUser = { ...user };
+  this.showEditModal = true;
+  
+  // Set these values so the validation works correctly
+  this.email = this.editedUser.email;
+  this.referer = this.editedUser.referer;
+  
+  // Now validate
+  this.validateEmail();
+  this.validateReferer();
+},
 
   closeEditModal() {
     this.showEditModal = false;
@@ -490,7 +518,20 @@ methods: {
   },
 
   async saveChanges() {
+  this.email = this.editedUser.email;
+  this.referer = this.editedUser.referer;
+  this.validateEmail();
+  this.validateReferer();
+  
+  // Ne soumettre que si les validations passent
+  if (!this.isValidEmail || !this.isValidReferer) {
+    return;
+  }
+  
   try {
+    // Le reste du code reste identique
+    const oldEmail = this.apiKeys.find(key => key.appId === this.editedUser.appId).email;
+
     const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser`, {
       method: "POST",
       headers: {
@@ -511,8 +552,9 @@ methods: {
       throw new Error(`Erreur HTTP : ${response.status} - ${errorText}`);
     }
 
-    const subject = encodeURIComponent("Modification de votre profil utilisateur");
-      const body = encodeURIComponent(`Bonjour,
+    // Reste du code...
+    const subjectNew = encodeURIComponent("Modification de votre profil utilisateur");
+    const bodyNew = encodeURIComponent(`Bonjour,
 
 Nous avons procédé à une modification de votre profil utilisateur. Voici vos nouvelles informations :
 
@@ -528,7 +570,7 @@ Si vous n'êtes pas à l'origine de cette action ou si vous avez des questions, 
 Cordialement,
 Votre service CaptchAdmin`);
 
-      window.location.href = `mailto:${this.editedUser.email}?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${oldEmail},${this.editedUser.email}?subject=${subjectNew}&body=${bodyNew}`;
 
     auditService.logUpdate('/key-access', `Modification du profil de l'utilisateur: ${this.editedUser.appId}`);
     await this.fetchKeys();

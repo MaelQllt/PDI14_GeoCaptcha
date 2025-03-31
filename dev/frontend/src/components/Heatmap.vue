@@ -76,6 +76,7 @@
   #map {
     width: 100%;
     height: 100%;
+    padding-bottom: 50px;
   }
   </style>
   

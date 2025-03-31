@@ -485,7 +485,7 @@ export default {
       this.activeTab = tabId;
     },
 
-    async loadData(firstSessionObject = 1, firstKingpinObject = 1) {
+    async loadData(firstSessionObject = 1) {
     try {
       // Récupération des données de session
       const sessionResponse = await fetch(
@@ -513,43 +513,12 @@ export default {
 
       // Si le nombre de sessions récupérées est égal à 20, appeler récursivement pour récupérer la prochaine page
       if (newSessions.length === 20) {
-        await this.loadData(firstSessionObject + 20, firstKingpinObject);
+        await this.loadData(firstSessionObject + 20);
       } else {
         console.log("Toutes les sessions ont été récupérées.");
 
-        // Récupération des données kingpin
-        const kingpinResponse = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/admin/kingpin?firstObject=${firstKingpinObject}&nbObjects=20`,
-          {
-            headers: {
-              "Accept": "application/json",
-              "x-api-key": import.meta.env.VITE_API_KEY,
-              "x-app-id": import.meta.env.VITE_API_ID,
-            },
-          }
-        );
-
-        if (!kingpinResponse.ok) {
-          const errorText = await kingpinResponse.text();
-          console.error('Erreur API kingpin:', kingpinResponse.status, errorText);
-          throw new Error(`Erreur réseau (kingpin): ${kingpinResponse.status} - ${kingpinResponse.statusText}`);
-        }
-
-        const kingpinData = await kingpinResponse.json();
-        const newKingpins = kingpinData.kingpin || [];
-
-        // Ajouter les nouveaux kingpins aux données existantes
-        this.kingpinData = [...this.kingpinData, ...newKingpins];
-
-        // Si le nombre de kingpins récupérés est égal à 20, appeler récursivement pour récupérer la prochaine page
-        if (newKingpins.length === 20) {
-          await this.loadData(firstSessionObject, firstKingpinObject + 20);
-        } else {
-          console.log("Tous les kingpins ont été récupérés.");
-
-          // Analyse des données récupérées
-          this.analyzeData();
-        }
+        // Analyse des données récupérées
+        this.analyzeData();
       }
 
     } catch (error) {

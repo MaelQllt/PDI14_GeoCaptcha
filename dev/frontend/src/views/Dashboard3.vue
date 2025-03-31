@@ -402,14 +402,17 @@ export default {
     },
     filteredAndSortedStats() {
     let filtered = this.kingpinStats.filter(stat => {
+      console.log("Filtrage par nom:", stat.name, this.searchQuery);
       return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
     });
 
-    if (this.filterOption === 'success') {
+    if (this.selectedTag === 'success') {
       filtered = filtered.filter(stat => stat.successRate > 70);
-    } else if (this.filterOption === 'failed') {
+    } else if (this.selectedTag === 'failed') {
       filtered = filtered.filter(stat => stat.successRate <= 50);
     }
+
+    console.log("Données filtrées:", filtered);
 
     return filtered.sort((a, b) => {
       const modifier = this.sortOrder === 'asc' ? 1 : -1;
@@ -617,73 +620,95 @@ export default {
 
     // Récupérer les données des géocaptchas
     async fetchData() {
-      try {
-        const response = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
-          {
-            headers: {
-              "Accept": "application/json",
-              "x-api-key": this.apiKey,
-              "x-app-id": this.apiId
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des données");
+    try {
+      const response = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=1&nbObjects=20`,
+        {
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": this.apiKey,
+            "x-app-id": this.apiId
+          },
         }
+      );
 
-        const data = await response.json();
-
-        this.items = data.sessions.map(session => ({
-          id: session._id,
-          attempts: session.attempts,
-          successes: session.success ? 1 : 0,
-          failures: session.success ? 0 : 1,
-          accuracy: session.success ? 100 : 0,
-          challenge: session.captcha.challenge,
-          ip: session.ip,
-          referer: session.referer,
-          createdAt: session.createdAt,
-        }));
-
-        // Calculer les métriques
-        this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
-        const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
-        const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
-        this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
-
-        // Ajouter une entrée d'audit
-        const auditEntry = {
-          action: 'INFO',
-          route: '/geocaptcha',
-          description: `Chargement de ${this.items.length} géocaptchas`,
-          timestamp: new Date().toLocaleString(),
-          rawTimestamp: new Date()
-        };
-        
-        if (auditService && typeof auditService.addLog === 'function') {
-          auditService.addLog(auditEntry);
-        }
-
-      } catch (error) {
-        this.error = true;
-        console.error("Erreur:", error);
-        
-        // Ajouter une entrée d'audit en cas d'erreur
-        const auditEntry = {
-          action: 'ERROR',
-          route: '/geocaptcha',
-          description: `Erreur lors du chargement des géocaptchas: ${error.message}`,
-          timestamp: new Date().toLocaleString(),
-          rawTimestamp: new Date()
-        };
-        
-        if (auditService && typeof auditService.addLog === 'function') {
-          auditService.addLog(auditEntry);
-        }
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des données");
       }
-    },
+
+      const data = await response.json();
+      console.log("Données récupérées de l'API:", data); // Vérifiez les données récupérées
+
+      // Accédez à data.sessions pour itérer sur les sessions
+      const sessions = data.sessions;
+
+      // Regrouper les sessions par challengeId
+      const aggregatedData = {};
+      sessions.forEach(session => {
+        const challengeId = session.challengeId;
+        if (!aggregatedData[challengeId]) {
+          aggregatedData[challengeId] = {
+            id: session._id,
+            attempts: 0,
+            successes: 0,
+            failures: 0,
+            accuracy: 0,
+            challenge: session.captcha.challenge,
+            ip: session.ip,
+            referer: session.referer,
+            createdAt: session.createdAt,
+          };
+        }
+        aggregatedData[challengeId].attempts += session.attempts;
+        if (session.success) {
+          aggregatedData[challengeId].successes++;
+        } else {
+          aggregatedData[challengeId].failures++;
+        }
+        aggregatedData[challengeId].accuracy = (aggregatedData[challengeId].successes / aggregatedData[challengeId].attempts) * 100;
+      });
+
+      // Convertir l'objet agrégé en tableau
+      this.items = Object.values(aggregatedData);
+      console.log("Données agrégées:", this.items); // Vérifiez les données agrégées
+
+      // Calculer les métriques
+      this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
+      const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
+      const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
+      this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+      // Ajouter une entrée d'audit
+      const auditEntry = {
+        action: 'INFO',
+        route: '/geocaptcha',
+        description: `Chargement de ${this.items.length} géocaptchas`,
+        timestamp: new Date().toLocaleString(),
+        rawTimestamp: new Date()
+      };
+
+      if (auditService && typeof auditService.addLog === 'function') {
+        auditService.addLog(auditEntry);
+      }
+
+    } catch (error) {
+      this.error = true;
+      console.error("Erreur:", error);
+
+      // Ajouter une entrée d'audit en cas d'erreur
+      const auditEntry = {
+        action: 'ERROR',
+        route: '/geocaptcha',
+        description: `Erreur lors du chargement des géocaptchas: ${error.message}`,
+        timestamp: new Date().toLocaleString(),
+        rawTimestamp: new Date()
+      };
+
+      if (auditService && typeof auditService.addLog === 'function') {
+        auditService.addLog(auditEntry);
+      }
+    }
+  },
 
     // Sélectionner un géocaptcha
     async selectGeocaptcha(item) {
@@ -817,11 +842,12 @@ export default {
   mounted() {
     window.scrollTo(0, 0);
     this.loadLogs();
-    this.fetchData();
-    this.loadData(); 
+    //this.loadData();
+    this.fetchData(); 
   },
   created() {
     this.loadLogs();
+    //this.loadData();
     this.fetchData(); 
     
     // Rafraîchir les logs toutes les 5 secondes

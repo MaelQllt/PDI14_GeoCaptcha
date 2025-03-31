@@ -485,10 +485,11 @@ export default {
       this.activeTab = tabId;
     },
 
-    async loadData(firstObject = 1) {
+    async loadData(firstSessionObject = 1, firstKingpinObject = 1) {
     try {
+      // Récupération des données de session
       const sessionResponse = await fetch(
-        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstObject}&nbObjects=20`,
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
         {
           headers: {
             "Accept": "application/json",
@@ -510,37 +511,46 @@ export default {
       // Ajouter les nouvelles sessions aux données existantes
       this.sessionData = [...this.sessionData, ...newSessions];
 
-      // Si le nombre de sessions récupérées est inférieur à 20, cela signifie qu'il n'y a plus de données
+      // Si le nombre de sessions récupérées est égal à 20, appeler récursivement pour récupérer la prochaine page
       if (newSessions.length === 20) {
-        // Appeler récursivement pour récupérer la prochaine page
-        await this.loadData(firstObject + 20);
+        await this.loadData(firstSessionObject + 20, firstKingpinObject);
       } else {
         console.log("Toutes les sessions ont été récupérées.");
-      }
 
-      // Récupération des données kingpin
-      const kingpinResponse = await fetch(
-        `https://qlf-geocaptcha.ign.fr/api/v1/admin/kingpin?firstObject=1&nbObjects=20`,
-        {
-          headers: {
-            "Accept": "application/json",
-            "x-api-key": import.meta.env.VITE_API_KEY,
-            "x-app-id": import.meta.env.VITE_API_ID,
-          },
+        // Récupération des données kingpin
+        const kingpinResponse = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/kingpin?firstObject=${firstKingpinObject}&nbObjects=20`,
+          {
+            headers: {
+              "Accept": "application/json",
+              "x-api-key": import.meta.env.VITE_API_KEY,
+              "x-app-id": import.meta.env.VITE_API_ID,
+            },
+          }
+        );
+
+        if (!kingpinResponse.ok) {
+          const errorText = await kingpinResponse.text();
+          console.error('Erreur API kingpin:', kingpinResponse.status, errorText);
+          throw new Error(`Erreur réseau (kingpin): ${kingpinResponse.status} - ${kingpinResponse.statusText}`);
         }
-      );
 
-      if (!kingpinResponse.ok) {
-        const errorText = await kingpinResponse.text();
-        console.error('Erreur API kingpin:', kingpinResponse.status, errorText);
-        throw new Error(`Erreur réseau (kingpin): ${kingpinResponse.status} - ${kingpinResponse.statusText}`);
+        const kingpinData = await kingpinResponse.json();
+        const newKingpins = kingpinData.kingpin || [];
+
+        // Ajouter les nouveaux kingpins aux données existantes
+        this.kingpinData = [...this.kingpinData, ...newKingpins];
+
+        // Si le nombre de kingpins récupérés est égal à 20, appeler récursivement pour récupérer la prochaine page
+        if (newKingpins.length === 20) {
+          await this.loadData(firstSessionObject, firstKingpinObject + 20);
+        } else {
+          console.log("Tous les kingpins ont été récupérés.");
+
+          // Analyse des données récupérées
+          this.analyzeData();
+        }
       }
-
-      const kingpinData = await kingpinResponse.json();
-      this.kingpinData = kingpinData.kingpin || [];
-
-      // Analyse des données récupérées
-      this.analyzeData();
 
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);

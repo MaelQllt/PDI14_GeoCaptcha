@@ -52,7 +52,7 @@
       <h1>Piste d'audit</h1>
 
       <div class="audit-container">
-        <div class="fr-container">
+      
         <div class="fr-input-group">
 
             <div class="filtre">
@@ -65,7 +65,7 @@
                 <button class="fr-btn-tertiary-no-outline fr-icon-refresh-line btn-refresh" @click="clearFilters"></button>
             </div>
             <button class="fr-btn fr-btn--danger delete-log" @click="confirmDeleteLogs" :disabled="logs.length === 0">Tout effacer</button>
-        </div>
+
         </div>
     
         <div v-if="filteredLogs.length === 0" class="fr-container">
@@ -95,7 +95,6 @@
                 @click="currentPage++">
         </button>
         </div>
-        
       </div>
 
       <div class="modal-overlay" v-if="showDeleteModal">
@@ -219,9 +218,11 @@ export default {
     loadLogs() {
       this.logs = auditService.getLogs();
     },
+
     confirmDeleteLogs() {
       this.showDeleteModal = true;
     },
+    // Méthode pour supprimer tous les logs
     deleteLogs() {
       auditService.clearLogs();
       this.logs = [];
@@ -240,19 +241,10 @@ export default {
       this.currentPage = 1;
     },
   },
-  watch: {
-    // Add watchers for the filter properties
-    filterRoute() {
-      this.currentPage = 1;  // Reset to page 1 when route filter changes
+    mounted() {
+        window.scrollTo(0, 0);
+        this.loadLogs();
     },
-    filterAction() {
-      this.currentPage = 1;  // Reset to page 1 when action filter changes
-    }
-  },
-  mounted() {
-    window.scrollTo(0, 0);
-    this.loadLogs();
-  },
   created() {
     this.loadLogs();
     
@@ -294,7 +286,6 @@ export default {
   display: flex;
   align-items: center; /* Aligner verticalement */
   width: 100%; /* S'assure que tout s'étale correctement */
-  margin-bottom: 20px; /* Espacement entre le groupe d'input et le reste du contenu */
 }
 
 .filtre {
@@ -452,57 +443,6 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-}
-
-:root[data-fr-theme="dark"] .box-create {
-  border: 1px solid rgb(73, 204, 144);
-  background-color: rgba(73, 204, 144, 0.1);
-  color: #e0e0e0;
-}
-
-:root[data-fr-theme="dark"] .box-delete {
-  border: 1px solid #ff6b6b;
-  background-color: rgba(255, 0, 0, 0.2);
-  color: #e0e0e0;
-}
-
-:root[data-fr-theme="dark"] .box-update {
-  border: 1px solid rgb(97, 175, 254);
-  background-color: rgba(97, 175, 254, 0.2);
-  color: #e0e0e0;
-}
-
-:root[data-fr-theme="dark"] .box-error {
-  border: 1px solid orange;
-  background-color: rgba(255, 165, 0, 0.2);
-  color: #e0e0e0;
-}
-
-:root[data-fr-theme="dark"] .box-navigate {
-  border: 1px solid #c183ff;
-  background-color: rgba(128, 0, 128, 0.2);
-  color: #e0e0e0;
-}
-
-:root[data-fr-theme="dark"] .box-info {
-  border: 1px solid #aaa;
-  background-color: #333;
-  color: #e0e0e0;
-}
-
-:root[data-fr-theme="dark"] .route-audit {
-  font-weight: bold;
-  color: #e0e0e0;
-}
-
-:root[data-fr-theme="dark"] .description-audit {
-  flex-grow: 1;
-  color: #cfcfcf;
-}
-
-:root[data-fr-theme="dark"] .time-audit {
-  margin-right: 10px;
-  color: #cfcfcf;
 }
 
 </style>

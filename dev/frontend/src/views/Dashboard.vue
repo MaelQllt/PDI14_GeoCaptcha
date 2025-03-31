@@ -155,7 +155,7 @@
 export default {
   data() {
     return {
-     items: [],
+      items: [],
       loading: true,
       error: false,
       totalResolved: 0,

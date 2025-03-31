@@ -1,0 +1,694 @@
+{
+    "kingpin": [
+      {
+        "tileCoord": {
+          "x": 16817,
+          "y": 11148
+        },
+        "_id": "67d1989921a35a0c149b81b7",
+        "name": "2222-08000",
+        "tileMatrix": 15,
+        "backendId": "2222-08000-backend.png",
+        "frontendId": "2222-08000-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:17.616Z",
+        "updatedAt": "2025-03-12T14:22:17.616Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16817,
+          "y": 11148
+        },
+        "_id": "67d1989921a35a0c149b81c2",
+        "name": "2222-08000",
+        "tileMatrix": 15,
+        "backendId": "2222-08000-backend-v2.png",
+        "frontendId": "2222-08000-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-15T09:12:32.616Z",
+        "updatedAt": "2025-03-15T09:12:32.616Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16530,
+          "y": 12045
+        },
+        "_id": "67d1989b21a35a0c149b81ba",
+        "name": "2490-09000",
+        "tileMatrix": 15,
+        "backendId": "2490-09000-backend.png",
+        "frontendId": "2490-09000-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:19.016Z",
+        "updatedAt": "2025-03-12T14:22:19.016Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16530,
+          "y": 12045
+        },
+        "_id": "67d1989b21a35a0c149b81bb",
+        "name": "2490-09000",
+        "tileMatrix": 15,
+        "backendId": "2490-09000-backend-v2.png",
+        "frontendId": "2490-09000-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-14T10:45:21.016Z",
+        "updatedAt": "2025-03-14T10:45:21.016Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16600,
+          "y": 12012
+        },
+        "_id": "67d1989c21a35a0c149b81bd",
+        "name": "3126-11000",
+        "tileMatrix": 15,
+        "backendId": "3126-11000-backend.png",
+        "frontendId": "3126-11000-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:20.272Z",
+        "updatedAt": "2025-03-12T14:22:20.272Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16601,
+          "y": 11801
+        },
+        "_id": "67d1989d21a35a0c149b81c0",
+        "name": "3987-15000",
+        "tileMatrix": 15,
+        "backendId": "3987-15000-backend.png",
+        "frontendId": "3987-15000-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:21.416Z",
+        "updatedAt": "2025-03-12T14:22:21.416Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16601,
+          "y": 11801
+        },
+        "_id": "67d1989d21a35a0c149b81c4",
+        "name": "3987-15000",
+        "tileMatrix": 15,
+        "backendId": "3987-15000-backend-v2.png",
+        "frontendId": "3987-15000-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-16T08:34:21.416Z",
+        "updatedAt": "2025-03-16T08:34:21.416Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16752,
+          "y": 11908
+        },
+        "_id": "67d1989e21a35a0c149b81c5",
+        "name": "4210-12000",
+        "tileMatrix": 15,
+        "backendId": "4210-12000-backend.png",
+        "frontendId": "4210-12000-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:22.512Z",
+        "updatedAt": "2025-03-12T14:22:22.512Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16698,
+          "y": 11751
+        },
+        "_id": "67d1989f21a35a0c149b81c6",
+        "name": "4321-13000",
+        "tileMatrix": 15,
+        "backendId": "4321-13000-backend.png",
+        "frontendId": "4321-13000-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:23.689Z",
+        "updatedAt": "2025-03-12T14:22:23.689Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16698,
+          "y": 11751
+        },
+        "_id": "67d1989f21a35a0c149b81c7",
+        "name": "4321-13000",
+        "tileMatrix": 15,
+        "backendId": "4321-13000-backend-v2.png",
+        "frontendId": "4321-13000-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-15T11:34:56.689Z",
+        "updatedAt": "2025-03-15T11:34:56.689Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16698,
+          "y": 11751
+        },
+        "_id": "67d1989f21a35a0c149b81c8",
+        "name": "4321-13000",
+        "tileMatrix": 15,
+        "backendId": "4321-13000-backend-v3.png",
+        "frontendId": "4321-13000-frontend-v3.png",
+        "inactive": false,
+        "createdAt": "2025-03-18T16:42:12.689Z",
+        "updatedAt": "2025-03-18T16:42:12.689Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16624,
+          "y": 11890
+        },
+        "_id": "67d198a021a35a0c149b81c9",
+        "name": "4532-12500",
+        "tileMatrix": 15,
+        "backendId": "4532-12500-backend.png",
+        "frontendId": "4532-12500-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:24.723Z",
+        "updatedAt": "2025-03-12T14:22:24.723Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16570,
+          "y": 11920
+        },
+        "_id": "67d198a121a35a0c149b81ca",
+        "name": "4675-12700",
+        "tileMatrix": 15,
+        "backendId": "4675-12700-backend.png",
+        "frontendId": "4675-12700-frontend.png",
+        "inactive": true,
+        "createdAt": "2025-03-12T14:22:25.829Z",
+        "updatedAt": "2025-03-20T10:15:13.829Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16570,
+          "y": 11920
+        },
+        "_id": "67d198a121a35a0c149b81cb",
+        "name": "4675-12700",
+        "tileMatrix": 15,
+        "backendId": "4675-12700-backend-v2.png",
+        "frontendId": "4675-12700-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-20T10:15:25.829Z",
+        "updatedAt": "2025-03-20T10:15:25.829Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16710,
+          "y": 11840
+        },
+        "_id": "67d198a221a35a0c149b81cc",
+        "name": "4720-12900",
+        "tileMatrix": 15,
+        "backendId": "4720-12900-backend.png",
+        "frontendId": "4720-12900-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:26.935Z",
+        "updatedAt": "2025-03-12T14:22:26.935Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16650,
+          "y": 11950
+        },
+        "_id": "67d198a321a35a0c149b81cd",
+        "name": "4810-13200",
+        "tileMatrix": 15,
+        "backendId": "4810-13200-backend.png",
+        "frontendId": "4810-13200-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:27.984Z",
+        "updatedAt": "2025-03-12T14:22:27.984Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16780,
+          "y": 11860
+        },
+        "_id": "67d198a421a35a0c149b81ce",
+        "name": "4915-13500",
+        "tileMatrix": 15,
+        "backendId": "4915-13500-backend.png",
+        "frontendId": "4915-13500-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:29.047Z",
+        "updatedAt": "2025-03-12T14:22:29.047Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16680,
+          "y": 11970
+        },
+        "_id": "67d198a521a35a0c149b81cf",
+        "name": "5018-13800",
+        "tileMatrix": 15,
+        "backendId": "5018-13800-backend.png",
+        "frontendId": "5018-13800-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:30.156Z",
+        "updatedAt": "2025-03-12T14:22:30.156Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16680,
+          "y": 11970
+        },
+        "_id": "67d198a521a35a0c149b81d0",
+        "name": "5018-13800",
+        "tileMatrix": 15,
+        "backendId": "5018-13800-backend-v2.png",
+        "frontendId": "5018-13800-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-17T09:43:18.156Z",
+        "updatedAt": "2025-03-17T09:43:18.156Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16590,
+          "y": 11980
+        },
+        "_id": "67d198a621a35a0c149b81d1",
+        "name": "5120-14100",
+        "tileMatrix": 15,
+        "backendId": "5120-14100-backend.png",
+        "frontendId": "5120-14100-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:31.265Z",
+        "updatedAt": "2025-03-12T14:22:31.265Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16720,
+          "y": 11900
+        },
+        "_id": "67d198a721a35a0c149b81d2",
+        "name": "5225-14300",
+        "tileMatrix": 15,
+        "backendId": "5225-14300-backend.png",
+        "frontendId": "5225-14300-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:32.375Z",
+        "updatedAt": "2025-03-12T14:22:32.375Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16800,
+          "y": 11930
+        },
+        "_id": "67d198a821a35a0c149b81d3",
+        "name": "5330-14600",
+        "tileMatrix": 15,
+        "backendId": "5330-14600-backend.png",
+        "frontendId": "5330-14600-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:33.487Z",
+        "updatedAt": "2025-03-12T14:22:33.487Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16800,
+          "y": 11930
+        },
+        "_id": "67d198a821a35a0c149b81d4",
+        "name": "5330-14600",
+        "tileMatrix": 15,
+        "backendId": "5330-14600-backend-v2.png",
+        "frontendId": "5330-14600-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-15T13:28:42.487Z",
+        "updatedAt": "2025-03-15T13:28:42.487Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16615,
+          "y": 11850
+        },
+        "_id": "67d198a921a35a0c149b81d5",
+        "name": "5440-14900",
+        "tileMatrix": 15,
+        "backendId": "5440-14900-backend.png",
+        "frontendId": "5440-14900-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:34.596Z",
+        "updatedAt": "2025-03-12T14:22:34.596Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16645,
+          "y": 11880
+        },
+        "_id": "67d198aa21a35a0c149b81d6",
+        "name": "5550-15200",
+        "tileMatrix": 15,
+        "backendId": "5550-15200-backend.png",
+        "frontendId": "5550-15200-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:35.704Z",
+        "updatedAt": "2025-03-12T14:22:35.704Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16645,
+          "y": 11880
+        },
+        "_id": "67d198aa21a35a0c149b81d7",
+        "name": "5550-15200",
+        "tileMatrix": 15,
+        "backendId": "5550-15200-backend-v2.png",
+        "frontendId": "5550-15200-frontend-v2.png",
+        "inactive": true,
+        "createdAt": "2025-03-16T12:10:18.704Z",
+        "updatedAt": "2025-03-18T09:22:35.704Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16645,
+          "y": 11880
+        },
+        "_id": "67d198aa21a35a0c149b81d8",
+        "name": "5550-15200",
+        "tileMatrix": 15,
+        "backendId": "5550-15200-backend-v3.png",
+        "frontendId": "5550-15200-frontend-v3.png",
+        "inactive": false,
+        "createdAt": "2025-03-18T09:23:14.704Z",
+        "updatedAt": "2025-03-18T09:23:14.704Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16675,
+          "y": 11910
+        },
+        "_id": "67d198ab21a35a0c149b81d9",
+        "name": "5660-15500",
+        "tileMatrix": 15,
+        "backendId": "5660-15500-backend.png",
+        "frontendId": "5660-15500-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:36.810Z",
+        "updatedAt": "2025-03-12T14:22:36.810Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16705,
+          "y": 11940
+        },
+        "_id": "67d198ac21a35a0c149b81da",
+        "name": "5770-15800",
+        "tileMatrix": 15,
+        "backendId": "5770-15800-backend.png",
+        "frontendId": "5770-15800-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:37.921Z",
+        "updatedAt": "2025-03-12T14:22:37.921Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16735,
+          "y": 11970
+        },
+        "_id": "67d198ad21a35a0c149b81db",
+        "name": "5880-16100",
+        "tileMatrix": 15,
+        "backendId": "5880-16100-backend.png",
+        "frontendId": "5880-16100-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:39.029Z",
+        "updatedAt": "2025-03-12T14:22:39.029Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16735,
+          "y": 11970
+        },
+        "_id": "67d198ad21a35a0c149b81dc",
+        "name": "5880-16100",
+        "tileMatrix": 15,
+        "backendId": "5880-16100-backend-v2.png",
+        "frontendId": "5880-16100-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-19T11:45:22.029Z",
+        "updatedAt": "2025-03-19T11:45:22.029Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16765,
+          "y": 12000
+        },
+        "_id": "67d198ae21a35a0c149b81dd",
+        "name": "5990-16400",
+        "tileMatrix": 15,
+        "backendId": "5990-16400-backend.png",
+        "frontendId": "5990-16400-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:40.138Z",
+        "updatedAt": "2025-03-12T14:22:40.138Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16580,
+          "y": 11830
+        },
+        "_id": "67d198af21a35a0c149b81de",
+        "name": "6100-16700",
+        "tileMatrix": 15,
+        "backendId": "6100-16700-backend.png",
+        "frontendId": "6100-16700-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:41.244Z",
+        "updatedAt": "2025-03-12T14:22:41.244Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16580,
+          "y": 11830
+        },
+        "_id": "67d198af21a35a0c149b81df",
+        "name": "6100-16700",
+        "tileMatrix": 15,
+        "backendId": "6100-16700-backend-v2.png",
+        "frontendId": "6100-16700-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-17T15:31:56.244Z",
+        "updatedAt": "2025-03-17T15:31:56.244Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16610,
+          "y": 11860
+        },
+        "_id": "67d198b021a35a0c149b81e0",
+        "name": "6210-17000",
+        "tileMatrix": 15,
+        "backendId": "6210-17000-backend.png",
+        "frontendId": "6210-17000-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:42.353Z",
+        "updatedAt": "2025-03-12T14:22:42.353Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16640,
+          "y": 11890
+        },
+        "_id": "67d198b121a35a0c149b81e1",
+        "name": "6320-17300",
+        "tileMatrix": 15,
+        "backendId": "6320-17300-backend.png",
+        "frontendId": "6320-17300-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:43.462Z",
+        "updatedAt": "2025-03-12T14:22:43.462Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16670,
+          "y": 11920
+        },
+        "_id": "67d198b221a35a0c149b81e2",
+        "name": "6430-17600",
+        "tileMatrix": 15,
+        "backendId": "6430-17600-backend.png",
+        "frontendId": "6430-17600-frontend.png",
+        "inactive": true,
+        "createdAt": "2025-03-12T14:22:44.568Z",
+        "updatedAt": "2025-03-20T08:41:13.568Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16670,
+          "y": 11920
+        },
+        "_id": "67d198b221a35a0c149b81e3",
+        "name": "6430-17600",
+        "tileMatrix": 15,
+        "backendId": "6430-17600-backend-v2.png",
+        "frontendId": "6430-17600-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-20T08:41:22.568Z",
+        "updatedAt": "2025-03-20T08:41:22.568Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16700,
+          "y": 11950
+        },
+        "_id": "67d198b321a35a0c149b81e4",
+        "name": "6540-17900",
+        "tileMatrix": 15,
+        "backendId": "6540-17900-backend.png",
+        "frontendId": "6540-17900-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:45.676Z",
+        "updatedAt": "2025-03-12T14:22:45.676Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16730,
+          "y": 11980
+        },
+        "_id": "67d198b421a35a0c149b81e5",
+        "name": "6650-18200",
+        "tileMatrix": 15,
+        "backendId": "6650-18200-backend.png",
+        "frontendId": "6650-18200-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:46.785Z",
+        "updatedAt": "2025-03-12T14:22:46.785Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16730,
+          "y": 11980
+        },
+        "_id": "67d198b421a35a0c149b81e6",
+        "name": "6650-18200",
+        "tileMatrix": 15,
+        "backendId": "6650-18200-backend-v2.png",
+        "frontendId": "6650-18200-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-18T17:23:51.785Z",
+        "updatedAt": "2025-03-18T17:23:51.785Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16730,
+          "y": 11980
+        },
+        "_id": "67d198b421a35a0c149b81e7",
+        "name": "6650-18200",
+        "tileMatrix": 15,
+        "backendId": "6650-18200-backend-v3.png",
+        "frontendId": "6650-18200-frontend-v3.png",
+        "inactive": false,
+        "createdAt": "2025-03-21T09:14:27.785Z",
+        "updatedAt": "2025-03-21T09:14:27.785Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16760,
+          "y": 12010
+        },
+        "_id": "67d198b521a35a0c149b81e8",
+        "name": "6760-18500",
+        "tileMatrix": 15,
+        "backendId": "6760-18500-backend.png",
+        "frontendId": "6760-18500-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:47.891Z",
+        "updatedAt": "2025-03-12T14:22:47.891Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16790,
+          "y": 12040
+        },
+        "_id": "67d198b621a35a0c149b81e9",
+        "name": "6870-18800",
+        "tileMatrix": 15,
+        "backendId": "6870-18800-backend.png",
+        "frontendId": "6870-18800-frontend.png",
+        "inactive": false,
+        "createdAt": "2025-03-12T14:22:49.000Z",
+        "updatedAt": "2025-03-12T14:22:49.000Z",
+        "__v": 0
+      },
+      {
+        "tileCoord": {
+          "x": 16790,
+          "y": 12040
+        },
+        "_id": "67d198b621a35a0c149b81ea",
+        "name": "6870-18800",
+        "tileMatrix": 15,
+        "backendId": "6870-18800-backend-v2.png",
+        "frontendId": "6870-18800-frontend-v2.png",
+        "inactive": false,
+        "createdAt": "2025-03-16T13:45:33.000Z",
+        "updatedAt": "2025-03-16T13:45:33.000Z",
+        "__v": 0
+      },
+      {
+            "tileCoord": {
+            "x": 16820,
+            "y": 12070
+            },
+            "_id": "67d198b721a35a0c149b81eb",
+            "name": "6980-19100",
+            "tileMatrix": 15,
+            "backendId": "6980-19100-backend.png",
+            "frontendId": "6980-19100-frontend.png",
+            "inactive": false,
+            "createdAt": "2025-03-12T14:22:50.109Z",
+            "updatedAt": "2025-03-12T14:22:50.109Z",
+            "__v": 0
+      }
+    ]
+}

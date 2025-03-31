@@ -27,10 +27,33 @@
     methods: {
       async extractTileCoordinates() {
         try {
-          // Charger le fichier JSON
-          const response = await import('../components/FakeGC.json');
+          // Appel à l'API pour récupérer les données kingpin avec vérification d'erreur
+          const response = await fetch('https://qlf-geocaptcha.ign.fr/api/v1/admin/kingpin?firstObject=21&nbObjects=20', {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'x-api-key': import.meta.env.VITE_API_KEY,
+              'x-app-id': import.meta.env.VITE_API_ID,
+            },
+          });
   
-          const tileCoordinates = response.kingpin.map(item => item.tileCoord);
+          // Vérifier si la réponse est OK avant de traiter les données
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Erreur API:', response.status, errorText);
+            throw new Error(`Erreur réseau: ${response.status} - ${response.statusText}`);
+          }
+  
+          const data = await response.json();
+          console.log('Données reçues:', data); // Pour débugger
+  
+          // Vérifier que data et data.kingpin existent
+          if (!data || !data.kingpin || !Array.isArray(data.kingpin)) {
+            throw new Error('Format de données inattendu');
+          }
+  
+          const tileCoordinates = data.kingpin.map(item => item.tileCoord);
   
           // Convertir les coordonnées de tuiles en lat/lon
           const rawCoordinates = tileCoordinates.map(({ x, y }) => {
@@ -52,6 +75,7 @@
           this.initMap();
         } catch (error) {
           console.error('Erreur lors du chargement des données:', error);
+          // Vous pourriez vouloir afficher un message d'erreur à l'utilisateur ici
         }
       },
   
@@ -83,6 +107,25 @@
       },
   
       initMap() {
+        // Vérifier que nous avons des coordonnées
+        if (!this.coordinates || this.coordinates.length === 0) {
+          console.warn('Aucune coordonnée disponible pour initialiser la carte');
+          // Initialiser une carte vide centrée sur la France
+          new Map({
+            target: this.$refs.map,
+            layers: [
+              new TileLayer({
+                source: new OSM(),
+              }),
+            ],
+            view: new View({
+              center: fromLonLat([2.45407, 46.80335]),
+              zoom: 5.75,
+            }),
+          });
+          return;
+        }
+  
         // Convertir les coordonnées lat/lon en coordonnées projetées OpenLayers
         const features = this.coordinates.map(coord => {
           const olCoord = fromLonLat([coord.lon, coord.lat]); // Convertir en format OpenLayers
@@ -121,7 +164,7 @@
             heatmapLayer,
           ],
           view: new View({
-            center: fromLonLat([2.45407, 46.80335]), // Centre calculé à partir des coordonnées
+            center: fromLonLat([centerLon, centerLat]), // Utiliser le centre calculé
             zoom: 5.75, // Zoom ajusté pour mieux voir la heatmap
           }),
         });
@@ -135,8 +178,8 @@
     width: 100%;
     height: 500px;
     margin-bottom: 50px;
-    border-radius: 20px; /* Change la valeur pour plus ou moins d'arrondi */
-    overflow: hidden; /* Assure que la carte ne dépasse pas les bords arrondis */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Optionnel : ajoute une ombre */
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   }
   </style>

@@ -844,13 +844,13 @@ export default {
   mounted() {
     window.scrollTo(0, 0);
     this.loadLogs();
-    //this.loadData();
-    this.fetchData(); 
+    this.loadData();
+    //this.fetchData(); 
   },
   created() {
     this.loadLogs();
-    //this.loadData();
-    this.fetchData(); 
+    this.loadData();
+    //this.fetchData(); 
     
     // Rafraîchir les logs toutes les 5 secondes
     this.refreshInterval = setInterval(this.loadLogs, 5000);

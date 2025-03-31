@@ -509,6 +509,8 @@ methods: {
 
   closeEditModal() {
     this.showEditModal = false;
+    this.email = "";
+    this.referer = "";
     this.editedUser = {
       appId: "",
       email: "",

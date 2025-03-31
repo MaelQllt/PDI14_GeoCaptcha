@@ -42,45 +42,63 @@
       > 
   
       <div class="metrics-list">
-          <div class="list-header">
-            <h1 class="fr-h1">Gestion de Géocaptcha</h1>
-            <div class="fr-select-group select-group-metrics">
-              <label class="fr-label trier-metrics" for="filter-select">
-                <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
-                Trier
-              </label>
-              <select class="fr-select select-metrics" aria-describedby="select-messages" id="filter-select" v-model="filterOption" @change="applyFilter">
-                <option value="id-asc">ID (croissant)</option>
-                <option value="id-desc">ID (décroissant)</option>
-                <option value="success-asc">Précision (croissant)</option>
-                <option value="success-desc">Précision (décroissant)</option>
-              </select>
+    <div class="list-header">
+      <h1 class="fr-h1">Gestion de Géocaptcha</h1>
+      <div class="fr-select-group select-group-metrics">
+        <div class="fr-search-bar">
+          <input
+            class="fr-input"
+            placeholder="Rechercher"
+            type="search"
+            v-model="searchQuery"
+          />
+          <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
+        </div>
+        <label class="fr-label trier-metrics" for="filter-select">
+          <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
+          Trier
+        </label>
+        <select class="fr-select select-metrics" aria-describedby="select-messages" id="filter-select" v-model="sortKey" @change="sortOrder = 'desc'">
+          <option value="name">Nom</option>
+          <option value="successRate">Taux de réussite</option>
+          <option value="total">Nombre de sessions</option>
+          <option value="avgTime">Temps moyen</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div v-for="(kingpin, index) in filteredAndSortedStats" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
+      <div class="fr-tile" :class="getAccuracyClass(kingpin.successRate)">
+        <div class="fr-tile__header">
+          <p><strong class="fr-tile__title">Nom: </strong> {{ kingpin.name }}</p>
+        </div>
+        <div class="fr-tile__body">
+          <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
+            <span class="text-2xl">🧩</span> <!-- Emoji placeholder for logo -->
+          </div>
+          
+          <div class="infos">
+            <div class="info-item grid grid-cols-2 gap-4 mb-4">
+              <div class="text-center">
+                <p><strong>Nombre d'essais : </strong>{{ kingpin.total }}</p>
+              </div>
+            </div>
+            
+            <div class="info-item gauge mb-2">
+              <GaugeChart :value="Math.round(kingpin.successRate)" min="0" max="100" label="Taux de réussite (%)" />
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    
+    <div v-if="filteredAndSortedStats.length === 0" class="fr-col-12 text-center p-8 bg-gray-50 rounded">
+      <p class="text-lg text-gray-600">Aucun kingpin ne correspond à votre recherche</p>
+    </div>
+  </div>
 
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div v-for="item in filteredItems" :key="item.id" class="fr-col-12 fr-col-md-6 fr-col-lg-4" @click="selectGeocaptcha(item)">
-              <div class="fr-tile" :class="getAccuracyClass(item.accuracy, item.attempts)" id="tile-7451">
-                <div class="fr-tile__header">
-                    <p><strong class="fr-tile__title">ID:</strong> {{ item.id }}</p>                  
-                </div>
-                <div class="fr-tile__body">
-                  
-                    <img :src="logoSrc" alt="Logo Géocaptcha" class="geocaptcha-logo" />
-                  
-                    <div class="infos">
-                        <div class="info-item attempts">
-                        <p><strong>Nombre d'essais: </strong> {{ item.attempts }}</p>
-                        </div>
-                        <div class="info-item gauge">
-                        <GaugeChart :value="item.accuracy" min="0" max="100" label="Précision (en %)" />
-                        </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-        </div>
 
           <!-- Modal pour Détails du Géocaptcha -->
           <div v-if="isModalVisible" class="modal-overlay">
@@ -277,7 +295,10 @@ export default {
       firstObject: 1,
       nbObjects: 20,
 
-      gaugeValue: 71,
+      kingpinData: [],
+      sessionData: [],
+      kingpinStats: [],
+      searchQuery: '',
     };
   },
   computed: {
@@ -334,11 +355,133 @@ export default {
       }
       return this.items;
     },
+    filteredAndSortedStats() {
+    // Filtrer par recherche
+    let filtered = this.kingpinStats.filter(stat => {
+      return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+    });
+    
+    // Filtrer par réussite
+    if (this.successFilter === 'success') {
+      filtered = filtered.filter(stat => stat.successes > 0);
+    } else if (this.successFilter === 'failed') {
+      filtered = filtered.filter(stat => stat.successes < stat.total);
+    }
+    
+    // Trier
+    return filtered.sort((a, b) => {
+      const modifier = this.sortOrder === 'asc' ? 1 : -1;
+      
+      if (this.sortKey === 'name') {
+        return modifier * a.name.localeCompare(b.name);
+      } else {
+        return modifier * (a[this.sortKey] - b[this.sortKey]);
+      }
+    });
+  },
+  
+  totalKingpins() {
+    return this.kingpinStats.length;
+  },
+  
+  totalSessions() {
+    return this.kingpinStats.reduce((sum, stat) => sum + stat.total, 0);
+  },
+
+    successRate() {
+        const totalSuccesses = this.kingpinStats.reduce((sum, stat) => sum + stat.successes, 0);
+        return this.totalSessions > 0 ? (totalSuccesses / this.totalSessions) * 100 : 0;
+      },
+      
+      avgTimeGlobal() {
+        let totalTime = 0;
+        let totalSuccesses = 0;
+        
+        this.kingpinStats.forEach(stat => {
+          totalTime += stat.totalTime;
+          totalSuccesses += stat.successes;
+        });
+        
+        return totalSuccesses > 0 ? totalTime / totalSuccesses : 0;
+      },
   },
   methods: {
     switchTab(tabId) {
       this.activeTab = tabId;
     },
+    async loadData() {
+        try {
+          // Simulons le chargement des données JSON 
+          // En production, vous utiliseriez probablement un fetch ou axios
+          const gcResponse = await import('../components/FakeGC.json');
+          const sessionResponse = await import('../components/FakeSession.json');
+          
+          this.kingpinData = gcResponse.kingpin || [];
+          this.sessionData = sessionResponse.sessions || [];
+          
+          this.analyzeData();
+        } catch (error) {
+          console.error('Erreur lors du chargement des données:', error);
+        }
+      },
+      
+      analyzeData() {
+        // Créer un mapping des kingpins par nom
+        const kingpinsByName = {};
+        this.kingpinData.forEach(kingpin => {
+          if (!kingpinsByName[kingpin.name]) {
+            kingpinsByName[kingpin.name] = [];
+          }
+          kingpinsByName[kingpin.name].push(kingpin);
+        });
+        
+        // Analyser les sessions pour chaque kingpin
+        const statsMap = {};
+        
+        this.sessionData.forEach(session => {
+          const kingpinName = session.captcha?.challenge?.name;
+          
+          if (!kingpinName) return;
+          
+          if (!statsMap[kingpinName]) {
+            statsMap[kingpinName] = {
+              name: kingpinName,
+              total: 0,
+              successes: 0,
+              totalTime: 0,
+              avgTime: 0,
+              successRate: 0,
+              attempts: 0
+            };
+          }
+          
+          const stats = statsMap[kingpinName];
+          stats.total++;
+          stats.attempts += session.attempts || 0;
+          
+          if (session.success) {
+            stats.successes++;
+            
+            // Calculer le temps en secondes
+            if (session.begin && session.end) {
+              const beginTime = new Date(session.begin);
+              const endTime = new Date(session.end);
+              const durationInSeconds = Math.abs((endTime - beginTime) / 1000);
+              
+              stats.totalTime += durationInSeconds;
+            }
+          }
+        });
+        
+        // Calculer les moyennes et taux
+        Object.values(statsMap).forEach(stats => {
+          stats.successRate = stats.total > 0 ? (stats.successes / stats.total) * 100 : 0;
+          stats.avgTime = stats.successes > 0 ? stats.totalTime / stats.successes : 0;
+          stats.avgAttempts = stats.total > 0 ? stats.attempts / stats.total : 0;
+        });
+        
+        this.kingpinStats = Object.values(statsMap);
+      },
     getBoxClass(action) {
       switch (action) {
         case 'CREATE': return 'box-create';
@@ -596,7 +739,8 @@ export default {
   mounted() {
     window.scrollTo(0, 0);
     this.loadLogs();
-    this.fetchData(); 
+    this.fetchData();
+    this.loadData(); 
   },
   created() {
     this.loadLogs();

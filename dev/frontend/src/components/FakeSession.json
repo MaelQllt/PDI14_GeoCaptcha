@@ -1,0 +1,924 @@
+{
+    "sessions": [
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "2222-08000",
+                    "backendId": "2222-08000-backend.png",
+                    "frontendId": "2222-08000-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989921a35a0c149b81b7",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:19.616000Z",
+            "end": "2025-03-12T14:22:31.616000Z",
+            "createdAt": "2025-03-12T14:22:17.616Z",
+            "updatedAt": "2025-03-12T14:22:17.616Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "2222-08000",
+                    "backendId": "2222-08000-backend-v2.png",
+                    "frontendId": "2222-08000-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989921a35a0c149b81c2",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-15T09:12:41.616000Z",
+            "end": "2025-03-15T09:12:34.616000Z",
+            "createdAt": "2025-03-15T09:12:32.616Z",
+            "updatedAt": "2025-03-15T09:12:32.616Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "2490-09000",
+                    "backendId": "2490-09000-backend.png",
+                    "frontendId": "2490-09000-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989b21a35a0c149b81ba",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:33.016000Z",
+            "end": "2025-03-12T14:22:38.016000Z",
+            "createdAt": "2025-03-12T14:22:19.016Z",
+            "updatedAt": "2025-03-12T14:22:19.016Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "2490-09000",
+                    "backendId": "2490-09000-backend-v2.png",
+                    "frontendId": "2490-09000-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989b21a35a0c149b81bb",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-14T10:45:29.016000Z",
+            "end": "2025-03-14T10:45:35.016000Z",
+            "createdAt": "2025-03-14T10:45:21.016Z",
+            "updatedAt": "2025-03-14T10:45:21.016Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "3126-11000",
+                    "backendId": "3126-11000-backend.png",
+                    "frontendId": "3126-11000-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989c21a35a0c149b81bd",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:21.272000Z",
+            "end": "2025-03-12T14:22:34.272000Z",
+            "createdAt": "2025-03-12T14:22:20.272Z",
+            "updatedAt": "2025-03-12T14:22:20.272Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "3987-15000",
+                    "backendId": "3987-15000-backend.png",
+                    "frontendId": "3987-15000-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989d21a35a0c149b81c0",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:33.416000Z",
+            "end": "2025-03-12T14:22:29.416000Z",
+            "createdAt": "2025-03-12T14:22:21.416Z",
+            "updatedAt": "2025-03-12T14:22:21.416Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "3987-15000",
+                    "backendId": "3987-15000-backend-v2.png",
+                    "frontendId": "3987-15000-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989d21a35a0c149b81c4",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-16T08:34:26.416000Z",
+            "end": "2025-03-16T08:34:35.416000Z",
+            "createdAt": "2025-03-16T08:34:21.416Z",
+            "updatedAt": "2025-03-16T08:34:21.416Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4210-12000",
+                    "backendId": "4210-12000-backend.png",
+                    "frontendId": "4210-12000-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989e21a35a0c149b81c5",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:27.512000Z",
+            "end": "2025-03-12T14:22:38.512000Z",
+            "createdAt": "2025-03-12T14:22:22.512Z",
+            "updatedAt": "2025-03-12T14:22:22.512Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4321-13000",
+                    "backendId": "4321-13000-backend.png",
+                    "frontendId": "4321-13000-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989f21a35a0c149b81c6",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:33.689000Z",
+            "end": "2025-03-12T14:22:31.689000Z",
+            "createdAt": "2025-03-12T14:22:23.689Z",
+            "updatedAt": "2025-03-12T14:22:23.689Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4321-13000",
+                    "backendId": "4321-13000-backend-v2.png",
+                    "frontendId": "4321-13000-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989f21a35a0c149b81c7",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-15T11:35:02.689000Z",
+            "end": "2025-03-15T11:35:10.689000Z",
+            "createdAt": "2025-03-15T11:34:56.689Z",
+            "updatedAt": "2025-03-15T11:34:56.689Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4321-13000",
+                    "backendId": "4321-13000-backend-v3.png",
+                    "frontendId": "4321-13000-frontend-v3.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d1989f21a35a0c149b81c8",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-18T16:42:15.689000Z",
+            "end": "2025-03-18T16:42:21.689000Z",
+            "createdAt": "2025-03-18T16:42:12.689Z",
+            "updatedAt": "2025-03-18T16:42:12.689Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4532-12500",
+                    "backendId": "4532-12500-backend.png",
+                    "frontendId": "4532-12500-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a021a35a0c149b81c9",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:25.723000Z",
+            "end": "2025-03-12T14:22:29.723000Z",
+            "createdAt": "2025-03-12T14:22:24.723Z",
+            "updatedAt": "2025-03-12T14:22:24.723Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4675-12700",
+                    "backendId": "4675-12700-backend.png",
+                    "frontendId": "4675-12700-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a121a35a0c149b81ca",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:26.829000Z",
+            "end": "2025-03-12T14:22:52.829000Z",
+            "createdAt": "2025-03-12T14:22:25.829Z",
+            "updatedAt": "2025-03-20T10:15:13.829Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4675-12700",
+                    "backendId": "4675-12700-backend-v2.png",
+                    "frontendId": "4675-12700-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a121a35a0c149b81cb",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-20T10:15:38.829000Z",
+            "end": "2025-03-20T10:15:27.829000Z",
+            "createdAt": "2025-03-20T10:15:25.829Z",
+            "updatedAt": "2025-03-20T10:15:25.829Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4720-12900",
+                    "backendId": "4720-12900-backend.png",
+                    "frontendId": "4720-12900-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a221a35a0c149b81cc",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:39.935000Z",
+            "end": "2025-03-12T14:22:55.935000Z",
+            "createdAt": "2025-03-12T14:22:26.935Z",
+            "updatedAt": "2025-03-12T14:22:26.935Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4810-13200",
+                    "backendId": "4810-13200-backend.png",
+                    "frontendId": "4810-13200-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a321a35a0c149b81cd",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:38.984000Z",
+            "end": "2025-03-12T14:22:51.984000Z",
+            "createdAt": "2025-03-12T14:22:27.984Z",
+            "updatedAt": "2025-03-12T14:22:27.984Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "4915-13500",
+                    "backendId": "4915-13500-backend.png",
+                    "frontendId": "4915-13500-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a421a35a0c149b81ce",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:32.047000Z",
+            "end": "2025-03-12T14:22:52.047000Z",
+            "createdAt": "2025-03-12T14:22:29.047Z",
+            "updatedAt": "2025-03-12T14:22:29.047Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5018-13800",
+                    "backendId": "5018-13800-backend.png",
+                    "frontendId": "5018-13800-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a521a35a0c149b81cf",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:42.156000Z",
+            "end": "2025-03-12T14:22:45.156000Z",
+            "createdAt": "2025-03-12T14:22:30.156Z",
+            "updatedAt": "2025-03-12T14:22:30.156Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5018-13800",
+                    "backendId": "5018-13800-backend-v2.png",
+                    "frontendId": "5018-13800-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a521a35a0c149b81d0",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-17T09:43:31.156000Z",
+            "end": "2025-03-17T09:43:42.156000Z",
+            "createdAt": "2025-03-17T09:43:18.156Z",
+            "updatedAt": "2025-03-17T09:43:18.156Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5120-14100",
+                    "backendId": "5120-14100-backend.png",
+                    "frontendId": "5120-14100-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a621a35a0c149b81d1",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:32.265000Z",
+            "end": "2025-03-12T14:22:52.265000Z",
+            "createdAt": "2025-03-12T14:22:31.265Z",
+            "updatedAt": "2025-03-12T14:22:31.265Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5225-14300",
+                    "backendId": "5225-14300-backend.png",
+                    "frontendId": "5225-14300-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a721a35a0c149b81d2",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:47.375000Z",
+            "end": "2025-03-12T14:22:47.375000Z",
+            "createdAt": "2025-03-12T14:22:32.375Z",
+            "updatedAt": "2025-03-12T14:22:32.375Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5330-14600",
+                    "backendId": "5330-14600-backend.png",
+                    "frontendId": "5330-14600-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a821a35a0c149b81d3",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:46.487000Z",
+            "end": "2025-03-12T14:22:42.487000Z",
+            "createdAt": "2025-03-12T14:22:33.487Z",
+            "updatedAt": "2025-03-12T14:22:33.487Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5330-14600",
+                    "backendId": "5330-14600-backend-v2.png",
+                    "frontendId": "5330-14600-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a821a35a0c149b81d4",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-15T13:28:51.487000Z",
+            "end": "2025-03-15T13:28:56.487000Z",
+            "createdAt": "2025-03-15T13:28:42.487Z",
+            "updatedAt": "2025-03-15T13:28:42.487Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5440-14900",
+                    "backendId": "5440-14900-backend.png",
+                    "frontendId": "5440-14900-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198a921a35a0c149b81d5",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:47.596000Z",
+            "end": "2025-03-12T14:22:49.596000Z",
+            "createdAt": "2025-03-12T14:22:34.596Z",
+            "updatedAt": "2025-03-12T14:22:34.596Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5550-15200",
+                    "backendId": "5550-15200-backend.png",
+                    "frontendId": "5550-15200-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198aa21a35a0c149b81d6",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:48.704000Z",
+            "end": "2025-03-12T14:22:51.704000Z",
+            "createdAt": "2025-03-12T14:22:35.704Z",
+            "updatedAt": "2025-03-12T14:22:35.704Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5550-15200",
+                    "backendId": "5550-15200-backend-v2.png",
+                    "frontendId": "5550-15200-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198aa21a35a0c149b81d7",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-16T12:10:28.704000Z",
+            "end": "2025-03-16T12:10:32.704000Z",
+            "createdAt": "2025-03-16T12:10:18.704Z",
+            "updatedAt": "2025-03-18T09:22:35.704Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5550-15200",
+                    "backendId": "5550-15200-backend-v3.png",
+                    "frontendId": "5550-15200-frontend-v3.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198aa21a35a0c149b81d8",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-18T09:23:18.704000Z",
+            "end": "2025-03-18T09:23:29.704000Z",
+            "createdAt": "2025-03-18T09:23:14.704Z",
+            "updatedAt": "2025-03-18T09:23:14.704Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5660-15500",
+                    "backendId": "5660-15500-backend.png",
+                    "frontendId": "5660-15500-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198ab21a35a0c149b81d9",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:51.810000Z",
+            "end": "2025-03-12T14:22:55.810000Z",
+            "createdAt": "2025-03-12T14:22:36.810Z",
+            "updatedAt": "2025-03-12T14:22:36.810Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5770-15800",
+                    "backendId": "5770-15800-backend.png",
+                    "frontendId": "5770-15800-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198ac21a35a0c149b81da",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:47.921000Z",
+            "end": "2025-03-12T14:22:54.921000Z",
+            "createdAt": "2025-03-12T14:22:37.921Z",
+            "updatedAt": "2025-03-12T14:22:37.921Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5880-16100",
+                    "backendId": "5880-16100-backend.png",
+                    "frontendId": "5880-16100-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198ad21a35a0c149b81db",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:41.029000Z",
+            "end": "2025-03-12T14:22:53.029000Z",
+            "createdAt": "2025-03-12T14:22:39.029Z",
+            "updatedAt": "2025-03-12T14:22:39.029Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5880-16100",
+                    "backendId": "5880-16100-backend-v2.png",
+                    "frontendId": "5880-16100-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198ad21a35a0c149b81dc",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-19T11:45:31.029000Z",
+            "end": "2025-03-19T11:45:42.029000Z",
+            "createdAt": "2025-03-19T11:45:22.029Z",
+            "updatedAt": "2025-03-19T11:45:22.029Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "5990-16400",
+                    "backendId": "5990-16400-backend.png",
+                    "frontendId": "5990-16400-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198ae21a35a0c149b81dd",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:41.138000Z",
+            "end": "2025-03-12T14:22:48.138000Z",
+            "createdAt": "2025-03-12T14:22:40.138Z",
+            "updatedAt": "2025-03-12T14:22:40.138Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6100-16700",
+                    "backendId": "6100-16700-backend.png",
+                    "frontendId": "6100-16700-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198af21a35a0c149b81de",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:52.244000Z",
+            "end": "2025-03-12T14:22:47.244000Z",
+            "createdAt": "2025-03-12T14:22:41.244Z",
+            "updatedAt": "2025-03-12T14:22:41.244Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6100-16700",
+                    "backendId": "6100-16700-backend-v2.png",
+                    "frontendId": "6100-16700-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198af21a35a0c149b81df",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-17T15:31:59.244000Z",
+            "end": "2025-03-17T15:32:02.244000Z",
+            "createdAt": "2025-03-17T15:31:56.244Z",
+            "updatedAt": "2025-03-17T15:31:56.244Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6210-17000",
+                    "backendId": "6210-17000-backend.png",
+                    "frontendId": "6210-17000-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b021a35a0c149b81e0",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:49.353000Z",
+            "end": "2025-03-12T14:23:04.353000Z",
+            "createdAt": "2025-03-12T14:22:42.353Z",
+            "updatedAt": "2025-03-12T14:22:42.353Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6320-17300",
+                    "backendId": "6320-17300-backend.png",
+                    "frontendId": "6320-17300-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b121a35a0c149b81e1",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:49.462000Z",
+            "end": "2025-03-12T14:22:52.462000Z",
+            "createdAt": "2025-03-12T14:22:43.462Z",
+            "updatedAt": "2025-03-12T14:22:43.462Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6430-17600",
+                    "backendId": "6430-17600-backend.png",
+                    "frontendId": "6430-17600-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b221a35a0c149b81e2",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:51.568000Z",
+            "end": "2025-03-12T14:23:07.568000Z",
+            "createdAt": "2025-03-12T14:22:44.568Z",
+            "updatedAt": "2025-03-20T08:41:13.568Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6430-17600",
+                    "backendId": "6430-17600-backend-v2.png",
+                    "frontendId": "6430-17600-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b221a35a0c149b81e3",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-20T08:41:37.568000Z",
+            "end": "2025-03-20T08:41:34.568000Z",
+            "createdAt": "2025-03-20T08:41:22.568Z",
+            "updatedAt": "2025-03-20T08:41:22.568Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6540-17900",
+                    "backendId": "6540-17900-backend.png",
+                    "frontendId": "6540-17900-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b321a35a0c149b81e4",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:48.676000Z",
+            "end": "2025-03-12T14:22:52.676000Z",
+            "createdAt": "2025-03-12T14:22:45.676Z",
+            "updatedAt": "2025-03-12T14:22:45.676Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6650-18200",
+                    "backendId": "6650-18200-backend.png",
+                    "frontendId": "6650-18200-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b421a35a0c149b81e5",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:50.785000Z",
+            "end": "2025-03-12T14:22:54.785000Z",
+            "createdAt": "2025-03-12T14:22:46.785Z",
+            "updatedAt": "2025-03-12T14:22:46.785Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6650-18200",
+                    "backendId": "6650-18200-backend-v2.png",
+                    "frontendId": "6650-18200-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b421a35a0c149b81e6",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-18T17:24:00.785000Z",
+            "end": "2025-03-18T17:24:17.785000Z",
+            "createdAt": "2025-03-18T17:23:51.785Z",
+            "updatedAt": "2025-03-18T17:23:51.785Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6650-18200",
+                    "backendId": "6650-18200-backend-v3.png",
+                    "frontendId": "6650-18200-frontend-v3.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b421a35a0c149b81e7",
+            "success": true,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-21T09:14:29.785000Z",
+            "end": "2025-03-21T09:14:35.785000Z",
+            "createdAt": "2025-03-21T09:14:27.785Z",
+            "updatedAt": "2025-03-21T09:14:27.785Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6760-18500",
+                    "backendId": "6760-18500-backend.png",
+                    "frontendId": "6760-18500-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b521a35a0c149b81e8",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:51.891000Z",
+            "end": "2025-03-12T14:23:13.891000Z",
+            "createdAt": "2025-03-12T14:22:47.891Z",
+            "updatedAt": "2025-03-12T14:22:47.891Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6870-18800",
+                    "backendId": "6870-18800-backend.png",
+                    "frontendId": "6870-18800-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b621a35a0c149b81e9",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:23:02Z",
+            "end": "2025-03-12T14:23:01Z",
+            "createdAt": "2025-03-12T14:22:49.000Z",
+            "updatedAt": "2025-03-12T14:22:49.000Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6870-18800",
+                    "backendId": "6870-18800-backend-v2.png",
+                    "frontendId": "6870-18800-frontend-v2.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b621a35a0c149b81ea",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-16T13:45:40Z",
+            "end": "2025-03-16T13:45:44Z",
+            "createdAt": "2025-03-16T13:45:33.000Z",
+            "updatedAt": "2025-03-16T13:45:33.000Z",
+            "__v": 0
+        },
+        {
+            "captcha": {
+                "type": "kingpin",
+                "challenge": {
+                    "name": "6980-19100",
+                    "backendId": "6980-19100-backend.png",
+                    "frontendId": "6980-19100-frontend.png",
+                    "angle": 153
+                }
+            },
+            "_id": "67d198b721a35a0c149b81eb",
+            "success": false,
+            "attempts": 1,
+            "available": true,
+            "begin": "2025-03-12T14:22:58.109000Z",
+            "end": "2025-03-12T14:23:08.109000Z",
+            "createdAt": "2025-03-12T14:22:50.109Z",
+            "updatedAt": "2025-03-12T14:22:50.109Z",
+            "__v": 0
+        }
+    ]
+}

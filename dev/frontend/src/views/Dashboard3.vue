@@ -44,6 +44,9 @@
       <div class="metrics-list">
     <div class="list-header">
       <h1 class="fr-h1">Gestion de Géocaptcha</h1>
+
+      <Heatmap :geocaptchaData="kingpinStats" />
+
       <div class="select-group-metrics">
         <div class="fr-search-bar">
           <input
@@ -300,11 +303,13 @@
 import { auditService } from '@/services/audit-service';
 import logoSrc from '@/assets/logo.png'; // Assurez-vous que le chemin est correct
 import GaugeChart from '../components/GaugeChart.vue';
+import Heatmap from '../components/Heatmap.vue';
 
 export default {
   name: 'DashboardPage',
   components: {
-    GaugeChart
+    GaugeChart,
+    Heatmap,
   },
   data() {
     return {

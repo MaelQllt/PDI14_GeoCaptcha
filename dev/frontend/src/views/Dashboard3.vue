@@ -47,7 +47,7 @@
 
       <Heatmap :geocaptchaData="kingpinStats" />
 
-      <div class="fr-select-group select-group-metrics">
+      <div class="select-group-metrics">
         <div class="fr-search-bar">
           <input
             class="fr-input"
@@ -57,17 +57,21 @@
           />
           <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
         </div>
-        <label class="fr-label trier-metrics" for="filter-select">
-          <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
-          Trier
-        </label>
-        <select class="fr-select select-metrics" aria-describedby="select-messages" id="filter-select" v-model="sortKey" @change="sortOrder = 'desc'">
-          <option value="name">Nom</option>
-          <option value="successRate">Taux de réussite</option>
-          <option value="total">Nombre de sessions</option>
-          <option value="avgTime">Temps moyen</option>
-        </select>
+        <div class="trier-metrics">
+          <label class="fr-label" for="filter-select">
+            <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
+            <span class="trier-text">Trier</span>
+          </label>
+          <select class="fr-select select-metrics" aria-describedby="select-messages" id="filter-select" v-model="sortKey" @change="sortOrder = 'desc'">
+            <option value="name">Nom</option>
+            <option value="successRate">Taux de réussite</option>
+            <option value="attempts">Nombre d'essais</option>
+          </select>
+          <button class="fr-icon-arrow-up-down-line " @click="toggleSortOrder"></button>
+        </div>
       </div>
+
+
     </div>
   </div>
 
@@ -304,6 +308,8 @@ export default {
       sessionData: [],
       kingpinStats: [],
       searchQuery: '',
+      sortKey: 'name', 
+      sortOrder: 'asc',
     };
   },
   computed: {
@@ -365,23 +371,19 @@ export default {
     let filtered = this.kingpinStats.filter(stat => {
       return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
     });
-    
-    // Filtrer par réussite
-    if (this.successFilter === 'success') {
-      filtered = filtered.filter(stat => stat.successes > 0);
-    } else if (this.successFilter === 'failed') {
-      filtered = filtered.filter(stat => stat.successes < stat.total);
-    }
-    
+
     // Trier
     return filtered.sort((a, b) => {
       const modifier = this.sortOrder === 'asc' ? 1 : -1;
-      
+
       if (this.sortKey === 'name') {
         return modifier * a.name.localeCompare(b.name);
-      } else {
-        return modifier * (a[this.sortKey] - b[this.sortKey]);
+      } else if (this.sortKey === 'successRate') {
+        return modifier * (a.successRate - b.successRate);
+      } else if (this.sortKey === 'attempts') {
+        return modifier * (a.attempts - b.attempts);
       }
+      return 0;
     });
   },
   
@@ -541,6 +543,9 @@ export default {
     applyFilter() {
       console.log("Filtre appliqué:", this.filterOption);
     },
+    toggleSortOrder() {
+    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+  },
 
     // Récupérer les données des géocaptchas
     async fetchData() {
@@ -789,19 +794,44 @@ export default {
 
 .select-group-metrics {
   display: flex;
-  align-items:flex-end;
+  align-items: flex-end; /* Aligner les éléments en bas */
   margin-bottom: 20px;
-  justify-content: flex-end;
-  gap: 20px;
+  justify-content: space-between;
 }
+
+.fr-search-bar {
+  display: flex;
+  align-items: center; /* Centrer verticalement les éléments dans la barre de recherche */
+  width: 250px; /* Largeur fixe pour la barre de recherche */
+  height: 40px;
+}
+
 
 .trier-metrics {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  height: 40px;  
-  line-height: 40px;
+  align-items: center; /* Aligner verticalement les éléments au centre */
+  gap: 10px;
+  height: 50px;
 }
+
+.trier-metrics .fr-label {
+  display: flex;
+  align-items: center; /* Aligner verticalement les éléments au centre */
+  gap: 5px; /* Espacement entre l'icône et le texte */
+}
+
+.fr-icon-filter-line {
+  height: 17px; /* Espacement entre l'icône et le texte */
+}
+
+.fr-icon-arrow-up-down-line {
+  height: 17px;
+}
+
+.trier-text{
+  height: 17px;
+}
+
 
 .select-metrics{
   width: 200px; 

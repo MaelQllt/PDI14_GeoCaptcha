@@ -11,71 +11,128 @@
   import VectorSource from 'ol/source/Vector';
   import Feature from 'ol/Feature';
   import Point from 'ol/geom/Point';
-  import { fromLonLat, toLonLat } from 'ol/proj';
-  import { register } from 'ol/proj/proj4';
-  import proj4 from 'proj4';
+  import {XYZ} from 'ol/source';
+  import { fromLonLat, toLonLat } from "ol/proj";
   
   export default {
     name: 'Heatmap',
-    props: {
-      geocaptchaData: {
-        type: Array,
-        required: true
-      }
+    data() {
+      return {
+        coordinates: [],
+      };
     },
     mounted() {
-      // Enregistrer la projection Lambert 93 (EPSG:2154)
-      proj4.defs('EPSG:2154', '+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
-      register(proj4);
-  
-      this.initMap();
+      this.extractTileCoordinates();
     },
     methods: {
-      initMap() {
-        const features = this.geocaptchaData.map(data => {
-          // Convertir les coordonnées de Lambert 93 à WGS 84
-          const coordinates = [data.x, data.y];
-          const transformedCoords = toLonLat(coordinates, 'EPSG:2154');
+      async extractTileCoordinates() {
+        try {
+          // Charger le fichier JSON
+          const response = await import('../components/FakeGC.json');
   
-          const feature = new Feature({
-            geometry: new Point(fromLonLat(transformedCoords)),
-            weight: data.successRate // Utilisez le taux de réussite comme poids pour la carte de chaleur
+          const tileCoordinates = response.kingpin.map(item => item.tileCoord);
+  
+          // Convertir les coordonnées de tuiles en lat/lon
+          const rawCoordinates = tileCoordinates.map(({ x, y }) => {
+            const { lat, lon } = this.tileToLatLon(x, y, 15);
+            // Arrondir pour faciliter la comparaison des doublons
+            return { 
+              lat: parseFloat(lat.toFixed(6)), 
+              lon: parseFloat(lon.toFixed(6)) 
+            };
           });
-          return feature;
+  
+          // Supprimer les doublons
+          this.coordinates = this.removeDuplicateCoordinates(rawCoordinates);
+  
+          console.log('Coordonnées originales:', rawCoordinates.length);
+          console.log('Coordonnées après déduplication:', this.coordinates.length);
+          
+          // Initialiser la carte une fois les coordonnées extraites
+          this.initMap();
+        } catch (error) {
+          console.error('Erreur lors du chargement des données:', error);
+        }
+      },
+  
+      removeDuplicateCoordinates(coords) {
+        const uniqueCoords = [];
+        const seen = new Set();
+        
+        for (const coord of coords) {
+          // Créer une clé unique pour chaque coordonnée
+          const key = `${coord.lat}_${coord.lon}`;
+          
+          if (!seen.has(key)) {
+            seen.add(key);
+            uniqueCoords.push(coord);
+          }
+        }
+        
+        return uniqueCoords;
+      },
+  
+      tileToLatLon(x, y, z) {
+        const n = Math.pow(2, z);
+        const lon = x / n * 360 - 180;
+        
+        const latRad = Math.atan(Math.sinh(Math.PI * (1 - 2 * y / n)));
+        const lat = latRad * 180 / Math.PI;
+        
+        return { lat, lon };
+      },
+  
+      initMap() {
+        // Convertir les coordonnées lat/lon en coordonnées projetées OpenLayers
+        const features = this.coordinates.map(coord => {
+          const olCoord = fromLonLat([coord.lon, coord.lat]); // Convertir en format OpenLayers
+          return new Feature(new Point(olCoord));
         });
   
         const vectorSource = new VectorSource({
-          features: features
+          features,
         });
   
         const heatmapLayer = new Heatmap({
           source: vectorSource,
           blur: 15,
-          radius: 5
+          radius: 10,
         });
+  
+        // Calculer le centre de la vue à partir des coordonnées
+        let centerLat = 0;
+        let centerLon = 0;
+        
+        if (this.coordinates.length > 0) {
+          centerLat = this.coordinates.reduce((sum, coord) => sum + coord.lat, 0) / this.coordinates.length;
+          centerLon = this.coordinates.reduce((sum, coord) => sum + coord.lon, 0) / this.coordinates.length;
+        } else {
+          // Valeur par défaut (France)
+          centerLat = 46.80335;
+          centerLon = 2.45407;
+        }
   
         new Map({
           target: this.$refs.map,
           layers: [
             new TileLayer({
-              source: new OSM()
+              source: new OSM(),
             }),
-            heatmapLayer
+            heatmapLayer,
           ],
           view: new View({
-            center: fromLonLat([2.3522, 48.8566]), // Centre de la carte (Paris, France)
-            zoom: 5
-          })
+            center: fromLonLat([2.45407, 46.80335]), // Centre calculé à partir des coordonnées
+            zoom: 5, // Zoom ajusté pour mieux voir la heatmap
+          }),
         });
-      }
-    }
+      },
+    },
   };
   </script>
   
   <style scoped>
   #map {
     width: 100%;
-    height: 100%;
+    height: 500px;
   }
   </style>
-  

@@ -411,15 +411,15 @@ export default {
         
         return totalSuccesses > 0 ? totalTime / totalSuccesses : 0;
       },
+      
   },
   methods: {
     switchTab(tabId) {
       this.activeTab = tabId;
     },
+
     async loadData() {
         try {
-          // Simulons le chargement des données JSON 
-          // En production, vous utiliseriez probablement un fetch ou axios
           const gcResponse = await import('../components/FakeGC.json');
           const sessionResponse = await import('../components/FakeSession.json');
           
@@ -431,6 +431,7 @@ export default {
           console.error('Erreur lors du chargement des données:', error);
         }
       },
+      
       
       analyzeData() {
         // Créer un mapping des kingpins par nom

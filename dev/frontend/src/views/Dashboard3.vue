@@ -485,65 +485,69 @@ export default {
       this.activeTab = tabId;
     },
 
-    async loadData() {
-        try {
-            // Récupération des données de session
-            const sessionResponse = await fetch(
-            `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=1&nbObjects=20`,
-            {
-                headers: {
-                "Accept": "application/json",
-                "x-api-key": import.meta.env.VITE_API_KEY,
-                "x-app-id": import.meta.env.VITE_API_ID,
-                },
-            }
-            );
-            
-            if (!sessionResponse.ok) {
-            const errorText = await sessionResponse.text();
-            console.error('Erreur API session:', sessionResponse.status, errorText);
-            throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
-            }
-            
-            // Récupération des données kingpin
-            const kingpinResponse = await fetch(
-            `https://qlf-geocaptcha.ign.fr/api/v1/admin/kingpin?firstObject=1&nbObjects=20`,
-            {
-                headers: {
-                "Accept": "application/json",
-                "x-api-key": import.meta.env.VITE_API_KEY,
-                "x-app-id": import.meta.env.VITE_API_ID,
-                },
-            }
-            );
-            
-            if (!kingpinResponse.ok) {
-            const errorText = await kingpinResponse.text();
-            console.error('Erreur API kingpin:', kingpinResponse.status, errorText);
-            throw new Error(`Erreur réseau (kingpin): ${kingpinResponse.status} - ${kingpinResponse.statusText}`);
-            }
-            
-            // Traitement des réponses
-            const sessionData = await sessionResponse.json();
-            const kingpinData = await kingpinResponse.json();
-            
-            console.log("Données de session récupérées:", sessionData);
-            console.log("Données kingpin récupérées:", kingpinData);
-            
-            // Stockage des données dans les propriétés de l'objet
-            this.sessionData = sessionData.sessions || [];
-            this.kingpinData = kingpinData.kingpin || [];
-            
-            // Analyse des données récupérées
-            this.analyzeData();
-            
-        } catch (error) {
-            console.error('Erreur lors du chargement des données:', error);
-            // Vous pourriez vouloir définir un état d'erreur ici pour l'afficher dans l'interface
-            this.errorMessage = `Erreur: ${error.message}`;
-            this.isError = true;
+    async loadData(firstObject = 1) {
+    try {
+      const sessionResponse = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstObject}&nbObjects=20`,
+        {
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": import.meta.env.VITE_API_KEY,
+            "x-app-id": import.meta.env.VITE_API_ID,
+          },
         }
-    },
+      );
+
+      if (!sessionResponse.ok) {
+        const errorText = await sessionResponse.text();
+        console.error('Erreur API session:', sessionResponse.status, errorText);
+        throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
+      }
+
+      const sessionData = await sessionResponse.json();
+      const newSessions = sessionData.sessions || [];
+
+      // Ajouter les nouvelles sessions aux données existantes
+      this.sessionData = [...this.sessionData, ...newSessions];
+
+      // Si le nombre de sessions récupérées est inférieur à 20, cela signifie qu'il n'y a plus de données
+      if (newSessions.length === 20) {
+        // Appeler récursivement pour récupérer la prochaine page
+        await this.loadData(firstObject + 20);
+      } else {
+        console.log("Toutes les sessions ont été récupérées.");
+      }
+
+      // Récupération des données kingpin
+      const kingpinResponse = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/kingpin?firstObject=1&nbObjects=20`,
+        {
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": import.meta.env.VITE_API_KEY,
+            "x-app-id": import.meta.env.VITE_API_ID,
+          },
+        }
+      );
+
+      if (!kingpinResponse.ok) {
+        const errorText = await kingpinResponse.text();
+        console.error('Erreur API kingpin:', kingpinResponse.status, errorText);
+        throw new Error(`Erreur réseau (kingpin): ${kingpinResponse.status} - ${kingpinResponse.statusText}`);
+      }
+
+      const kingpinData = await kingpinResponse.json();
+      this.kingpinData = kingpinData.kingpin || [];
+
+      // Analyse des données récupérées
+      this.analyzeData();
+
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+      this.errorMessage = `Erreur: ${error.message}`;
+      this.isError = true;
+    }
+  },
       
       
       analyzeData() {

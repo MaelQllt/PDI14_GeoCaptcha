@@ -35,16 +35,127 @@
       <!-- Contenus des onglets -->
       <div
         id="tabpanel-404-panel"
-        class="fr-tabs__panel"
+        class="fr-tabs__panel tab-404"
         :class="{ 'fr-tabs__panel--selected': activeTab === 'tabpanel-404' }"
         role="tabpanel"
         aria-labelledby="tabpanel-404"
       > 
-    </div>
+  
+      <div class="metrics-list">
+          <div class="list-header">
+            <h1 class="fr-h1">Gestion de Géocaptcha</h1>
+            <div class="fr-select-group select-group-metrics">
+              <label class="fr-label trier-metrics" for="filter-select">
+                <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
+                Trier
+              </label>
+              <select class="fr-select select-metrics" aria-describedby="select-messages" id="filter-select" v-model="filterOption" @change="applyFilter">
+                <option value="id-asc">ID (croissant)</option>
+                <option value="id-desc">ID (décroissant)</option>
+                <option value="success-asc">Précision (croissant)</option>
+                <option value="success-desc">Précision (décroissant)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <div v-for="item in filteredItems" :key="item.id" class="fr-col-12 fr-col-md-6 fr-col-lg-4" @click="selectGeocaptcha(item)">
+              <div class="fr-tile" :class="getAccuracyClass(item.accuracy, item.attempts)" id="tile-7451">
+                <div class="fr-tile__header">
+                    <p><strong class="fr-tile__title">ID:</strong> {{ item.id }}</p>                  
+                </div>
+                <div class="fr-tile__body">
+                  
+                    <img :src="logoSrc" alt="Logo Géocaptcha" class="geocaptcha-logo" />
+                  
+                    <div class="infos">
+                        <div class="info-item attempts">
+                        <p><strong>Nombre d'essais: </strong> {{ item.attempts }}</p>
+                        </div>
+                        <div class="info-item gauge">
+                        <GaugeChart :value="item.accuracy" min="0" max="100" label="Précision (en %)" />
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+          <!-- Modal pour Détails du Géocaptcha -->
+          <div v-if="isModalVisible" class="modal-overlay">
+            <div class="fr-container fr-container--fluid fr-container-md">
+              <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                  <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                      <h2 id="modal-6053-title" class="fr-modal__title">
+                        <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                        Détails du Géocaptcha
+                      </h2>
+                      <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                      <div>
+                        <p><strong>ID:</strong> {{ selectedGeocaptcha.id }}</p>
+                        <p><strong>IP:</strong> {{ selectedGeocaptcha.ip }}</p>
+                        <p><strong>Essais:</strong> {{ selectedGeocaptcha.attempts }}</p>
+                        <p><strong>Réussites:</strong> {{ selectedGeocaptcha.successes }}</p>
+                        <p><strong>Echecs:</strong> {{ selectedGeocaptcha.failures }}</p>
+                        <p><strong>Précision:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
+                        <p><strong>Referer:</strong> {{ selectedGeocaptcha.referer }}</p>
+                        <p><strong>Date de création:</strong> {{ selectedGeocaptcha.createdAt }}</p>
+                      </div>
+
+                      <!-- Afficher les images du défi -->
+                      <div>
+                        <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.backendId}`" alt="Backend" />
+                        <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/admin/challenge/${selectedGeocaptcha.challenge.frontendId}`" alt="Frontend" />
+                      </div>
+                    </div>
+
+                    <div class="fr-modal__footer">
+                      <div class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-left">
+                        <button @click="showConfirmationModal" class="fr-btn fr-btn--reject">Rejeter</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal de confirmation -->
+          <div v-if="isConfirmationModalVisible" class="modal-overlay">
+            <div class="fr-container fr-container--fluid fr-container-md">
+              <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                  <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                      <h2 id="modal-6053-title" class="fr-modal__title">
+                        <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
+                        Confirmation
+                      </h2>
+                      <button @click="closeConfirmationModal" class="fr-btn--close fr-btn">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                      <p>Êtes-vous sûr de vouloir rejeter ce géocaptcha ?</p>
+                    </div>
+                    <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
+                      <button @click="rejectGeocaptcha" class="fr-btn fr-btn--reject">Oui, Rejeter</button>
+                      <button @click="closeConfirmationModal" class="fr-btn fr-btn--cancel">Annuler</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>  
+
 
       <div
         id="tabpanel-405-panel"
-        class="fr-tabs__panel"
+        class="fr-tabs__panel tab-405"
         :class="{ 'fr-tabs__panel--selected': activeTab === 'tabpanel-405' }"
         role="tabpanel"
         aria-labelledby="tabpanel-405"
@@ -132,9 +243,14 @@
 <script>
 
 import { auditService } from '@/services/audit-service';
+import logoSrc from '@/assets/logo.png'; // Assurez-vous que le chemin est correct
+import GaugeChart from '../components/GaugeChart.vue';
 
 export default {
   name: 'DashboardPage',
+  components: {
+    GaugeChart
+  },
   data() {
     return {
       activeTab: "tabpanel-404",
@@ -144,6 +260,23 @@ export default {
       currentPage: 1,
       logsPerPage: 10,
       showDeleteModal: false,
+
+      items: [],
+      loading: true,
+      error: false,
+      logoSrc: logoSrc,
+      totalResolved: 0,
+      successRate: 0,
+      selectedGeocaptcha: null,
+      isModalVisible: false,
+      isConfirmationModalVisible: false,
+      filterOption: 'id-asc',
+      apiKey: import.meta.env.VITE_API_KEY,
+      apiId: import.meta.env.VITE_API_ID,
+      firstObject: 1,
+      nbObjects: 20,
+
+      gaugeValue: 71,
     };
   },
   computed: {
@@ -184,7 +317,22 @@ export default {
       const routes = new Set();
       this.logs.forEach(log => routes.add(log.route));
       return Array.from(routes);
-    }
+    },
+
+    filteredItems() {
+      if (this.filterOption === 'all') {
+        return this.items;
+      } else if (this.filterOption === 'id-asc') {
+        return [...this.items].sort((a, b) => a.id.localeCompare(b.id));
+      } else if (this.filterOption === 'id-desc') {
+        return [...this.items].sort((a, b) => b.id.localeCompare(a.id));
+      } else if (this.filterOption === 'success-asc') {
+        return [...this.items].sort((a, b) => a.accuracy - b.accuracy);
+      } else if (this.filterOption === 'success-desc') {
+        return [...this.items].sort((a, b) => b.accuracy - a.accuracy);
+      }
+      return this.items;
+    },
   },
   methods: {
     switchTab(tabId) {
@@ -240,13 +388,220 @@ export default {
       this.logs = [deleteAudit];
       this.currentPage = 1;
     },
-  },
-    mounted() {
-        window.scrollTo(0, 0);
-        this.loadLogs();
+
+     // Méthodes pour GéoCaptcha
+    // Appliquer le filtre
+    applyFilter() {
+      console.log("Filtre appliqué:", this.filterOption);
     },
+
+    // Récupérer les données des géocaptchas
+    async fetchData() {
+      try {
+        const response = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
+          {
+            headers: {
+              "Accept": "application/json",
+              "x-api-key": this.apiKey,
+              "x-app-id": this.apiId
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des données");
+        }
+
+        const data = await response.json();
+
+        this.items = data.sessions.map(session => ({
+          id: session._id,
+          attempts: session.attempts,
+          successes: session.success ? 1 : 0,
+          failures: session.success ? 0 : 1,
+          accuracy: session.success ? 100 : 0,
+          challenge: session.captcha.challenge,
+          ip: session.ip,
+          referer: session.referer,
+          createdAt: session.createdAt,
+        }));
+
+        // Calculer les métriques
+        this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
+        const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
+        const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
+        this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+        // Ajouter une entrée d'audit
+        const auditEntry = {
+          action: 'INFO',
+          route: '/geocaptcha',
+          description: `Chargement de ${this.items.length} géocaptchas`,
+          timestamp: new Date().toLocaleString(),
+          rawTimestamp: new Date()
+        };
+        
+        if (auditService && typeof auditService.addLog === 'function') {
+          auditService.addLog(auditEntry);
+        }
+
+      } catch (error) {
+        this.error = true;
+        console.error("Erreur:", error);
+        
+        // Ajouter une entrée d'audit en cas d'erreur
+        const auditEntry = {
+          action: 'ERROR',
+          route: '/geocaptcha',
+          description: `Erreur lors du chargement des géocaptchas: ${error.message}`,
+          timestamp: new Date().toLocaleString(),
+          rawTimestamp: new Date()
+        };
+        
+        if (auditService && typeof auditService.addLog === 'function') {
+          auditService.addLog(auditEntry);
+        }
+      }
+    },
+
+    // Sélectionner un géocaptcha
+    async selectGeocaptcha(item) {
+      try {
+        // Stocker les informations du géocaptcha sélectionné
+        this.selectedGeocaptcha = item;
+        this.isModalVisible = true; // Afficher le modal
+        
+        // Ajouter une entrée d'audit
+        const auditEntry = {
+          action: 'NAVIGATE',
+          route: `/geocaptcha/${item.id}`,
+          description: `Consultation du géocaptcha ID: ${item.id}`,
+          timestamp: new Date().toLocaleString(),
+          rawTimestamp: new Date()
+        };
+        
+        if (auditService && typeof auditService.addLog === 'function') {
+          auditService.addLog(auditEntry);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la sélection du géocaptcha:", error);
+      }
+    },
+
+    getAccuracyClass(accuracy, attempts) {
+      if (attempts > 30) {
+        if (accuracy <= 60) {
+          return "low";
+        }
+        else if (accuracy > 60 && accuracy <= 80) {
+          return "medium";
+        }
+        else {
+          return "high";
+        }
+      }
+      else {
+        return "not-enough-attempts";
+      }
+    },
+
+    // Fermer le modal
+    closeModal() {
+      this.isModalVisible = false;
+      this.selectedGeocaptcha = null;
+    },
+
+    // Afficher le modal de confirmation
+    showConfirmationModal() {
+      this.isConfirmationModalVisible = true;
+    },
+
+    // Fermer le modal de confirmation
+    closeConfirmationModal() {
+      this.isConfirmationModalVisible = false;
+    },
+
+    // Rejeter un géocaptcha
+    async rejectGeocaptcha() {
+      try {
+        // Suppression de la session via l'API
+        const response = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session/${this.selectedGeocaptcha.id}`,
+          {
+            method: 'DELETE',
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": this.apiKey,
+              "x-app-id": this.apiId
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la suppression du Géocaptcha");
+        }
+
+        // Mise à jour de la liste des géocaptchas
+        this.items = this.items.filter(item => item.id !== this.selectedGeocaptcha.id);
+
+        // Réactualisation des métriques
+        this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
+        const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
+        const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
+        this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+        // Ajouter une entrée d'audit
+        const auditEntry = {
+          action: 'DELETE',
+          route: `/geocaptcha/${this.selectedGeocaptcha.id}`,
+          description: `Suppression du géocaptcha ID: ${this.selectedGeocaptcha.id}`,
+          timestamp: new Date().toLocaleString(),
+          rawTimestamp: new Date()
+        };
+        
+        if (auditService && typeof auditService.addLog === 'function') {
+          auditService.addLog(auditEntry);
+        }
+
+        // Fermeture des modaux
+        this.closeModal();
+        this.closeConfirmationModal();
+      } catch (error) {
+        console.error("Erreur lors de la suppression:", error);
+        
+        // Ajouter une entrée d'audit en cas d'erreur
+        const auditEntry = {
+          action: 'ERROR',
+          route: `/geocaptcha/${this.selectedGeocaptcha.id}`,
+          description: `Erreur lors de la suppression du géocaptcha: ${error.message}`,
+          timestamp: new Date().toLocaleString(),
+          rawTimestamp: new Date()
+        };
+        
+        if (auditService && typeof auditService.addLog === 'function') {
+          auditService.addLog(auditEntry);
+        }
+      }
+    },
+  },
+  watch: {
+    // Add watchers for the filter properties
+    filterRoute() {
+      this.currentPage = 1;  // Reset to page 1 when route filter changes
+    },
+    filterAction() {
+      this.currentPage = 1;  // Reset to page 1 when action filter changes
+    }
+  },
+  mounted() {
+    window.scrollTo(0, 0);
+    this.loadLogs();
+    this.fetchData(); 
+  },
   created() {
     this.loadLogs();
+    this.fetchData(); 
     
     // Rafraîchir les logs toutes les 5 secondes
     this.refreshInterval = setInterval(this.loadLogs, 5000);
@@ -274,12 +629,60 @@ export default {
   visibility: hidden; 
   opacity: 0;
   transition: opacity 0.1s ease, visibility 0.3s ease; 
+  display: none;
 }
 
 
 .fr-tabs__panel--selected {
   visibility: visible;
   opacity: 1;
+  display: block;
+}
+
+.select-group-metrics {
+  display: flex;
+  align-items:flex-end;
+  margin-bottom: 20px;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.trier-metrics {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;  
+  line-height: 40px;
+}
+
+.select-metrics{
+  width: 200px; 
+}
+
+.infos {
+  display: flex;
+}
+.info-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.info-item.gauge {
+  margin-right: 5px;
+}
+.info-item.attempts p {
+  margin: 0;
+  width: 100%;
+}
+
+.geocaptcha-logo {
+  width: 100px; /* Ajuste la taille en fonction de tes besoins */
+  height: auto;
+  margin-bottom: 15px;
+  object-fit: contain; /* Assure que l'image garde ses proportions */
 }
 
 .fr-input-group {

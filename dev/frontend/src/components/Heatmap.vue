@@ -122,7 +122,7 @@
           ],
           view: new View({
             center: fromLonLat([2.45407, 46.80335]), // Centre calculé à partir des coordonnées
-            zoom: 5, // Zoom ajusté pour mieux voir la heatmap
+            zoom: 5.75, // Zoom ajusté pour mieux voir la heatmap
           }),
         });
       },
@@ -134,6 +134,9 @@
   #map {
     width: 100%;
     height: 500px;
-    padding-bottom: 50px;
+    margin-bottom: 50px;
+    border-radius: 20px; /* Change la valeur pour plus ou moins d'arrondi */
+    overflow: hidden; /* Assure que la carte ne dépasse pas les bords arrondis */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Optionnel : ajoute une ombre */
   }
   </style>

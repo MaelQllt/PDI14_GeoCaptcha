@@ -989,7 +989,7 @@ export default {
   width: 100%;
   height: 300px;
   z-index: 1000;
-  margin-top: 30px;
+  margin-top: 40px;
   border-radius: 20px; /* Change la valeur pour plus ou moins d'arrondi */
   overflow: hidden; /* Assure que la carte ne dépasse pas les bords arrondis */
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Optionnel : ajoute une ombre */

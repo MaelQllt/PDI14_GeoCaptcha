@@ -11,7 +11,6 @@
   import VectorSource from 'ol/source/Vector';
   import Feature from 'ol/Feature';
   import Point from 'ol/geom/Point';
-  import {XYZ} from 'ol/source';
   import { fromLonLat, toLonLat } from "ol/proj";
   
   export default {
@@ -142,19 +141,6 @@
           radius: 10,
         });
   
-        // Calculer le centre de la vue à partir des coordonnées
-        let centerLat = 0;
-        let centerLon = 0;
-        
-        if (this.coordinates.length > 0) {
-          centerLat = this.coordinates.reduce((sum, coord) => sum + coord.lat, 0) / this.coordinates.length;
-          centerLon = this.coordinates.reduce((sum, coord) => sum + coord.lon, 0) / this.coordinates.length;
-        } else {
-          // Valeur par défaut (France)
-          centerLat = 46.80335;
-          centerLon = 2.45407;
-        }
-  
         new Map({
           target: this.$refs.map,
           layers: [
@@ -164,7 +150,7 @@
             heatmapLayer,
           ],
           view: new View({
-            center: fromLonLat([centerLon, centerLat]), // Utiliser le centre calculé
+            center: fromLonLat([2.45407, 46.80335]), // Utiliser le centre calculé
             zoom: 5.75, // Zoom ajusté pour mieux voir la heatmap
           }),
         });

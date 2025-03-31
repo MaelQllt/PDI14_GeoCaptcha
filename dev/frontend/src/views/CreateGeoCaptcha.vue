@@ -320,87 +320,112 @@ export default {
 
   methods: {
 
-    validateAndCreateGeoCaptcha() {
-      console.log("mode", this.mode);
-      this.latitudeError = "";
-      this.longitudeError = "";
-      this.zipcodeError = "";
-      this.modeError = "";
+    async validateAndCreateGeoCaptcha() {
+    this.latitudeError = "";
+    this.longitudeError = "";
+    this.zipcodeError = "";
+    this.modeError = "";
 
-      // Cas "Sur la carte"
-      if (this.selectedOption === '3') {
-        if (!this.randomPoint) {
-          alert("Veuillez dessiner une boîte et générer un point aléatoire sur la carte.");
-          return;
-        }
-
-        // Si un point aléatoire existe, utilisez ses coordonnées
-        this.latitude = this.randomPoint[1];
-        this.longitude = this.randomPoint[0];
-      }
-
-      // Vérifications communes pour toutes les options
-      if (!this.latitude || !this.longitude || !this.zipcode || !this.mode) {
-        if (!this.latitude) this.latitudeError = "La latitude est obligatoire.";
-        if (!this.longitude) this.longitudeError = "La longitude est obligatoire.";
-        if (!this.zipcode) this.zipcodeError = "Le zipcode est obligatoire.";
-        if (!this.mode) this.modeError = "Le mode est obligatoire.";
+    // Cas "Sur la carte"
+    if (this.selectedOption === '3') {
+      if (!this.randomPoint) {
+        alert("Veuillez dessiner une boîte et générer un point aléatoire sur la carte.");
         return;
       }
 
-      // Convertir les valeurs en nombres décimaux
-      const lat = parseFloat(this.latitude);
-      const lon = parseFloat(this.longitude);
+      // Si un point aléatoire existe, utilisez ses coordonnées
+      this.latitude = this.randomPoint[1];
+      this.longitude = this.randomPoint[0];
+    }
 
-      // Vérifier que les valeurs sont des nombres valides
-      if (isNaN(lat)) {
-        this.latitudeError = "La latitude doit être un nombre valide.";
+    // Vérifications communes pour toutes les options
+    if (!this.latitude || !this.longitude || !this.zipcode || !this.mode) {
+      if (!this.latitude) this.latitudeError = "La latitude est obligatoire.";
+      if (!this.longitude) this.longitudeError = "La longitude est obligatoire.";
+      if (!this.zipcode) this.zipcodeError = "Le zipcode est obligatoire.";
+      if (!this.mode) this.modeError = "Le mode est obligatoire.";
+      return;
+    }
+
+    // Convertir les valeurs en nombres décimaux
+    const lat = parseFloat(this.latitude);
+    const lon = parseFloat(this.longitude);
+
+    // Vérifier que les valeurs sont des nombres valides
+    if (isNaN(lat)) {
+      this.latitudeError = "La latitude doit être un nombre valide.";
+      return;
+    }
+    if (isNaN(lon)) {
+      this.longitudeError = "La longitude doit être un nombre valide.";
+      return;
+    }
+
+    // Vérification de la longueur du code postal
+    if (this.zipcode.length !== 5) {
+      this.zipcodeError = "Le code postal doit comporter exactement 5 chiffres.";
+      return;
+    }
+
+    // Pour les options "Coordonnées précises" et "Aléatoire", gardez les vérifications de limites
+    if (this.selectedOption === '1') {
+      if (lat < this.latitudeMin || lat > this.latitudeMax) {
+        this.latitudeError = `La latitude doit être entre ${this.latitudeMin} et ${this.latitudeMax}.`;
         return;
       }
-      if (isNaN(lon)) {
-        this.longitudeError = "La longitude doit être un nombre valide.";
+
+      if (lon < this.longitudeMin || lon > this.longitudeMax) {
+        this.longitudeError = `La longitude doit être entre ${this.longitudeMin} et ${this.longitudeMax}.`;
         return;
       }
 
-      // Vérification de la longueur du code postal
-      if (this.zipcode.length !== 5) {
-        this.zipcodeError = "Le code postal doit comporter exactement 5 chiffres.";
+      const departmentCode = this.selectedDepartement;
+      let expectedPrefix;
+
+      // Gérer les cas spéciaux pour la Corse et les DOM-TOM
+      if (departmentCode === '2A' || departmentCode === '2B') {
+        expectedPrefix = '20';
+      } else if (['971', '972', '973', '974', '976'].includes(departmentCode)) {
+        expectedPrefix = departmentCode + '00';
+      } else {
+        expectedPrefix = departmentCode.padStart(2, '0');
+      }
+
+      if (!this.zipcode.startsWith(expectedPrefix)) {
+        this.zipcodeError = `Le code postal doit commencer par ${expectedPrefix}.`;
         return;
       }
+    }
 
-      // Pour les options "Coordonnées précises" et "Aléatoire", gardez les vérifications de limites
-      if (this.selectedOption === '1') {
-        if (lat < this.latitudeMin || lat > this.latitudeMax) {
-          this.latitudeError = `La latitude doit être entre ${this.latitudeMin} et ${this.latitudeMax}.`;
-          return;
-        }
+    // Si tout est valide, afficher la tuile GéoCaptcha
+    this.showGeoCaptchaTile();
+  },
 
-        if (lon < this.longitudeMin || lon > this.longitudeMax) {
-          this.longitudeError = `La longitude doit être entre ${this.longitudeMin} et ${this.longitudeMax}.`;
-          return;
-        }
 
-        const departmentCode = this.selectedDepartement;
-        let expectedPrefix;
+  async showGeoCaptchaTile() {
+    // Convertir les coordonnées latitude/longitude en coordonnées de tuile
+    const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 17 (niveau de zoom)
+    console.log("Coordonnées de la tuile :", tileCoords);
 
-        // Gérer les cas spéciaux pour la Corse et les DOM-TOM
-        if (departmentCode === '2A' || departmentCode === '2B') {
-          expectedPrefix = '20';
-        } else if (['971', '972', '973', '974', '976'].includes(departmentCode)) {
-          expectedPrefix = departmentCode + '00';
-        } else {
-          expectedPrefix = departmentCode.padStart(2, '0');
-        }
+    // Préparer les données pour l'API
+    const data = {
+      id: this.generateUniqueId(),
+      x: tileCoords.x,
+      y: tileCoords.y,
+      z: 15,
+      zipcode: this.zipcode,
+      mode: this.mode,
+      ok: "1"
+    };
+    console.log("Données envoyées à l'API :", data);
 
-        if (!this.zipcode.startsWith(expectedPrefix)) {
-          this.zipcodeError = `Le code postal doit commencer par ${expectedPrefix}.`;
-          return;
-        }
-      }
-
-      // Si tout est valide, créer le GéoCaptcha
-      this.createGeoCaptcha();
-    },
+    try {
+      this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
+      this.isModalOpen = true;
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+  },
 
 
 
@@ -680,21 +705,54 @@ export default {
     return { latMin, latMax, lonMin, lonMax };
   },
 
-  handleConserver() {
-    this.isModalOpen = false;
-    this.isSuccess = true;
-    this.isDepartement = false;
-    this.latitude = "";
-    this.longitude = "";
-    this.zipcode = "";
-    this.mode = "";
+  async handleConserver() {
+    // Préparer les données pour l'API
+    const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15);
+    const data = {
+      id: this.generateUniqueId(),
+      x: tileCoords.x,
+      y: tileCoords.y,
+      z: 15,
+      zipcode: this.zipcode,
+      mode: this.mode,
+      ok: "1"
+    };
 
-    this.latitudePlaceholder = "Entrez une latitude";
-    this.longitudePlaceholder = "Entrez une longitude";
+    try {
+      // Envoyer la requête POST à l'API
+      const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/kingpin", {
+        method: "POST",
+        headers: {
+          "Accept": "*/*",
+          "content-type": "application/json",
+          "x-api-key": import.meta.env.VITE_API_KEY,
+          "x-app-id": import.meta.env.VITE_API_ID,
+        },
+        body: JSON.stringify(data),
+      });
+      console.log(response);
 
-    setTimeout(() => {
-      this.isSuccess = false;
-    }, 3000);
+      if (!response.ok) {
+        throw new Error("Erreur lors de la création du GéoCaptcha");
+      }
+
+      // Log de création d'un GéoCaptcha
+      auditService.logCreate('/geo-captcha', `Création d'un GéoCaptcha`);
+
+      const result = await response.json();
+      console.log("Réponse de l'API :", result);
+
+      this.successMessage = `GéoCaptcha créé avec succès ! ID : ${data.id}`;
+      this.isSuccess = true;
+      this.isModalOpen = false;
+
+      setTimeout(() => {
+        this.isSuccess = false;
+      }, 3000);
+    } catch (error) {
+      console.error("Erreur :", error);
+      auditService.logError('/geo-captcha', `Échec lors de la création d'un GéoCaptcha`);
+    }
   },
 
 

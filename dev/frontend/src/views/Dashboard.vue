@@ -910,11 +910,6 @@ export default {
   margin-top: 20px;
 }
 
-.pagination-btn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
 .page-info {
   font-weight: bold;
 }

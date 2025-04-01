@@ -306,7 +306,11 @@
 </template>
 
 <script>
+
+/*Service de logs*/
 import { auditService } from '@/services/audit-service';
+
+/*Composants visuels importés*/
 import GaugeChart from '../components/GaugeChart.vue';
 import Heatmap from '../components/Heatmap.vue';
 
@@ -317,6 +321,7 @@ export default {
     Heatmap,
   },
   data() {
+
     return {
       activeTab: "tabpanel-404",
       logs: [],
@@ -343,9 +348,12 @@ export default {
       sortKey: 'name',
       sortOrder: 'asc',
       selectedTag: 'all',
+
     };
   },
+
   computed: {
+
     // Filtrer les logs en fonction des critères de filtrage et de pagination
     filteredLogs() {
       let filtered = this.logs;
@@ -367,6 +375,7 @@ export default {
 
       return filtered.slice(start, end);
     },
+
     // Calculer le nombre total de pages
     totalPages() {
       let filtered = this.logs;
@@ -381,12 +390,14 @@ export default {
 
       return Math.ceil(filtered.length / this.logsPerPage) || 1;
     },
+
     // Obtenir les routes uniques
     uniqueRoutes() {
       const routes = new Set();
       this.logs.forEach(log => routes.add(log.route));
       return Array.from(routes);
     },
+
     // Filtrer et trier les statistiques
     filteredAndSortedStats() {
       let filtered = this.kingpinStats.filter(stat => {
@@ -413,39 +424,26 @@ export default {
         return 0;
       });
     },
+
     // Calculer le nombre total de sessions
     totalSessions() {
       return this.kingpinStats.reduce((sum, stat) => sum + stat.total, 0);
     },
+
     // Calculer le taux de réussite global
     successRate() {
       const totalSuccesses = this.kingpinStats.reduce((sum, stat) => sum + stat.successes, 0);
       return this.totalSessions > 0 ? (totalSuccesses / this.totalSessions) * 100 : 0;
     },
   },
+
   methods: {
-    // Ouvrir le modal pour un kingpin spécifique
-    openKingpinModal(kingpin) {
-      this.selectedGeocaptcha = {
-        id: kingpin.name,
-        ip: 'N/A',
-        attempts: kingpin.total,
-        successes: Math.round(kingpin.successRate * kingpin.total / 100),
-        failures: kingpin.total - Math.round(kingpin.successRate * kingpin.total / 100),
-        accuracy: kingpin.successRate,
-        referer: 'N/A',
-        createdAt: 'N/A',
-        challenge: {
-          backendId: 'N/A',
-          frontendId: 'N/A'
-        }
-      };
-      this.isModalVisible = true;
-    },
+
     // Changer d'onglet
     switchTab(tabId) {
       this.activeTab = tabId;
     },
+
     // Charger les données de session depuis l'API
     async loadData(firstSessionObject = 1) {
       try {
@@ -483,6 +481,7 @@ export default {
         this.isError = true;
       }
     },
+
     // Analyser les données de session
     analyzeData() {
       try {
@@ -545,6 +544,26 @@ export default {
         return [];
       }
     },
+
+    // Ouvrir le modal pour un kingpin spécifique
+    openKingpinModal(kingpin) {
+      this.selectedGeocaptcha = {
+        id: kingpin.name,
+        ip: 'N/A',
+        attempts: kingpin.total,
+        successes: Math.round(kingpin.successRate * kingpin.total / 100),
+        failures: kingpin.total - Math.round(kingpin.successRate * kingpin.total / 100),
+        accuracy: kingpin.successRate,
+        referer: 'N/A',
+        createdAt: 'N/A',
+        challenge: {
+          backendId: 'N/A',
+          frontendId: 'N/A'
+        }
+      };
+      this.isModalVisible = true;
+    },    
+
     // Obtenir la classe CSS pour une action donnée
     getBoxClass(action) {
       switch (action) {
@@ -556,6 +575,7 @@ export default {
         default: return 'box-info';
       }
     },
+
     // Obtenir la classe CSS pour une action donnée
     getActionClass(action) {
       switch (action) {
@@ -567,20 +587,24 @@ export default {
         default: return 'action-info';
       }
     },
+
     // Réinitialiser les filtres
     clearFilters() {
       this.filterAction = '';
       this.filterRoute = '';
       this.currentPage = 1;
     },
+
     // Charger les logs depuis le service d'audit
     loadLogs() {
       this.logs = auditService.getLogs();
     },
+
     // Afficher le modal de confirmation de suppression des logs
     confirmDeleteLogs() {
       this.showDeleteModal = true;
     },
+
     // Supprimer les logs
     deleteLogs() {
       auditService.clearLogs();
@@ -598,28 +622,34 @@ export default {
       this.logs = [deleteAudit];
       this.currentPage = 1;
     },
+
     // Définir le filtre de tag
     setFilter(tag) {
       this.selectedTag = tag;
       this.filterOption = tag;
     },
+
     // Inverser l'ordre de tri
     toggleSortOrder() {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     },
+
     // Fermer le modal
     closeModal() {
       this.isModalVisible = false;
       this.selectedGeocaptcha = null;
     },
+
     // Afficher le modal de confirmation
     showConfirmationModal() {
       this.isConfirmationModalVisible = true;
     },
+
     // Fermer le modal de confirmation
     closeConfirmationModal() {
       this.isConfirmationModalVisible = false;
     },
+
     // Rejeter un géocaptcha
     async rejectGeocaptcha() {
       try {
@@ -677,25 +707,33 @@ export default {
       }
     },
   },
+
   watch: {
+
     // Réinitialiser la page courante lorsque le filtre de route change
     filterRoute() {
       this.currentPage = 1;
     },
+
     // Réinitialiser la page courante lorsque le filtre d'action change
     filterAction() {
       this.currentPage = 1;
     }
   },
+
   mounted() {
+
     window.scrollTo(0, 0);
     this.loadLogs();
     this.loadData();
+
   }
 };
+
 </script>
 
 <style scoped>
+
 /* Styles pour les onglets */
 .fr-tabs{
   margin-left: 50px;

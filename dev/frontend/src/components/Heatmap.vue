@@ -1,12 +1,25 @@
 <template>
-  <div>
+  <div class="map-container">
     <!-- Conteneur de la carte qui sera référencé par this.$refs.map -->
-    <div id="map" ref="map" style="width: 100%; height: 500px;"></div>
+    <div id="map" ref="map"></div>
+    
+    <!-- Légende de la heatmap -->
+    <div class="legend-overlay">
+      <h3>Légende</h3>
+      <p>Présence de GéoCaptcha :</p>
+      <div class="legend-gradient">
+        <div class="gradient"></div>
+        <div class="labels">
+          <span>Faible présence</span>
+          <span>Forte présence</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-// Importation des modules OpenLayers nécessaires
+/*Bibliothèque OpenLayers*/
 import 'ol/ol.css'; // Styles CSS pour OpenLayers
 import { Map, View } from 'ol'; // Classes principales pour la carte et la vue
 import TileLayer from 'ol/layer/Tile'; // Couche de tuiles (fond de carte)
@@ -22,6 +35,7 @@ export default {
   data() {
     return {
       coordinates: [], // Stockage des coordonnées pour la carte de chaleur
+      heatmapLayer: null, // Référence à la couche de carte thermique
     };
   },
   mounted() {
@@ -138,11 +152,24 @@ export default {
         features,
       });
 
+      // Configuration des couleurs de la carte thermique
+      // Utilisation d'un dégradé de bleu à rouge en passant par le jaune
+      const heatmapColors = [
+        'rgba(0, 0, 255, 0)',    // Transparent pour les valeurs très faibles
+        'rgba(0, 0, 255, 0.5)',  // Bleu pour les valeurs faibles
+        'rgba(0, 255, 255, 0.7)', // Cyan
+        'rgba(0, 255, 0, 0.7)',   // Vert
+        'rgba(255, 255, 0, 0.7)', // Jaune
+        'rgba(255, 128, 0, 0.7)', // Orange
+        'rgba(255, 0, 0, 0.9)'    // Rouge pour les valeurs élevées
+      ];
+
       // Création de la couche de carte thermique
-      const heatmapLayer = new Heatmap({
+      this.heatmapLayer = new Heatmap({
         source: vectorSource,
         blur: 15,  // Niveau de flou pour adoucir la visualisation
         radius: 10, // Rayon de chaque point sur la carte thermique
+        gradient: heatmapColors, // Utilisation du dégradé personnalisé
       });
 
       // Création de la carte OpenLayers
@@ -159,7 +186,7 @@ export default {
               attributions: 'Carte © IGN/Geoplateforme', // Attribution légale
             }),
           }),
-          heatmapLayer, // Ajout de la couche de carte thermique
+          this.heatmapLayer, // Ajout de la couche de carte thermique
         ],
         view: new View({
           center: fromLonLat([2.45407, 46.80335]), // Centre de la carte (coordonnées approximatives de la France)
@@ -174,12 +201,72 @@ export default {
 
 <style scoped>
 /* Styles CSS pour le conteneur de la carte */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  margin-bottom: 50px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
 #map {
   width: 100%; 
-  height: 500px; 
-  margin-bottom: 50px;
-  border-radius: 20px; 
-  overflow: hidden; 
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
+  height: 100%;
+}
+
+/* Styles pour la légende superposée */
+.legend-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 350px;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* S'assure que la légende est au-dessus de la carte */
+}
+
+.legend-overlay h3 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.legend-overlay p {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #555;
+}
+
+.legend-gradient {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gradient {
+  height: 16px;
+  width: 100%;
+  border-radius: 4px;
+  background: linear-gradient(to right, 
+    rgba(0, 0, 255, 0.5),  
+    rgba(0, 255, 255, 0.7), 
+    rgba(0, 255, 0, 0.7), 
+    rgba(255, 255, 0, 0.7),
+    rgba(255, 128, 0, 0.7), 
+    rgba(255, 0, 0, 0.9)    
+  );
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #444;
 }
 </style>

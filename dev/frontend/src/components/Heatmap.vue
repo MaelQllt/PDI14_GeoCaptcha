@@ -102,29 +102,6 @@ export default {
     },
 
     initMap() {
-      if (!this.coordinates || this.coordinates.length === 0) {
-        console.warn('Aucune coordonnée disponible pour initialiser la carte');
-        new Map({
-          target: this.$refs.map,
-          layers: [
-            new TileLayer({
-              source: new XYZ({
-                url: 'https://data.geopf.fr/wmts?' +
-                     'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=PM' +
-                     '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png' +
-                     '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
-                attributions: 'Carte © IGN/Geoplateforme'
-              }),
-            }),
-          ],
-          view: new View({
-            center: fromLonLat([2.45407, 46.80335]),
-            zoom: 5.75,
-            maxZoom: 15
-          }),
-        });
-        return;
-      }
 
       const features = this.coordinates.map(coord => {
         const olCoord = fromLonLat([coord.lon, coord.lat]);
@@ -158,7 +135,7 @@ export default {
         view: new View({
           center: fromLonLat([2.45407, 46.80335]),
           zoom: 5.75,
-          maxZoom: 15
+          maxZoom: 15,
         }),
       });
     },

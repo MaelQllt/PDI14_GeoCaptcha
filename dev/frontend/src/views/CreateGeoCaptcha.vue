@@ -182,7 +182,8 @@
                               </h1>
                               <p>Voici un GéoCaptcha correspondant à la zone géographique choisi: </p>
                               <div class="image-container">
-                                <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                                <img :src="imageTuile" alt="geocaptcha-background" class="background-tile" v-if="imageTuile">
+                                <img :src="foregroundTuile" alt="geocaptcha-foreground" class="foreground-tile" v-if="foregroundTuile">
                                 <p v-else>Chargement de l'image...</p>
                               </div>
                             </div>
@@ -384,35 +385,6 @@ export default {
       this.showGeoCaptchaTile();
     },
 
-    async showGeoCaptchaTile() {
-      // Conversion des coordonnées latitude/longitude en coordonnées de tuile
-      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 15 pour les GéoCaptchas
-      console.log("Coordonnées de la tuile :", tileCoords);
-
-      // Préparation des données pour l'API
-      const data = {
-        id: this.generateUniqueId(),
-        x: tileCoords.x,
-        y: tileCoords.y,
-        z: 15,
-        zipcode: this.zipcode,
-        mode: this.mode,
-        ok: "1"
-      };
-      console.log("Données envoyées à l'API :", data);
-
-      // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
-      if (data.mode === 'plan-sur-plan') {
-        data.mode = 'plan';
-      }
-
-      try {
-        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
-        this.isModalOpen = true;
-      } catch (error) {
-        console.error("Erreur :", error);
-      }
-    },
 
     async createGeoCaptcha() {
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile
@@ -468,25 +440,70 @@ export default {
       }
     },
 
-    async getCaptchaImageTuile(layer, tileMatrix, col, row) {
-      // Récupération de l'image de la tuile à partir de l'API 
-      try {
-        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${layer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`,
-          {
-            method: "GET",
-            headers: {
-              "Accept": "image/png",
-              "x-api-key": import.meta.env.VITE_API_KEY,
-              "x-app-id": import.meta.env.VITE_API_ID,
-            }
-          }
-        );
-        if (!response.ok) throw new Error('Image non trouvée');
-        return URL.createObjectURL(await response.blob());
-      } catch (error) {
-        console.log(error)
+    async showGeoCaptchaTile() {
+  const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15);
+  const data = {
+    id: this.generateUniqueId(),
+    x: tileCoords.x,
+    y: tileCoords.y,
+    z: 15,
+    zipcode: this.zipcode,
+    mode: this.mode,
+    ok: "1"
+  };
+
+  // Utilise le mode sélectionné pour la tuile de premier plan
+  const { backgroundUrl, foregroundUrl } = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
+
+  if (backgroundUrl && foregroundUrl) {
+    this.imageTuile = backgroundUrl;
+    this.foregroundTuile = foregroundUrl;
+    this.isModalOpen = true;
+  } else {
+    console.error("Erreur : Impossible de récupérer les tuiles.");
+  }
+}
+,
+
+async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
+  try {
+    // Récupération de l'image de la tuile de fond en mode 'plan'
+    const backgroundResponse = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=plan&tileMatrix=${tileMatrix}&col=${col}&row=${row}`, {
+      method: "GET",
+      headers: {
+        "Accept": "image/png",
+        "x-api-key": import.meta.env.VITE_API_KEY,
+        "x-app-id": import.meta.env.VITE_API_ID,
       }
-    },
+    });
+
+    if (!backgroundResponse.ok) throw new Error('Image de fond non trouvée');
+
+    const backgroundBlob = await backgroundResponse.blob();
+    const backgroundUrl = URL.createObjectURL(backgroundBlob);
+
+    // Récupération de l'image de la tuile de premier plan avec le mode sélectionné
+    const foregroundResponse = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${foregroundLayer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`, {
+      method: "GET",
+      headers: {
+        "Accept": "image/png",
+        "x-api-key": import.meta.env.VITE_API_KEY,
+        "x-app-id": import.meta.env.VITE_API_ID,
+      }
+    });
+
+    if (!foregroundResponse.ok) throw new Error('Image de premier plan non trouvée');
+
+    const foregroundBlob = await foregroundResponse.blob();
+    const foregroundUrl = URL.createObjectURL(foregroundBlob);
+
+    return { backgroundUrl, foregroundUrl };
+  } catch (error) {
+    console.error("Erreur lors de la récupération des tuiles :", error);
+    return { backgroundUrl: null, foregroundUrl: null };
+  }
+}
+,
 
     // Fonction de conversion des coordonnées latitude/longitude en coordonnées de tuile
     latLonToTile(lat, lon, z) {
@@ -1085,4 +1102,25 @@ margin-top: 0.25rem;
 #alert-1068 {
 margin-top:1em;
 }
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.background-tile {
+  width: 100%;
+  height: auto;
+}
+
+.foreground-tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: circle(50%);
+}
+
 </style>

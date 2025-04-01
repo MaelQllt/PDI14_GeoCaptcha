@@ -3,8 +3,6 @@ import Home from '../views/Home.vue';
 import CreateGeoCaptcha from '../views/CreateGeoCaptcha.vue';
 import Dashboard from '../views/Dashboard.vue';
 import KeyAccess from '../views/KeyAccess.vue';
-import Test from '../views/Dashboard2.vue';
-import Test2 from '../views/Dashboard.vue'
 
 const routes = [
   { path: '/', component: Home },

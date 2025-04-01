@@ -837,7 +837,7 @@ export default {
         this.randomPoint = null;
       },
 
-      // Fonction qui permet de récupérer le fichier geojson contenant les régions de France avec les outre-mers
+      // Fonction permettant de récupérer le fichier geojson contenant les régions de France avec les outre-mers
       async loadGeoJson() {
         try {
           const response = await fetch("/regions-avec-outre-mer.geojson"); 
@@ -847,7 +847,7 @@ export default {
         }
       },
 
-    // Fonction qui vérifie si un point se trouve à l'intérieur de la France
+    // Fonction vérifiant si un point se trouve à l'intérieur de la France
     isPointInFrance(lon, lat) {
       if (!this.franceGeoJson) return false;
 
@@ -857,7 +857,7 @@ export default {
       );
     },
 
-    // Fonction qui génère un point aléatoire à l'intérieur de la boîte
+    // Fonction générant un point aléatoire à l'intérieur de la boîte
     getRandomPointInBox(coords) {
       if (coords.length < 4 || !this.franceGeoJson) return null;
 
@@ -912,7 +912,7 @@ export default {
       return [this.longitude, this.latitude];
     },
 
-    // Fonction qui trouve le code du département à partir des coordonnées
+    // Fonction trouvant le code du département à partir des coordonnées
     findDepartementByCoordinates(lon, lat) {
       if (!this.franceGeoJson) return null;
 

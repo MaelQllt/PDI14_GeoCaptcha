@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import CreateGeoCaptcha from '../views/CreateGeoCaptcha.vue';
-import Dashboard from '../views/Test.vue';
+import Dashboard from '../views/Dashboard.vue';
 import KeyAccess from '../views/KeyAccess.vue';
 
 const routes = [

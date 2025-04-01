@@ -807,7 +807,7 @@ export default {
         target: "map",
         view: new View({
           center: fromLonLat([2.45407, 46.80335]),
-          zoom: 5.75,
+          zoom: 5,
           maxZoom: 15
         })
       });

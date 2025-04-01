@@ -180,14 +180,37 @@
                                 <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
                                 GéoCaptcha généré :
                               </h1>
-                              <p>Voici un GéoCaptcha correspondant à la zone géographique choisi: </p>
+                              <p>Voici un GéoCaptcha correspondant à la zone géographique choisie :</p>
                               <div class="image-container">
-                                <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
-                                <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
-                                <p v-else>Chargement de l'image...</p>
+                                <div class="background-tile-container">
+                                  <img :src="backgroundImageTuile" alt="fond du geocaptcha" v-if="backgroundImageTuile">
+                                </div>
+                                <!-- Conteneur pour l'image circulaire rotative -->
+                                <div class="circular-tile-container" :style="{ transform: `rotate(${rotationAngle}deg)` }">
+                                  <div class="circular-mask">
+                                    <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                                  </div>
+                                </div>
+                                <p v-if="!imageTuile">Chargement de l'image...</p>
+                                
+                                <!-- Section de rotation améliorée -->
+                                <div class="rotation-controls">
+                                  <p class="rotation-label">Faites glisser pour tourner la tuile</p>
+                                  <input 
+                                    type="range" 
+                                    min="0" 
+                                    max="360" 
+                                    v-model="rotationAngle" 
+                                    class="rotation-slider"
+                                    @input="updateRotation"
+                                  >
+                                  <div class="rotation-value" :style="{ left: `calc(${rotationAngle / 360 * 100}% - 20px)` }">
+                                    {{ rotationAngle }}°
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                            
+
                             <div class="fr-modal__footer">
                               <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
                                 <button @click="handleConserver" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>
@@ -266,6 +289,10 @@ export default {
       boxCoordinates: [],
       randomPoint: null,
       showAlert: false,
+
+      rotationAngle: 0,
+      backgroundMode: "", // Pour stocker le mode de fond différent
+      backgroundImageTuile: "",
     };
   },
 
@@ -402,19 +429,25 @@ export default {
       };
       console.log("Données envoyées à l'API :", data);
 
-      // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
-      if (data.mode === 'plan-sur-plan') {
-        data.mode = 'plan';
-      }
+      this.rotationAngle = Math.floor(Math.random() * 360);
+
+      // Fixez le mode de fond à "plan"
+      const backgroundMode = "plan";
 
       try {
-        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
+        // Chargement de l'image principale
+        this.imageTuile = await this.getCaptchaImageTuile(this.mode, data.z, data.x, data.y);
+
+        // Chargement de l'image de fond avec le mode "plan" et zoom 15
+        this.backgroundImageTuile = await this.getCaptchaImageTuile(backgroundMode, 15, data.x, data.y);
+
+        // Ouvrir la modale
         this.isModalOpen = true;
       } catch (error) {
         console.error("Erreur :", error);
       }
     },
-    
+
 
     async createGeoCaptcha() {
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile
@@ -931,6 +964,14 @@ export default {
 
       return null;
     },
+
+    updateRotation() {
+      // Conversion en nombre entier pour éviter les décimales
+      this.rotationAngle = parseInt(this.rotationAngle);
+      
+      // Vous pourriez ajouter ici d'autres logiques liées à la rotation
+      // Par exemple, jouer un son léger, changer la couleur de la bordure, etc.
+}
   },
 };
 </script>
@@ -1041,8 +1082,139 @@ z-index: 1000;
 }
 
 .image-container {
-display: flex;
-justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  margin: 0 auto;
+}
+
+.background-tile-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.background-tile-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.circular-tile-container {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  transition: transform 0.5s ease-in-out;
+  z-index: 2;
+}
+
+.circular-mask {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgb(0, 0, 145);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.circular-mask img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rotation-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+  position: absolute;
+  bottom: -30px;
+}
+
+.rotation-slider {
+  width: 80%;
+  margin: 40px auto 10px;
+  -webkit-appearance: none;
+  height: 6px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  position: relative;
+  z-index: 3;
+}
+
+.rotation-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgb(0, 0, 145);
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.rotation-slider::-webkit-slider-thumb:hover {
+  background: rgb(18, 18, 255);
+  transform: scale(1.1);
+}
+
+.rotation-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgb(0, 0, 145);
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.rotation-slider::-moz-range-thumb:hover {
+  background: rgb(18, 18, 255);
+  transform: scale(1.1);
+}
+
+/* Ajout d'un indicateur de valeur au-dessus du curseur */
+.rotation-value {
+  position: absolute;
+  bottom: -60px;
+  font-size: 14px;
+  font-weight: bold;
+  color: rgb(0, 0, 145);
+  background: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 3;
+}
+
+/* Ajout d'un texte explicatif */
+.rotation-label {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 5px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Animation facultative pour ajouter un effet visuel lors de l'ouverture */
+@keyframes rotateIn {
+  from { transform: rotate(0deg); opacity: 0; }
+  to { transform: rotate(v-bind(rotationAngle + 'deg')); opacity: 1; }
+}
+
+.circular-tile-container {
+  animation: rotateIn 1s ease-out forwards;
 }
 
 .fr-modal__content {

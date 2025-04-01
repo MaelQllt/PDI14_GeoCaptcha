@@ -807,7 +807,7 @@ export default {
         target: "map",
         view: new View({
           center: fromLonLat([2.45407, 46.80335]),
-          zoom: 5.75,
+          zoom: 5,
           maxZoom: 15
         })
       });
@@ -1142,7 +1142,7 @@ z-index: 1000;
 .rotation-slider {
   width: 80%;
   margin: 40px auto 10px;
-  -webkit-appearance: none;
+  
   height: 6px;
   border-radius: 5px;
   background: #d3d3d3;

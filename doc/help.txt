@@ -1,1 +1,0 @@
-pour lancer vite app: npm run dev dans C:\Users\diego\Documents\ENSG\2ème année\PDI\Maquette\frontend

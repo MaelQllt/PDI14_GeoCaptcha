@@ -481,6 +481,7 @@ export default {
     },
 
     async loadData(firstSessionObject = 1) {
+<<<<<<< HEAD
   try {
     const sessionResponse = await fetch(
       `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
@@ -490,6 +491,26 @@ export default {
           "x-api-key": import.meta.env.VITE_API_KEY,
           "x-app-id": import.meta.env.VITE_API_ID,
         },
+=======
+    try {
+      // Récupération des données de session
+      const sessionResponse = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
+        {
+          method: 'GET',
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": import.meta.env.VITE_API_KEY,
+            "x-app-id": import.meta.env.VITE_API_ID,
+          },
+        }
+      );
+
+      if (!sessionResponse.ok) {
+        const errorText = await sessionResponse.text();
+        console.error('Erreur API session:', sessionResponse.status, errorText);
+        throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
+>>>>>>> bd19965a0b5d51998df41148ef7f0111790a5bbf
       }
     );
 
@@ -631,6 +652,7 @@ analyzeData() {
       const response = await fetch(
         `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=1&nbObjects=20`,
         {
+          method: 'GET',
           headers: {
             "Accept": "application/json",
             "x-api-key": import.meta.env.VITE_API_KEY,

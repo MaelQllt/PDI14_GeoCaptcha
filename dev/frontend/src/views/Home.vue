@@ -106,6 +106,7 @@ const loadGeoCaptchaScript = () => {
 const getChallengeId = async () => {
   try {
     const response = await fetch(`${apiBaseUrl}/challenge?type=kingpin`, {
+      method: 'GET',
       headers: {
         'x-api-key': apiKey,
         'x-app-id': apiId,
@@ -128,6 +129,7 @@ const getChallengeId = async () => {
 const getCaptchaImage = async (cId) => {
   try {
     const response = await fetch(`${apiBaseUrl}/challenge/${cId}`, {
+      method: 'GET',
       headers: {
         'Accept': 'image/png',
         'x-api-key': apiKey,

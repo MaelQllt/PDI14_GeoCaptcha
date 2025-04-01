@@ -1142,7 +1142,7 @@ form {
 .rotation-slider {
   width: 80%;
   margin: 40px auto 10px;
-  -webkit-appearance: none;
+  
   height: 6px;
   border-radius: 5px;
   background: #d3d3d3;

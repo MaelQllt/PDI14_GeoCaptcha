@@ -1,234 +1,332 @@
 <template>
-  <div class="generation">
-    <h1 class="fr-h1">Générer un GéoCaptcha</h1>
-  </div>
-  <div class="geo-captcha">
-    <div class="fr-container fr-container--fluid fr-mb-md-14v">
-      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-          <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-pt-10v fr-pt-md-14v fr-pb-6v fr-pb-md-10v">
-            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-              <div class="fr-col-12 fr-col-md-9 fr-col-lg-8"> 
+  <div class="dashboard">
+    <div class="fr-tabs">
+      <!-- Liste des onglets -->
+      <ul class="fr-tabs__list" role="tablist" aria-label="Navigation des onglets">
+        <!-- Onglet pour la gestion de GéoCaptcha -->
+        <li role="presentation">
+          <button
+            id="tabpanel-404"
+            class="fr-tabs__tab fr-icon-slideshow-line fr-tabs__tab--icon-left"
+            :class="{ 'fr-tabs__tab--selected': activeTab === 'tabpanel-404' }"
+            role="tab"
+            :aria-selected="activeTab === 'tabpanel-404'"
+            aria-controls="tabpanel-404-panel"
+            @click="switchTab('tabpanel-404')"
+          >
+            Gestion de GéoCaptcha
+          </button>
+        </li>
+        <!-- Onglet pour les logs -->
+        <li role="presentation">
+          <button
+            id="tabpanel-405"
+            class="fr-tabs__tab fr-icon-survey-line fr-tabs__tab--icon-left"
+            :class="{ 'fr-tabs__tab--selected': activeTab === 'tabpanel-405' }"
+            role="tab"
+            :aria-selected="activeTab === 'tabpanel-405'"
+            aria-controls="tabpanel-405-panel"
+            @click="switchTab('tabpanel-405')"
+          >
+            Logs
+          </button>
+        </li>
+      </ul>
 
-                <!-- Zone du formulaire -->
-                <label class="fr-label label_param" for="select-hint">
-                  <span class="fr-h4">Paramètres de génération</span> 
-                  <span class="fr-hint-text">En choisissant un mode, vous pourrez générer un GéoCaptcha en France métropolitaine et dans les DOM-TOM.</span>
-                </label>
-                <form @submit.prevent="validateAndCreateGeoCaptcha">
-                  <div class="fr-input-group">
+      <!-- Contenus des onglets -->
 
-                    <!-- Choix parmis les 3 options : Sur la carte, Coordonnées précises et Aléatoire -->
-                    <fieldset class="fr-segmented">
-                      <div class="fr-segmented__elements">
-                        <div class="fr-segmented__element">
-                          <input value="1" v-model="selectedOption" @click="closeDepartement" type="radio" id="segmented-2073-3" name="segmented-2073">
-                          <label class="fr-icon-road-map-line fr-label" for="segmented-2073-3">
-                            Sur la carte
-                          </label>
-                        </div>
-                        <div class="fr-segmented__element">
-                          <input value="2" v-model="selectedOption" @click="openDepartement" type="radio" id="segmented-2073-2" name="segmented-2073">
-                          <label class="fr-icon-map-pin-2-line fr-label" for="segmented-2073-2">
-                            Coordonnées précises
-                          </label>
-                        </div>
-                        <div class="fr-segmented__element">
-                          <input value="3" v-model="selectedOption" @click="closeDepartement" type="radio" id="segmented-2073-1" name="segmented-2073">
-                          <label class="fr-icon-question-line fr-label" for="segmented-2073-1">
-                            Aléatoire
-                          </label>
-                        </div> 
-                      </div>
-                    </fieldset>
-                    
-                    <!-- Phrase en fonction de l'option choisi -->
-                    <p v-if="selectedOption === '1'" class="choix-zone">Sélectionnez une zone où un GéoCaptcha sera généré. Cliquez une première fois pour initier la sélection, étendez la zone, puis cliquez à nouveau pour valider.</p>
-                    <p v-if="selectedOption === '2'" class="choix-zone">Le GéoCaptcha sera généré dans le département de France que vous aurez choisi.</p>
-                    <p v-if="selectedOption === '3'" class="choix-zone">Le GéoCaptcha sera généré avec une localisation aléatoire en France.</p>
+      <!-- Contenu de l'onglet Gestion de GéoCaptcha -->
+      <div
+        id="tabpanel-404-panel"
+        class="fr-tabs__panel tab-404"
+        :class="{ 'fr-tabs__panel--selected': activeTab === 'tabpanel-404' }"
+        role="tabpanel"
+        aria-labelledby="tabpanel-404"
+      >
+        <div class="metrics-list">
+          <div class="list-header">
+            <h1 class="fr-h1">Gestion de Géocaptcha</h1>
+            <h6 class="fr-h6">Heatmap affichant la localisation des GéoCaptchas créés :</h6>
+            <!-- Composant Heatmap pour afficher les données -->
+            <Heatmap :geocaptchaData="kingpinStats" />
 
-                    <!-- Select pour la sélection du département pour les options Coordonnées précises et Aléatoire -->
-                    <select v-if="selectedOption === '2' || selectedOption === '3'" id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }" :required="isDepartement">
-                      <option value="" disabled selected>Choisissez votre département</option>
-                      <option v-for="dept in departements" :key="dept.code" :value="dept.code">
-                        {{ dept.nom }} ({{ dept.code }})
-                      </option>
-                    </select>
-
-                    <!-- Option Coordonnées précises -->
-                    <div v-if="selectedOption === '2'">
-                      <div class="fr-select-group">
-                        <label class="fr-label" for="select">Choix du département:</label>
-                        <select class="fr-select" id="select" name="select" v-model="selectedDepartement">
-                          <option value="" selected disabled hidden>Sélectionner un département</option>
-                          <option v-for="dept in departements" :key="dept.code" :value="dept.code">
-                            {{ dept.code }} - {{ dept.nom }}
-                          </option>
-                        </select>
-                        <div class="fr-input-group">
-                          <label class="fr-label lat-format" for="latitude">Latitude :</label>
-                          <input type="number" step="any" id="latitude" v-model="latitude" class="fr-input" :placeholder="latitudePlaceholder" required />
-                          <p v-if="latitudeError" class="fr-error-text">{{ latitudeError }}</p>
-                        </div>
-
-                        <div class="fr-input-group">
-                          <label class="fr-label" for="longitude">Longitude :</label>
-                          <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" required />
-                          <p v-if="longitudeError" class="fr-error-text">{{ longitudeError }}</p>
-                        </div>
-
-                        <div class="fr-input-group">
-                          <label class="fr-label" for="zipcode">Zipcode :</label>
-                          <input type="text" id="zipcode" v-model="zipcode" class="fr-input" placeholder="Entrez un code postal" required />
-                          <p v-if="zipcodeError" class="fr-error-text">{{ zipcodeError }}</p>
-                        </div>
-                      </div>
-                    </div>           
-
-                    <!-- Option Aléatoire -->
-                    <div v-if="selectedOption === '3'">
-                      <div class="fr-input-group">
-                        <label class="fr-label" for="random-departement">Département aléatoire :</label>
-                        <input type="text" id="random-departement" v-model="randomDepartement.nom" class="fr-input" readonly />
-                      </div>
-
-                      <div class="fr-input-group">
-                        <label class="fr-label lat-format" for="latitude">Latitude :</label>
-                        <input type="number" step="any" id="latitude" v-model="latitude" class="fr-input" :placeholder="latitudePlaceholder" readonly />
-                      </div>
-
-                      <div class="fr-input-group">
-                        <label class="fr-label" for="longitude">Longitude :</label>
-                        <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" readonly />
-                      </div>
-
-                      <div class="fr-input-group">
-                        <label class="fr-label" for="zipcode">Zipcode :</label>
-                        <input type="text" id="zipcode" v-model="zipcode" class="fr-input" readonly />
-                      </div>
-                    </div>
-
-                    <!-- Option Sur la carte -->
-                    <div v-if="selectedOption === '1'">
-                      <div class="map-container">
-                        
-                        <!-- Carte -->
-                        <div id="map" class="map"></div>
-                        
-                        <div class="row mt-3">
-                          <div class="col-auto">
-                            <span class="tag-group">
-                              <input type="button" value="Annuler la sélection" class="fr-tag tag-undo" @click="undoDraw"/>
-                            </span>
-                          </div>
-                        </div>
-                      
-                        <div v-if="boxCoordinates.length > 0" class="mt-3">
-                          <div v-if="randomPoint">
-                            <p><strong>Point aléatoire dans la boîte :</strong></p>
-
-                            <div class="fr-input-group">
-                              <label class="fr-label" for="latitude">Latitude :</label>
-                              <input type="number" step="any" id="latitude" v-model="latitude" class="fr-input" :placeholder="latitudePlaceholder" readonly />
-                            </div>
-
-                            <div class="fr-input-group">
-                              <label class="fr-label" for="longitude">Longitude :</label>
-                              <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" readonly />
-                            </div>
-
-                            <div v-if="showAlert" id="alert-1070" class="fr-alert fr-alert--error">
-                              <h3 class="fr-alert__title">Erreur</h3>
-                              <p>Impossible de générer un GéoCaptcha en dehors de la France. Veuillez sélectionner une zone en France.</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Choix du mode -->
-                    <div class="fr-input-group mode-format">
-                      <label class="fr-label" for="mode">Mode :</label>
-                      <select id="mode" v-model="mode" class="fr-select" required>
-                        <option value="" disabled selected>Choisissez un mode</option>
-                        <option value="ortho">Ortho</option>
-                        <option value="plan-sur-plan">Plan</option>
-                        <option value="scan">Scan</option>
-                      </select>
-                    </div>
-
-                    <!-- Bouton pour générer une tuile -->
-                    <div class="button-container">
-                      <div v-if="selectedOption === '3'" class="tooltip-container">
-                        <label @click="closeDepartement" class="fr-icon-refresh-line"></label>
-                      </div>
-                      <button type="submit" class="fr-btn btn-generer">Générer</button>
-                    </div>
-
-                    <!-- Alerte d'acceptation de la tuile -->
-                    <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
-                      <h3 class="fr-alert__title">Succès de la création</h3>
-                      <p v-if="isDepartement">{{ successMessage }}</p>
-                      <p v-else>GéoCaptcha créé avec une localisation en France.</p>
-                    </div>
-
-                    <!-- Alerte de refus de la tuile -->
-                    <div v-if="isRefuse" id="alert-1068" class="fr-alert fr-alert--info">
-                      <h3 class="fr-alert__title">Tuile refusée</h3>
-                      <p v-if="isDepartement">{{ successMessage }}</p>
-                      <p v-else>GéoCaptcha non enregistré.</p>
-                    </div>
-                  </div>
-                  
-                  <!-- Modale avec la tuile générée -->
-                  <div v-if="isModalOpen" class="modal-overlay">
-                    <div class="fr-container fr-container--fluid fr-container-md">
-                      <div class="fr-grid-row fr-grid-row--center">
-                        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                          <div class="fr-modal__body">
-                            <div class="fr-modal__header">
-                              <button @click="closeModal" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
-                            </div>
-
-                            <div class="fr-modal__content">
-                              <h1 id="modal-6053-title" class="fr-modal__title">
-                                <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
-                                GéoCaptcha généré :
-                              </h1>
-                              <p>Voici un GéoCaptcha correspondant à la zone géographique choisi: </p>
-                              <div class="image-container">
-                                <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
-                                <p v-else>Chargement de l'image...</p>
-                              </div>
-                            </div>
-                            
-                            <div class="fr-modal__footer">
-                              <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
-                                <button @click="handleConserver" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>
-                                <button @click="closeModal" type="button" id="button-6048" class="refuse-btn fr-btn fr-icon-close-circle-line fr-btn--icon-left fr-btn--tertiary">Refuser</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </form>
+            <!-- Barre de recherche et filtres -->
+            <div class="select-group-metrics">
+              <div class="fr-search-bar">
+                <input
+                  class="fr-input"
+                  placeholder="Rechercher"
+                  type="search"
+                  v-model="searchQuery"
+                />
+                <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
               </div>
-            </div> 
-          </div> 
-        </div> 
-      </div> 
+              <!-- Filtres par tag -->
+              <div class="filter-tags">
+                <ul class="fr-tags-group">
+                  <li>
+                    <button
+                      class="fr-tag"
+                      :class="{ 'fr-tag--selected': selectedTag === 'all', 'fr-tag--checked': selectedTag === 'all' }"
+                      :aria-pressed="selectedTag === 'all'"
+                      @click="setFilter('all')"
+                    >
+                      Tous
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      class="fr-tag"
+                      :class="{ 'fr-tag--selected': selectedTag === 'success', 'fr-tag--checked': selectedTag === 'success' }"
+                      :aria-pressed="selectedTag === 'success'"
+                      @click="setFilter('success')"
+                    >
+                      Réussis
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      class="fr-tag"
+                      :class="{ 'fr-tag--selected': selectedTag === 'failed', 'fr-tag--checked': selectedTag === 'failed' }"
+                      :aria-pressed="selectedTag === 'failed'"
+                      @click="setFilter('failed')"
+                    >
+                      Échoués
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Options de tri -->
+              <div class="trier-metrics">
+                <label class="fr-label" for="filter-select">
+                  <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
+                  <span class="trier-text">Trier</span>
+                </label>
+                <select
+                  class="fr-select select-metrics"
+                  aria-describedby="select-messages"
+                  id="filter-select"
+                  v-model="sortKey"
+                  @change="sortOrder = 'desc'"
+                >
+                  <option value="name">Nom</option>
+                  <option value="successRate">Taux de réussite</option>
+                  <option value="attempts">Nombre d'essais</option>
+                </select>
+                <button class="fr-icon-arrow-up-down-line" @click="toggleSortOrder"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Affichage des statistiques filtrées et triées -->
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div
+            v-for="(kingpin, index) in filteredAndSortedStats"
+            :key="index"
+            class="fr-col-12 fr-col-md-6 fr-col-lg-4"
+          >
+            <div class="fr-tile" @click="openKingpinModal(kingpin)">
+              <div class="fr-tile__header">
+                <p><strong class="fr-tile__title">Nom: </strong> {{ kingpin.name }}</p>
+              </div>
+              <div class="fr-tile__body">
+                <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
+                  <span class="text-2xl">🧩</span> <!-- À modifier à terme -->
+                </div>
+                <div class="infos">
+                  <div class="info-item grid grid-cols-2 gap-4 mb-4">
+                    <div class="text-center">
+                      <p><strong>Nombre d'essais : </strong>{{ kingpin.attempts }}</p>
+                    </div>
+                  </div>
+                  <div class="info-item gauge mb-2">
+                    <!-- Composant GaugeChart pour afficher le taux de réussite -->
+                    <GaugeChart :value="Math.round(kingpin.successRate)" min="0" max="100" label="Taux de réussite (%)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal pour les détails du Géocaptcha -->
+        <div v-if="isModalVisible" class="modal-overlay">
+          <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                  <div class="fr-modal__header">
+                    <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
+                  </div>
+                  <div class="fr-modal__content">
+                    <h2 id="modal-6053-title" class="fr-modal__title">
+                      <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                      Détails du Géocaptcha
+                    </h2>
+                    <div>
+                      <p><strong>ID:</strong> {{ selectedGeocaptcha.id }}</p>
+                      <p><strong>IP:</strong> {{ selectedGeocaptcha.ip }}</p>
+                      <p><strong>Essais:</strong> {{ selectedGeocaptcha.attempts }}</p>
+                      <p><strong>Réussites:</strong> {{ selectedGeocaptcha.successes }}</p>
+                      <p><strong>Echecs:</strong> {{ selectedGeocaptcha.failures }}</p>
+                      <p><strong>Précision:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
+                      <p><strong>Referer:</strong> {{ selectedGeocaptcha.referer }}</p>
+                      <p><strong>Date de création:</strong> {{ selectedGeocaptcha.createdAt }}</p>
+                    </div>
+                  </div>
+                  <div class="fr-modal__footer">
+                    <div class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-left">
+                      <button @click="showConfirmationModal" class="fr-btn fr-btn--reject">Rejeter</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de confirmation pour rejeter un Géocaptcha -->
+        <div v-if="isConfirmationModalVisible" class="modal-overlay">
+          <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                  <div class="fr-modal__header">
+                    <button @click="closeConfirmationModal" class="fr-btn--close fr-btn">Fermer</button>
+                  </div>
+                  <div class="fr-modal__content">
+                    <h2 id="modal-6053-title" class="fr-modal__title">
+                      <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
+                      Confirmation
+                    </h2>
+                    <p>Êtes-vous sûr de vouloir rejeter ce géocaptcha ?</p>
+                  </div>
+                  <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
+                    <button @click="rejectGeocaptcha" class="fr-btn fr-btn--reject">Oui, Rejeter</button>
+                    <button @click="closeConfirmationModal" class="fr-btn fr-btn--cancel">Annuler</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenu de l'onglet Logs -->
+      <div
+        id="tabpanel-405-panel"
+        class="fr-tabs__panel tab-405"
+        :class="{ 'fr-tabs__panel--selected': activeTab === 'tabpanel-405' }"
+        role="tabpanel"
+        aria-labelledby="tabpanel-405"
+      >
+        <h1>Logs</h1>
+        <div class="audit-container">
+          <div class="fr-container">
+            <div class="fr-input-group">
+              <div class="filtre">
+                <!-- Filtre par route -->
+                <select id="filter-route" v-model="filterRoute" class="fr-select filtre-route">
+                  <option value="">Filtre par route</option>
+                  <option v-for="route in uniqueRoutes" :key="route" :value="route">{{ route }}</option>
+                </select>
+                <button class="fr-btn-tertiary-no-outline fr-icon-refresh-line btn-refresh" @click="clearFilters"></button>
+              </div>
+              <!-- Bouton pour effacer tous les logs -->
+              <button class="fr-btn fr-btn--danger delete-log" @click="confirmDeleteLogs" :disabled="logs.length === 0">Tout effacer</button>
+            </div>
+          </div>
+
+          <!-- Message si aucun log ne correspond aux filtres -->
+          <div v-if="filteredLogs.length === 0" class="fr-container">
+            <div class="box-audit box-info">
+              <span class="action-audit action-info">INFO</span>
+              <span class="description-audit">Aucune entrée d'audit ne correspond aux filtres.</span>
+            </div>
+          </div>
+
+          <!-- Affichage des logs filtrés -->
+          <div v-for="(log, index) in filteredLogs" :key="index" class="fr-container">
+            <div :class="['box-audit', getBoxClass(log.action)]">
+              <span :class="['action-audit', getActionClass(log.action)]">{{ log.action }}</span>
+              <span class="route-audit">{{ log.route }}</span>
+              <span class="description-audit">{{ log.description }}</span>
+              <span class="time-audit">{{ log.timestamp }}</span>
+            </div>
+          </div>
+
+          <!-- Pagination des logs -->
+          <div class="fr-pagination" v-if="filteredLogs.length > 0">
+            <button
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
+              :disabled="currentPage === 1"
+              @click="currentPage--"
+            ></button>
+            <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+            <button
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line"
+              :disabled="currentPage === totalPages"
+              @click="currentPage++"
+            ></button>
+          </div>
+        </div>
+
+        <!-- Modal de confirmation pour supprimer tous les logs -->
+        <div v-if="isModalOpen" class="modal-overlay">
+    <div class="fr-container fr-container--fluid fr-container-md">
+      <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-modal__body">
+            <div class="fr-modal__header">
+              <button @click="closeModal" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
+            </div>
+
+            <div class="fr-modal__content">
+              <h1 id="modal-6053-title" class="fr-modal__title">
+                <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                GéoCaptcha généré :
+              </h1>
+              <p>Voici un GéoCaptcha correspondant à la zone géographique choisie: </p>
+              
+              <div class="preview-container">
+                <div class="map-preview" id="preview-map"></div>
+                <div class="circular-overlay" 
+                     :style="{ transform: `rotate(${rotationDegrees}deg)` }">
+                  <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile" class="circular-image">
+                </div>
+                <div class="rotation-controls">
+                  <button @click="rotateLeft" class="fr-btn fr-btn--sm fr-icon-arrow-left-line"></button>
+                  <span>{{ rotationDegrees }}°</span>
+                  <button @click="rotateRight" class="fr-btn fr-btn--sm fr-icon-arrow-right-line"></button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="fr-modal__footer">
+              <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                <button @click="handleConserver" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>
+                <button @click="closeModal" type="button" id="button-6048" class="refuse-btn fr-btn fr-icon-close-circle-line fr-btn--icon-left fr-btn--tertiary">Refuser</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-
-/*Bibliothèque OpenLayers*/
+// Ajout des imports nécessaires pour la carte de prévisualisation
 import "ol/ol.css";
 import Map from "ol/Map.js";
 import View from "ol/View.js";
+import {XYZ} from 'ol/source';
+
 import Draw, { createBox } from "ol/interaction/Draw.js";
 import TileLayer from "ol/layer/Tile.js";
 import VectorLayer from "ol/layer/Vector.js";
@@ -236,7 +334,7 @@ import FullScreen from 'ol/control/FullScreen.js';
 import {defaults as defaultControls} from 'ol/control/defaults.js';
 import { fromLonLat, toLonLat } from "ol/proj";
 import VectorSource from "ol/source/Vector.js";
-import {XYZ} from 'ol/source';
+
 
 /*Bibliothèque Turf*/
 import * as turf from "@turf/turf";
@@ -244,10 +342,16 @@ import * as turf from "@turf/turf";
 /*Service de logs*/
 import { auditService } from '@/services/audit-service';
 
+
 export default {
   name: "OpenLayersMap",
   data() {
     return {
+      // Ajout de nouvelles propriétés
+      previewMap: null,
+      rotationDegrees: 0,
+      
+      // Propriétés existantes...
       selectedOption: "1",
       selectedDepartement: "",
       departements: [],
@@ -282,44 +386,136 @@ export default {
       showAlert: false,
     };
   },
-
+  
   watch: {
-    selectedShape() {
-      this.updateInteraction();
-    },
 
-    selectedDepartement(newValue) {
-      if (newValue) {
-        this.fetchDepartmentBoundary(newValue);
-      }
-    },
-  },
+selectedShape() {
+  this.updateInteraction();
+},
 
-  async mounted() {
-    window.scrollTo(0, 0);
-    this.recupDepartementFrance();
-    this.$nextTick(() => {
-      const mapContainer = document.getElementById('map');
-      if (mapContainer) {
-        this.initializeMap();
-      } else {
-        // Observez les changements de l'option sélectionnée
-        this.$watch('selectedOption', (newValue) => {
-          if (newValue === '1') {
-            this.$nextTick(() => {
-              const mapContainer = document.getElementById('map');
-              if (mapContainer) {
-                this.initializeMap();
-              }
-            });
+selectedDepartement(newValue) {
+  if (newValue) {
+    this.fetchDepartmentBoundary(newValue);
+  }
+},
+},
+
+async mounted() {
+window.scrollTo(0, 0);
+this.recupDepartementFrance();
+this.$nextTick(() => {
+  const mapContainer = document.getElementById('map');
+  if (mapContainer) {
+    this.initializeMap();
+  } else {
+    // Observez les changements de l'option sélectionnée
+    this.$watch('selectedOption', (newValue) => {
+      if (newValue === '1') {
+        this.$nextTick(() => {
+          const mapContainer = document.getElementById('map');
+          if (mapContainer) {
+            this.initializeMap();
           }
         });
       }
     });
-    await this.loadGeoJson();
-  },
-
+  }
+});
+await this.loadGeoJson();
+},
+  
   methods: {
+    // Nouvelles méthodes pour la rotation et la carte de prévisualisation
+    rotateLeft() {
+      this.rotationDegrees = (this.rotationDegrees - 15) % 360;
+    },
+    
+    rotateRight() {
+      this.rotationDegrees = (this.rotationDegrees + 15) % 360;
+    },
+    
+    initializePreviewMap() {
+      // Attendre que le DOM soit prêt
+      this.$nextTick(() => {
+        const previewMapElement = document.getElementById('preview-map');
+        if (!previewMapElement) return;
+        
+        // Récupération du plan IGN comme fond de carte
+        const planIGN = new TileLayer({
+          source: new XYZ({
+            url: 'https://data.geopf.fr/wmts?' +
+                'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=PM' +
+                '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png' +
+                '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
+            attributions: 'Carte © IGN/Geoplateforme'
+          }),
+        });
+        
+        // Créer la carte de prévisualisation
+        this.previewMap = new Map({
+          layers: [planIGN],
+          target: 'preview-map',
+          view: new View({
+            center: fromLonLat([this.longitude, this.latitude]),
+            zoom: 15
+          })
+        });
+      });
+    },
+    
+    // Modification de la méthode showGeoCaptchaTile pour initialiser la carte de prévisualisation
+    async showGeoCaptchaTile() {
+      // Code existant
+      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15);
+      console.log("Coordonnées de la tuile :", tileCoords);
+
+      const data = {
+        id: this.generateUniqueId(),
+        x: tileCoords.x,
+        y: tileCoords.y,
+        z: 15,
+        zipcode: this.zipcode,
+        mode: this.mode,
+        ok: "1"
+      };
+      console.log("Données envoyées à l'API :", data);
+
+      // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
+      if (data.mode === 'plan-sur-plan') {
+        data.mode = 'plan';
+      }
+
+      try {
+        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
+        this.isModalOpen = true;
+        
+        // Réinitialiser la rotation
+        this.rotationDegrees = 0;
+        
+        // Initialiser la carte de prévisualisation
+        this.initializePreviewMap();
+      } catch (error) {
+        console.error("Erreur :", error);
+      }
+    },
+    
+    // Mettre à jour la position du modal pour éviter les problèmes de scrolling
+    closeModal() {
+      this.isModalOpen = false;
+      document.body.style.overflow = 'auto';
+      this.isRefuse = true;
+      
+      // Nettoyer la carte de prévisualisation
+      if (this.previewMap) {
+        this.previewMap.setTarget(null);
+        this.previewMap = null;
+      }
+      
+      setTimeout(() => {
+        this.isRefuse = false;
+      }, 3000);
+    },
+
     async validateAndCreateGeoCaptcha() {
       this.latitudeError = "";
       this.longitudeError = "";
@@ -399,35 +595,6 @@ export default {
       this.showGeoCaptchaTile();
     },
 
-    async showGeoCaptchaTile() {
-      // Conversion des coordonnées latitude/longitude en coordonnées de tuile
-      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 15 pour les GéoCaptchas
-      console.log("Coordonnées de la tuile :", tileCoords);
-
-      // Préparation des données pour l'API
-      const data = {
-        id: this.generateUniqueId(),
-        x: tileCoords.x,
-        y: tileCoords.y,
-        z: 15,
-        zipcode: this.zipcode,
-        mode: this.mode,
-        ok: "1"
-      };
-      console.log("Données envoyées à l'API :", data);
-
-      // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
-      if (data.mode === 'plan-sur-plan') {
-        data.mode = 'plan';
-      }
-
-      try {
-        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
-        this.isModalOpen = true;
-      } catch (error) {
-        console.error("Erreur :", error);
-      }
-    },
 
     async createGeoCaptcha() {
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile
@@ -483,25 +650,46 @@ export default {
       }
     },
 
-    async getCaptchaImageTuile(layer, tileMatrix, col, row) {
-      // Récupération de l'image de la tuile à partir de l'API 
-      try {
-        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${layer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`,
-          {
-            method: "GET",
-            headers: {
-              "Accept": "image/png",
-              "x-api-key": import.meta.env.VITE_API_KEY,
-              "x-app-id": import.meta.env.VITE_API_ID,
-            }
-          }
-        );
-        if (!response.ok) throw new Error('Image non trouvée');
-        return URL.createObjectURL(await response.blob());
-      } catch (error) {
-        console.log(error)
+
+async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
+  try {
+    // Récupération de l'image de la tuile de fond en mode 'plan'
+    const backgroundResponse = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=plan&tileMatrix=${tileMatrix}&col=${col}&row=${row}`, {
+      method: "GET",
+      headers: {
+        "Accept": "image/png",
+        "x-api-key": import.meta.env.VITE_API_KEY,
+        "x-app-id": import.meta.env.VITE_API_ID,
       }
-    },
+    });
+
+    if (!backgroundResponse.ok) throw new Error('Image de fond non trouvée');
+
+    const backgroundBlob = await backgroundResponse.blob();
+    const backgroundUrl = URL.createObjectURL(backgroundBlob);
+
+    // Récupération de l'image de la tuile de premier plan avec le mode sélectionné
+    const foregroundResponse = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${foregroundLayer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`, {
+      method: "GET",
+      headers: {
+        "Accept": "image/png",
+        "x-api-key": import.meta.env.VITE_API_KEY,
+        "x-app-id": import.meta.env.VITE_API_ID,
+      }
+    });
+
+    if (!foregroundResponse.ok) throw new Error('Image de premier plan non trouvée');
+
+    const foregroundBlob = await foregroundResponse.blob();
+    const foregroundUrl = URL.createObjectURL(foregroundBlob);
+
+    return { backgroundUrl, foregroundUrl };
+  } catch (error) {
+    console.error("Erreur lors de la récupération des tuiles :", error);
+    return { backgroundUrl: null, foregroundUrl: null };
+  }
+}
+,
 
     // Fonction de conversion des coordonnées latitude/longitude en coordonnées de tuile
     latLonToTile(lat, lon, z) {
@@ -530,15 +718,6 @@ export default {
       } catch (err) {
         console.error("Erreur :", err);
       }
-    },
-
-    closeModal() {
-      this.isModalOpen = false;
-      document.body.style.overflow = 'auto';
-      this.isRefuse = true;
-      setTimeout(() => {
-        this.isRefuse = false;
-      }, 3000);
     },
 
     openDepartement() {
@@ -925,17 +1104,13 @@ export default {
 
       return null;
     },
-  },
+
+  }
 };
 </script>
 
-
-
-
-
-
 <style scoped>
-
+/* Styles existants... */
 
 /* Styles pour la carte OpenLayers */
 .map {
@@ -1083,4 +1258,82 @@ form {
   margin-top:1em;
 }
 
+.image-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.background-tile {
+  width: 100%;
+  height: auto;
+}
+
+.foreground-tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: circle(50%);
+}
+
+/* Nouveaux styles pour la prévisualisation avec overlay circulaire */
+.preview-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  margin: 20px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.map-preview {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.circular-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  margin-left: -100px;
+  margin-top: -100px;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 2;
+  border: 3px solid #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.circular-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rotation-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 20px;
+  z-index: 3;
+}
+
+.rotation-controls span {
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+/* ... autres styles existants ... */
 </style>

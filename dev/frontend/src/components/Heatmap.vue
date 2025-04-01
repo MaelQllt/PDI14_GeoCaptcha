@@ -11,7 +11,6 @@
         <div class="gradient"></div>
         <div class="labels">
           <span>Faible présence</span>
-          <span></span>
           <span>Forte présence</span>
         </div>
       </div>

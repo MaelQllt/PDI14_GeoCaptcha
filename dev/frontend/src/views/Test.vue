@@ -204,6 +204,7 @@
     background:#d3d3d3;
     user-select: none;
   }
+  
   .captcha-kingpin {
     position:relative;
     width: 100%;

@@ -9,12 +9,16 @@
           <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-pt-10v fr-pt-md-14v fr-pb-6v fr-pb-md-10v">
             <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
               <div class="fr-col-12 fr-col-md-9 fr-col-lg-8"> 
+
+                <!-- Zone du formulaire -->
                 <label class="fr-label label_param" for="select-hint">
                   <span class="fr-h4">Paramètres de génération</span> 
                   <span class="fr-hint-text">En choisissant un mode, vous pourrez générer un GéoCaptcha en France métropolitaine et dans les DOM-TOM.</span>
                 </label>
                 <form @submit.prevent="validateAndCreateGeoCaptcha">
                   <div class="fr-input-group">
+
+                    <!-- Choix parmis les 3 options : Sur la carte, Coordonnées précises et Aléatoire -->
                     <fieldset class="fr-segmented">
                       <div class="fr-segmented__elements">
                         <div class="fr-segmented__element">
@@ -38,10 +42,12 @@
                       </div>
                     </fieldset>
                     
+                    <!-- Phrase en fonction de l'option choisi -->
                     <p v-if="selectedOption === '1'" class="choix-zone">Sélectionnez une zone où un GéoCaptcha sera généré. Cliquez une première fois pour initier la sélection, étendez la zone, puis cliquez à nouveau pour valider.</p>
                     <p v-if="selectedOption === '2'" class="choix-zone">Le GéoCaptcha sera généré dans le département de France que vous aurez choisi.</p>
                     <p v-if="selectedOption === '3'" class="choix-zone">Le GéoCaptcha sera généré avec une localisation aléatoire en France.</p>
 
+                    <!-- Select pour la sélection du département pour les options Coordonnées précises et Aléatoire -->
                     <select v-if="selectedOption === '2' || selectedOption === '3'" id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }" :required="isDepartement">
                       <option value="" disabled selected>Choisissez votre département</option>
                       <option v-for="dept in departements" :key="dept.code" :value="dept.code">
@@ -49,6 +55,7 @@
                       </option>
                     </select>
 
+                    <!-- Option Coordonnées précises -->
                     <div v-if="selectedOption === '2'">
                       <div class="fr-select-group">
                         <label class="fr-label" for="select">Choix du département:</label>
@@ -78,6 +85,7 @@
                       </div>
                     </div>           
 
+                    <!-- Option Aléatoire -->
                     <div v-if="selectedOption === '3'">
                       <div class="fr-input-group">
                         <label class="fr-label" for="random-departement">Département aléatoire :</label>
@@ -100,8 +108,10 @@
                       </div>
                     </div>
 
+                    <!-- Option Sur la carte -->
                     <div v-if="selectedOption === '1'">
                       <div class="map-container">
+                        
                         <!-- Carte -->
                         <div id="map" class="map"></div>
                         
@@ -136,6 +146,7 @@
                       </div>
                     </div>
 
+                    <!-- Choix du mode -->
                     <div class="fr-input-group mode-format">
                       <label class="fr-label" for="mode">Mode :</label>
                       <select id="mode" v-model="mode" class="fr-select" required>
@@ -146,6 +157,7 @@
                       </select>
                     </div>
 
+                    <!-- Bouton pour générer une tuile -->
                     <div class="button-container">
                       <div v-if="selectedOption === '3'" class="tooltip-container">
                         <label @click="closeDepartement" class="fr-icon-refresh-line"></label>
@@ -153,12 +165,14 @@
                       <button type="submit" class="fr-btn btn-generer">Générer</button>
                     </div>
 
+                    <!-- Alerte d'acceptation de la tuile -->
                     <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
                       <h3 class="fr-alert__title">Succès de la création</h3>
                       <p v-if="isDepartement">{{ successMessage }}</p>
                       <p v-else>GéoCaptcha créé avec une localisation en France.</p>
                     </div>
 
+                    <!-- Alerte de refus de la tuile -->
                     <div v-if="isRefuse" id="alert-1068" class="fr-alert fr-alert--info">
                       <h3 class="fr-alert__title">Tuile refusée</h3>
                       <p v-if="isDepartement">{{ successMessage }}</p>
@@ -166,6 +180,7 @@
                     </div>
                   </div>
                   
+                  <!-- Modale avec la tuile générée -->
                   <div v-if="isModalOpen" class="modal-overlay">
                     <div class="fr-container fr-container--fluid fr-container-md">
                       <div class="fr-grid-row fr-grid-row--center">
@@ -180,24 +195,13 @@
                                 <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
                                 GéoCaptcha généré :
                               </h1>
-                              <p>Voici un GéoCaptcha correspondant à la zone géographique choisie :</p>
-                              <div class="image-container" @pointerdown="down($event)" @pointerup="up" @mouseleave="up">
-                                <!-- Conteneur pour l'image circulaire rotative -->
-                                <div class="captcha-kingpin">
-                                  <div class="layer layer-base">
-                                    <img :src="backgroundImageTuile" alt="fond du geocaptcha" v-if="backgroundImageTuile">
-                                  </div>
-                                  <div class="layer layer-stacked" :style="{ transform: `rotate(-${rotationAngle}deg)` }">
-                                    <div class="cropped">
-                                      <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
-                                    </div>
-                                    <div class="grab"></div>
-                                  </div>
-                                </div>
-                                <p v-if="!imageTuile">Chargement de l'image...</p>
+                              <p>Voici un GéoCaptcha correspondant à la zone géographique choisi: </p>
+                              <div class="image-container">
+                                <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                                <p v-else>Chargement de l'image...</p>
                               </div>
                             </div>
-
+                            
                             <div class="fr-modal__footer">
                               <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
                                 <button @click="handleConserver" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>
@@ -276,13 +280,6 @@ export default {
       boxCoordinates: [],
       randomPoint: null,
       showAlert: false,
-
-      rotationAngle: 0,
-      backgroundMode: "", // Pour stocker le mode de fond différent
-      backgroundImageTuile: "",
-      startAngle: 0,
-      bboxCenter: {},
-      captcha: null,
     };
   },
 
@@ -419,59 +416,18 @@ export default {
       };
       console.log("Données envoyées à l'API :", data);
 
-      this.rotationAngle = Math.floor(Math.random() * 360);
-
-      // Fixez le mode de fond à "plan"
-      const backgroundMode = "plan";
-
-      if (this.mode === 'plan-sur-plan') {
-        this.mode = 'plan';
+      // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
+      if (data.mode === 'plan-sur-plan') {
+        data.mode = 'plan';
       }
 
       try {
-        // Chargement de l'image principale
-        this.imageTuile = await this.getCaptchaImageTuile(this.mode, data.z, data.x, data.y);
-
-        // Chargement de l'image de fond avec le mode "plan" et zoom 15
-        this.backgroundImageTuile = await this.getCaptchaImageTuile(backgroundMode, 15, data.x, data.y);
-
-        // Ouvrir la modale
+        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
         this.isModalOpen = true;
       } catch (error) {
         console.error("Erreur :", error);
       }
     },
-
-    down(evt) {
-    this.captcha = evt.currentTarget;
-    let bbox = this.captcha.getBoundingClientRect();
-    this.bboxCenter = {
-      x: bbox.left + bbox.width / 2,
-      y: bbox.top + bbox.height / 2,
-    };
-    this.startAngle = (this.getAngle(evt) - this.rotationAngle + 720) % 360;
-    this.captcha._evt = this.move.bind(this);
-    this.captcha.addEventListener('pointermove', this.captcha._evt);
-  },
-  
-  up() {
-    if (this.captcha) {
-      this.captcha.removeEventListener('pointermove', this.captcha._evt);
-    }
-  },
-  
-  move(evt) {
-    this.rotationAngle = (this.getAngle(evt) - this.startAngle + 720) % 360;
-  },
-  
-  getAngle(evt) {
-    return -(
-      (Math.atan2(this.bboxCenter.y - evt.clientY, this.bboxCenter.x - evt.clientX) *
-        180) /
-      Math.PI
-    );
-  },
-
 
     async createGeoCaptcha() {
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile
@@ -527,25 +483,6 @@ export default {
       }
     },
 
-    async getCaptchaImageTuile(layer, tileMatrix, col, row) {
-      // Récupération de l'image de la tuile à partir de l'API 
-      try {
-        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${layer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`,
-          {
-            method: "GET",
-            headers: {
-              "Accept": "image/png",
-              "x-api-key": import.meta.env.VITE_API_KEY,
-              "x-app-id": import.meta.env.VITE_API_ID,
-            }
-          }
-        );
-        if (!response.ok) throw new Error('Image non trouvée');
-        return URL.createObjectURL(await response.blob());
-      } catch (error) {
-        console.log(error)
-      }
-    },
     async getCaptchaImageTuile(layer, tileMatrix, col, row) {
       // Récupération de l'image de la tuile à partir de l'API 
       try {
@@ -900,7 +837,7 @@ export default {
         this.randomPoint = null;
       },
 
-      // Fonction qui permet de récupérer le fichier geojson contenant les régions de France avec les outre-mers
+      // Fonction permettant de récupérer le fichier geojson contenant les régions de France avec les outre-mers
       async loadGeoJson() {
         try {
           const response = await fetch("/regions-avec-outre-mer.geojson"); 
@@ -910,7 +847,7 @@ export default {
         }
       },
 
-    // Fonction qui vérifie si un point se trouve à l'intérieur de la France
+    // Fonction vérifiant si un point se trouve à l'intérieur de la France
     isPointInFrance(lon, lat) {
       if (!this.franceGeoJson) return false;
 
@@ -920,7 +857,7 @@ export default {
       );
     },
 
-    // Fonction qui génère un point aléatoire à l'intérieur de la boîte
+    // Fonction générant un point aléatoire à l'intérieur de la boîte
     getRandomPointInBox(coords) {
       if (coords.length < 4 || !this.franceGeoJson) return null;
 
@@ -975,7 +912,7 @@ export default {
       return [this.longitude, this.latitude];
     },
 
-    // Fonction qui trouve le code du département à partir des coordonnées
+    // Fonction trouvant le code du département à partir des coordonnées
     findDepartementByCoordinates(lon, lat) {
       if (!this.franceGeoJson) return null;
 
@@ -988,14 +925,6 @@ export default {
 
       return null;
     },
-
-    updateRotation() {
-      // Conversion en nombre entier pour éviter les décimales
-      this.rotationAngle = parseInt(this.rotationAngle);
-      
-      // Vous pourriez ajouter ici d'autres logiques liées à la rotation
-      // Par exemple, jouer un son léger, changer la couleur de la bordure, etc.
-}
   },
 };
 </script>
@@ -1008,7 +937,7 @@ export default {
 <style scoped>
 
 
-/* Style pour la carte OpenLayers */
+/* Styles pour la carte OpenLayers */
 .map {
   width: 100%;
   height: 300px;
@@ -1028,44 +957,42 @@ export default {
   height: 100%;
 }
 
-.map .ol-rotate {
-  top: 3em;
-}
 
 
-/* Style pour le formulaire */
+/* Styles pour le formulaire */
+
 .row {
   margin-top: 20px;
 }
 
 .fr-h1 {
-margin-top: 170px; 
-text-align: center;
+  margin-top: 170px; 
+  text-align: center;
 }
 
 .label_param {
-text-align: center;
-margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .choix-zone {
-margin-top: 20px;
-margin-bottom: -20px;
+  margin-top: 20px;
+  margin-bottom: -20px;
 }
 
 .lat-format {
-margin-top: 25px;
+  margin-top: 25px;
 }
 
 .mode-format {
-margin-top: 25px;
+  margin-top: 25px;
 }
 
 form {
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .tag-undo{
@@ -1073,169 +1000,78 @@ gap: 20px;
 }
 
 .button-container {
-display: flex;
-align-items: center; 
-gap: 10px; 
+  display: flex;
+  align-items: center; 
+  gap: 10px; 
 }
 
 .tag-group {
-display: flex;
-justify-content: flex-end;
-gap: 10px;
-margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .btn-generer {
-display: block;
-margin-left: auto;
+  display: block;
+  margin-left: auto;
 } 
 
 
-/* Style pour le modal */
+/* Styles pour le modal */
+
 .modal-overlay {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.5); 
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 1000; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+.fr-modal__title {
+  margin-bottom: 1em;
+  text-align: center;
 }
 
 .image-container {
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  height: 400px;
-  margin: 0 auto;
-}
-
-.captcha-kingpin {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-}
-
-.captcha-kingpin .layer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-position: 50% 50%;
-}
-
-.captcha-kingpin .layer-base {
-  width: 100%;
-  height: 100%;
-}
-
-.captcha-kingpin .layer-base img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.captcha-kingpin .layer-stacked {
-  cursor: grab;
-  position: absolute;
-  width: 150px;
-  height: 150px;
-  top: 25px;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
-
-.captcha-kingpin .cropped {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 0 1px 3px, 0 0 0 15px rgba(36,60,71,.25);
-}
-
-.captcha-kingpin .cropped img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.captcha-kingpin .grab {
-  cursor: grab;
-  position: absolute;
-  z-index: 1;
-  right: -10px;
-  top: 60px;
-  width: 20px;
-  height: 30px;
-  border-radius: 3px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 30'%3E%3Cpath d='m5,10h10M5,15h10M5,20h10' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
-  background-color: #243c47;
-}
-
-.captcha-kingpin .grab:hover {
-  background-color: #30a7df;
 }
 
 .fr-modal__content {
-display: flex;
-flex-direction: column;
-align-items: center;
-width: 100%;
-}
-
-.fr-modal__title {
-margin-bottom: 1em;
-text-align: center;
-}
-.modal {
-background-color: white;
-padding: 2rem;
-border-radius: 8px;
-width: 80%;
-max-width: 500px;
-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-position: relative;
-}
-
-.fr-modal__content img {
-object-fit: contain;
-}
-
-.modal-content {
-padding: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .accept-btn{
-outline: 2px solid rgb(0,0,145);
+  outline: 2px solid rgb(0,0,145);
 }
 
 .accept-btn:hover{
-outline: 2px solid rgb(18,18,255);
+  outline: 2px solid rgb(18,18,255);
 }
 
 .refuse-btn {
-color: red;
-outline: 2px solid red;
+  color: red;
+  outline: 2px solid red;
 }
 
 .hidden {
-visibility: hidden;
-opacity: 0;
+  visibility: hidden;
+  opacity: 0;
 }
 
 .fr-error-text {
-color: red;
-font-size: 0.875rem;
-margin-top: 0.25rem;
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
 .fr-icon-refresh-line:hover {
@@ -1244,6 +1080,7 @@ margin-top: 0.25rem;
 }
 
 #alert-1068 {
-margin-top:1em;
+  margin-top:1em;
 }
+
 </style>

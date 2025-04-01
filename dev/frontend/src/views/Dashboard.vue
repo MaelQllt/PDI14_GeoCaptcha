@@ -151,6 +151,22 @@
           </div>
         </div>
 
+        <!-- Pagination des métriques -->
+        <div class="fr-pagination" v-if="filteredAndSortedStats.length > 0">
+          <button
+            class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
+            :disabled="currentMetricPage === 1"
+            @click="currentMetricPage--"
+          ></button>
+          <span class="page-info">{{ currentMetricPage }} / {{ totalMetricPages }}</span>
+          <button
+            class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line"
+            :disabled="currentMetricPage === totalMetricPages"
+            @click="currentMetricPage++"
+          ></button>
+        </div>
+
+
         <!-- Modal pour les détails du Géocaptcha -->
         <div v-if="isModalVisible" class="modal-overlay">
           <div class="fr-container fr-container--fluid fr-container-md">
@@ -348,6 +364,8 @@ export default {
       sortKey: 'name',
       sortOrder: 'asc',
       selectedTag: 'all',
+      currentMetricPage: 1,
+      metricsPerPage: 9,
 
     };
   },
@@ -410,10 +428,8 @@ export default {
         filtered = filtered.filter(stat => stat.successRate <= 50);
       }
 
-
-      return filtered.sort((a, b) => {
+      filtered.sort((a, b) => {
         const modifier = this.sortOrder === 'asc' ? 1 : -1;
-
         if (this.sortKey === 'name') {
           return modifier * a.name.localeCompare(b.name);
         } else if (this.sortKey === 'successRate') {
@@ -423,11 +439,31 @@ export default {
         }
         return 0;
       });
+
+      // Pagination
+      const start = (this.currentMetricPage - 1) * this.metricsPerPage;
+      const end = start + this.metricsPerPage;
+      return filtered.slice(start, end);
     },
+
 
     // Calculer le nombre total de sessions
     totalSessions() {
       return this.kingpinStats.reduce((sum, stat) => sum + stat.total, 0);
+    },
+
+    totalMetricPages() {
+      let filtered = this.kingpinStats.filter(stat => {
+        return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+      });
+
+      if (this.selectedTag === 'success') {
+        filtered = filtered.filter(stat => stat.successRate > 70);
+      } else if (this.selectedTag === 'failed') {
+        filtered = filtered.filter(stat => stat.successRate <= 50);
+      }
+
+      return Math.ceil(filtered.length / this.metricsPerPage) || 1;
     },
 
     // Calculer le taux de réussite global
@@ -710,17 +746,26 @@ export default {
 
   watch: {
 
-    // Réinitialiser la page courante lorsque le filtre de route change
     filterRoute() {
       this.currentPage = 1;
     },
-
-    // Réinitialiser la page courante lorsque le filtre d'action change
     filterAction() {
       this.currentPage = 1;
-    }
-  },
+    },
+    searchQuery() {
+      this.currentMetricPage = 1;
+    },
+    selectedTag() {
+      this.currentMetricPage = 1;
+    },
+    sortKey() {
+      this.currentMetricPage = 1;
+    },
+    sortOrder() {
+      this.currentMetricPage = 1;
+    },
 
+  },
   mounted() {
 
     window.scrollTo(0, 0);

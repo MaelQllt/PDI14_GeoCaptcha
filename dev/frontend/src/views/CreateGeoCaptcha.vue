@@ -785,18 +785,7 @@ export default {
   initializeMap() {
   this.source = new VectorSource({ wrapX: false });
   
-  // Orthophotos IGN (fond)
-  const orthoIGN = new TileLayer({
-    source: new XYZ({
-      url: 'https://data.geopf.fr/wmts?' +
-           'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=PM' +
-           '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/jpeg' +
-           '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
-      attributions: 'Carte © IGN/Geoplateforme'
-    })
-  });
-  
-  // Plan IGN (avec transparence)
+  // Plan IGN (only this layer will be used)
   const planIGN = new TileLayer({
     source: new XYZ({
       url: 'https://data.geopf.fr/wmts?' +
@@ -813,7 +802,7 @@ export default {
   
   this.map = new Map({
     controls: defaultControls().extend([new FullScreen()]),
-    layers: [orthoIGN, planIGN, this.vectorLayer], // Ordre des couches: ortho, plan, vecteur
+    layers: [planIGN, this.vectorLayer], // Only planIGN and vectorLayer
     target: "map",
     view: new View({
       center: fromLonLat([2.45407, 46.80335]),

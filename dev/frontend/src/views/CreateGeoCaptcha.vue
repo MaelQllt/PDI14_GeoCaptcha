@@ -9,16 +9,12 @@
           <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-pt-10v fr-pt-md-14v fr-pb-6v fr-pb-md-10v">
             <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
               <div class="fr-col-12 fr-col-md-9 fr-col-lg-8"> 
-
-                <!-- Zone du formulaire -->
                 <label class="fr-label label_param" for="select-hint">
                   <span class="fr-h4">Paramètres de génération</span> 
                   <span class="fr-hint-text">En choisissant un mode, vous pourrez générer un GéoCaptcha en France métropolitaine et dans les DOM-TOM.</span>
                 </label>
                 <form @submit.prevent="validateAndCreateGeoCaptcha">
                   <div class="fr-input-group">
-
-                    <!-- Choix parmis les 3 options : Sur la carte, Coordonnées précises et Aléatoire -->
                     <fieldset class="fr-segmented">
                       <div class="fr-segmented__elements">
                         <div class="fr-segmented__element">
@@ -42,12 +38,10 @@
                       </div>
                     </fieldset>
                     
-                    <!-- Phrase en fonction de l'option choisi -->
                     <p v-if="selectedOption === '1'" class="choix-zone">Sélectionnez une zone où un GéoCaptcha sera généré. Cliquez une première fois pour initier la sélection, étendez la zone, puis cliquez à nouveau pour valider.</p>
                     <p v-if="selectedOption === '2'" class="choix-zone">Le GéoCaptcha sera généré dans le département de France que vous aurez choisi.</p>
                     <p v-if="selectedOption === '3'" class="choix-zone">Le GéoCaptcha sera généré avec une localisation aléatoire en France.</p>
 
-                    <!-- Select pour la sélection du département pour les options Coordonnées précises et Aléatoire -->
                     <select v-if="selectedOption === '2' || selectedOption === '3'" id="departement" v-model="selectedDepartement" class="fr-select" :class="{ hidden: !isDepartement }" :required="isDepartement">
                       <option value="" disabled selected>Choisissez votre département</option>
                       <option v-for="dept in departements" :key="dept.code" :value="dept.code">
@@ -55,7 +49,6 @@
                       </option>
                     </select>
 
-                    <!-- Option Coordonnées précises -->
                     <div v-if="selectedOption === '2'">
                       <div class="fr-select-group">
                         <label class="fr-label" for="select">Choix du département:</label>
@@ -85,7 +78,6 @@
                       </div>
                     </div>           
 
-                    <!-- Option Aléatoire -->
                     <div v-if="selectedOption === '3'">
                       <div class="fr-input-group">
                         <label class="fr-label" for="random-departement">Département aléatoire :</label>
@@ -108,10 +100,8 @@
                       </div>
                     </div>
 
-                    <!-- Option Sur la carte -->
                     <div v-if="selectedOption === '1'">
                       <div class="map-container">
-                        
                         <!-- Carte -->
                         <div id="map" class="map"></div>
                         
@@ -146,7 +136,6 @@
                       </div>
                     </div>
 
-                    <!-- Choix du mode -->
                     <div class="fr-input-group mode-format">
                       <label class="fr-label" for="mode">Mode :</label>
                       <select id="mode" v-model="mode" class="fr-select" required>
@@ -157,7 +146,6 @@
                       </select>
                     </div>
 
-                    <!-- Bouton pour générer une tuile -->
                     <div class="button-container">
                       <div v-if="selectedOption === '3'" class="tooltip-container">
                         <label @click="closeDepartement" class="fr-icon-refresh-line"></label>
@@ -165,14 +153,12 @@
                       <button type="submit" class="fr-btn btn-generer">Générer</button>
                     </div>
 
-                    <!-- Alerte d'acceptation de la tuile -->
                     <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
                       <h3 class="fr-alert__title">Succès de la création</h3>
                       <p v-if="isDepartement">{{ successMessage }}</p>
                       <p v-else>GéoCaptcha créé avec une localisation en France.</p>
                     </div>
 
-                    <!-- Alerte de refus de la tuile -->
                     <div v-if="isRefuse" id="alert-1068" class="fr-alert fr-alert--info">
                       <h3 class="fr-alert__title">Tuile refusée</h3>
                       <p v-if="isDepartement">{{ successMessage }}</p>
@@ -180,7 +166,6 @@
                     </div>
                   </div>
                   
-                  <!-- Modale avec la tuile générée -->
                   <div v-if="isModalOpen" class="modal-overlay">
                     <div class="fr-container fr-container--fluid fr-container-md">
                       <div class="fr-grid-row fr-grid-row--center">
@@ -197,8 +182,7 @@
                               </h1>
                               <p>Voici un GéoCaptcha correspondant à la zone géographique choisi: </p>
                               <div class="image-container">
-                                <img :src="imageTuile" alt="geocaptcha-background" class="background-tile" v-if="imageTuile">
-                                <img :src="foregroundTuile" alt="geocaptcha-foreground" class="foreground-tile" v-if="foregroundTuile">
+                                <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
                                 <p v-else>Chargement de l'image...</p>
                               </div>
                             </div>
@@ -249,7 +233,6 @@ export default {
   name: "OpenLayersMap",
   data() {
     return {
-      
       selectedOption: "1",
       selectedDepartement: "",
       departements: [],
@@ -286,7 +269,6 @@ export default {
   },
 
   watch: {
-
     selectedShape() {
       this.updateInteraction();
     },
@@ -402,6 +384,35 @@ export default {
       this.showGeoCaptchaTile();
     },
 
+    async showGeoCaptchaTile() {
+      // Conversion des coordonnées latitude/longitude en coordonnées de tuile
+      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 15 pour les GéoCaptchas
+      console.log("Coordonnées de la tuile :", tileCoords);
+
+      // Préparation des données pour l'API
+      const data = {
+        id: this.generateUniqueId(),
+        x: tileCoords.x,
+        y: tileCoords.y,
+        z: 15,
+        zipcode: this.zipcode,
+        mode: this.mode,
+        ok: "1"
+      };
+      console.log("Données envoyées à l'API :", data);
+
+      // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
+      if (data.mode === 'plan-sur-plan') {
+        data.mode = 'plan';
+      }
+
+      try {
+        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
+        this.isModalOpen = true;
+      } catch (error) {
+        console.error("Erreur :", error);
+      }
+    },
 
     async createGeoCaptcha() {
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile
@@ -457,70 +468,25 @@ export default {
       }
     },
 
-    async showGeoCaptchaTile() {
-  const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15);
-  const data = {
-    id: this.generateUniqueId(),
-    x: tileCoords.x,
-    y: tileCoords.y,
-    z: 15,
-    zipcode: this.zipcode,
-    mode: this.mode,
-    ok: "1"
-  };
-
-  // Utilise le mode sélectionné pour la tuile de premier plan
-  const { backgroundUrl, foregroundUrl } = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
-
-  if (backgroundUrl && foregroundUrl) {
-    this.imageTuile = backgroundUrl;
-    this.foregroundTuile = foregroundUrl;
-    this.isModalOpen = true;
-  } else {
-    console.error("Erreur : Impossible de récupérer les tuiles.");
-  }
-}
-,
-
-async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
-  try {
-    // Récupération de l'image de la tuile de fond en mode 'plan'
-    const backgroundResponse = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=plan&tileMatrix=${tileMatrix}&col=${col}&row=${row}`, {
-      method: "GET",
-      headers: {
-        "Accept": "image/png",
-        "x-api-key": import.meta.env.VITE_API_KEY,
-        "x-app-id": import.meta.env.VITE_API_ID,
+    async getCaptchaImageTuile(layer, tileMatrix, col, row) {
+      // Récupération de l'image de la tuile à partir de l'API 
+      try {
+        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${layer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`,
+          {
+            method: "GET",
+            headers: {
+              "Accept": "image/png",
+              "x-api-key": import.meta.env.VITE_API_KEY,
+              "x-app-id": import.meta.env.VITE_API_ID,
+            }
+          }
+        );
+        if (!response.ok) throw new Error('Image non trouvée');
+        return URL.createObjectURL(await response.blob());
+      } catch (error) {
+        console.log(error)
       }
-    });
-
-    if (!backgroundResponse.ok) throw new Error('Image de fond non trouvée');
-
-    const backgroundBlob = await backgroundResponse.blob();
-    const backgroundUrl = URL.createObjectURL(backgroundBlob);
-
-    // Récupération de l'image de la tuile de premier plan avec le mode sélectionné
-    const foregroundResponse = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${foregroundLayer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`, {
-      method: "GET",
-      headers: {
-        "Accept": "image/png",
-        "x-api-key": import.meta.env.VITE_API_KEY,
-        "x-app-id": import.meta.env.VITE_API_ID,
-      }
-    });
-
-    if (!foregroundResponse.ok) throw new Error('Image de premier plan non trouvée');
-
-    const foregroundBlob = await foregroundResponse.blob();
-    const foregroundUrl = URL.createObjectURL(foregroundBlob);
-
-    return { backgroundUrl, foregroundUrl };
-  } catch (error) {
-    console.error("Erreur lors de la récupération des tuiles :", error);
-    return { backgroundUrl: null, foregroundUrl: null };
-  }
-}
-,
+    },
 
     // Fonction de conversion des coordonnées latitude/longitude en coordonnées de tuile
     latLonToTile(lat, lon, z) {
@@ -787,7 +753,7 @@ async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
         target: "map",
         view: new View({
           center: fromLonLat([2.45407, 46.80335]),
-          zoom: 5,
+          zoom: 5.75,
           maxZoom: 15
         })
       });
@@ -856,7 +822,7 @@ async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
         this.randomPoint = null;
       },
 
-      // Fonction permettant de récupérer le fichier geojson contenant les régions de France avec les outre-mers
+      // Fonction qui permet de récupérer le fichier geojson contenant les régions de France avec les outre-mers
       async loadGeoJson() {
         try {
           const response = await fetch("/regions-avec-outre-mer.geojson"); 
@@ -866,7 +832,7 @@ async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
         }
       },
 
-    // Fonction vérifiant si un point se trouve à l'intérieur de la France
+    // Fonction qui vérifie si un point se trouve à l'intérieur de la France
     isPointInFrance(lon, lat) {
       if (!this.franceGeoJson) return false;
 
@@ -876,7 +842,7 @@ async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
       );
     },
 
-    // Fonction générant un point aléatoire à l'intérieur de la boîte
+    // Fonction qui génère un point aléatoire à l'intérieur de la boîte
     getRandomPointInBox(coords) {
       if (coords.length < 4 || !this.franceGeoJson) return null;
 
@@ -931,7 +897,7 @@ async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
       return [this.longitude, this.latitude];
     },
 
-    // Fonction trouvant le code du département à partir des coordonnées
+    // Fonction qui trouve le code du département à partir des coordonnées
     findDepartementByCoordinates(lon, lat) {
       if (!this.franceGeoJson) return null;
 
@@ -956,7 +922,7 @@ async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
 <style scoped>
 
 
-/* Styles pour la carte OpenLayers */
+/* Style pour la carte OpenLayers */
 .map {
   width: 100%;
   height: 300px;
@@ -976,42 +942,44 @@ async getCaptchaImageTuile(foregroundLayer, tileMatrix, col, row) {
   height: 100%;
 }
 
+.map .ol-rotate {
+  top: 3em;
+}
 
 
-/* Styles pour le formulaire */
-
+/* Style pour le formulaire */
 .row {
   margin-top: 20px;
 }
 
 .fr-h1 {
-  margin-top: 170px; 
-  text-align: center;
+margin-top: 170px; 
+text-align: center;
 }
 
 .label_param {
-  text-align: center;
-  margin-bottom: 20px;
+text-align: center;
+margin-bottom: 20px;
 }
 
 .choix-zone {
-  margin-top: 20px;
-  margin-bottom: -20px;
+margin-top: 20px;
+margin-bottom: -20px;
 }
 
 .lat-format {
-  margin-top: 25px;
+margin-top: 25px;
 }
 
 .mode-format {
-  margin-top: 25px;
+margin-top: 25px;
 }
 
 form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 20px;
 }
 
 .tag-undo{
@@ -1019,78 +987,94 @@ form {
 }
 
 .button-container {
-  display: flex;
-  align-items: center; 
-  gap: 10px; 
+display: flex;
+align-items: center; 
+gap: 10px; 
 }
 
 .tag-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-bottom: 10px;
+display: flex;
+justify-content: flex-end;
+gap: 10px;
+margin-bottom: 10px;
 }
 
 .btn-generer {
-  display: block;
-  margin-left: auto;
+display: block;
+margin-left: auto;
 } 
 
 
-/* Styles pour le modal */
-
+/* Style pour le modal */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; 
-}
-
-.fr-modal__title {
-  margin-bottom: 1em;
-  text-align: center;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5); 
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 1000; 
 }
 
 .image-container {
-  display: flex;
-  justify-content: center;
+display: flex;
+justify-content: center;
 }
 
 .fr-modal__content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+width: 100%;
+}
+
+.fr-modal__title {
+margin-bottom: 1em;
+text-align: center;
+}
+.modal {
+background-color: white;
+padding: 2rem;
+border-radius: 8px;
+width: 80%;
+max-width: 500px;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+position: relative;
+}
+
+.fr-modal__content img {
+object-fit: contain;
+}
+
+.modal-content {
+padding: 1em;
 }
 
 .accept-btn{
-  outline: 2px solid rgb(0,0,145);
+outline: 2px solid rgb(0,0,145);
 }
 
 .accept-btn:hover{
-  outline: 2px solid rgb(18,18,255);
+outline: 2px solid rgb(18,18,255);
 }
 
 .refuse-btn {
-  color: red;
-  outline: 2px solid red;
+color: red;
+outline: 2px solid red;
 }
 
 .hidden {
-  visibility: hidden;
-  opacity: 0;
+visibility: hidden;
+opacity: 0;
 }
 
 .fr-error-text {
-  color: red;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+color: red;
+font-size: 0.875rem;
+margin-top: 0.25rem;
 }
 
 .fr-icon-refresh-line:hover {
@@ -1099,27 +1083,6 @@ form {
 }
 
 #alert-1068 {
-  margin-top:1em;
+margin-top:1em;
 }
-
-.image-container {
-  position: relative;
-  width: 100%;
-  height: auto;
-}
-
-.background-tile {
-  width: 100%;
-  height: auto;
-}
-
-.foreground-tile {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  clip-path: circle(50%);
-}
-
 </style>

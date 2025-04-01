@@ -1,139 +1,125 @@
 <template>
-  <footer class="footer">
-    <!-- Partie haute : Nous contacter et accès rapide Git -->
-    <section class="footer-top">
-      <div class="fr-container">
-        <div class="footer-contact">
-          <!-- Titre "Nous contacter" -->
-          <h2 class="footer-title">Nous contacter</h2>
+  <footer class="fr-footer" role="contentinfo" id="footer-6953">
+    <!-- Container principal du footer -->
+    <div class="fr-container">
+      <!-- Corps du footer -->
+      <div class="fr-footer__body">
+        <!-- Affichage logo et république française -->
+        <div class="fr-footer__brand fr-enlarge-link">
+          <a id="footer-brand-link-6954" title="Captchadmin Géo" href="/">
+            <p class="fr-logo">
+              République<br>française
+            </p>
+          </a>
+        </div>
 
-          <!-- Phrase sous le titre -->
-          <p class="footer-text">
-            Pour toute question ou demande d'information, vous pouvez contacter les personnes suivantes :
+        <!-- Contenu principal du footer -->
+        <div class="fr-footer__content">
+          <!-- Description du contenu -->
+          <p class="fr-footer__content-desc">
+            Interface administrateur des GéoCaptchas réalisé par des étudiants de l'ENSG. Les GéoCaptchas sont des défis Captcha innovants développés par la MARS (Mission Architecture Réseau et Sécurité) et qui sont basés sur des données géographiques.
           </p>
 
-          <!-- Les adresses mails sur la même ligne -->
-          <div class="contact-list">
-            <a href="mailto:clement.rathana@ensg.eu">clement.rathana@ensg.eu</a>
-            <a href="mailto:ibrahima.fofana@ensg.eu">ibrahima.fofana@ensg.eu</a>
-            <a href="mailto:diego.posado-banuls@ensg.eu">diego.posado-banuls@ensg.eu</a>
-            <a href="mailto:mael.quillat@ensg.eu">mael.quillat@ensg.eu</a>
-          </div>
-
-          <!-- Lien d'accès rapide vers le GitHub -->
-          <p class="footer-text">
-            Accès rapide : 
-            <a href="https://github.com/MaelQllt/PDI14_GeoCaptcha" target="_blank" rel="noopener noreferrer">GitHub du projet</a>
-          </p>
+          <!-- Liste des liens utiles -->
+          <ul class="fr-footer__content-list">
+            <li class="fr-footer__content-item">
+              <a title="géocaptcha.fr - nouvelle fenêtre" id="footer__content-link-6957" href="https://qlf-geocaptcha.ign.fr/api/v1/#" target="_blank" rel="noopener external" class="fr-footer__content-link">
+                géocaptcha.ign.fr
+              </a>
+            </li>
+            <li class="fr-footer__content-item">
+              <a title="ign.fr - nouvelle fenêtre" id="footer__content-link-6955" href="https://www.ign.fr/" target="_blank" rel="noopener external" class="fr-footer__content-link">
+                ign.fr
+              </a>
+            </li>
+            <li class="fr-footer__content-item">
+              <a title="ensg.eu - nouvelle fenêtre" id="footer__content-link-6956" href="https://ensg.eu/fr" target="_blank" rel="noopener external" class="fr-footer__content-link">
+                ensg.eu
+              </a>
+            </li>
+            <li class="fr-footer__content-item">
+              <a title="github du projet - nouvelle fenêtre" id="footer__content-link-6958" href="https://github.com/MaelQllt/PDI14_GeoCaptcha" target="_blank" rel="noopener external" class="fr-footer__content-link">
+                github du projet
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-    </section>
 
-    <!-- Partie basse : Logos -->
-    <section class="footer-bottom">
-      <div class="fr-container logos">
-        <!-- Logo République Française avec DSFR -->
-        <div class="fr-logo">
-          <République Française class="footer-logo" />
+      <!-- Partie inférieure du footer -->
+      <div class="fr-footer__bottom">
+        <!-- Liste des liens de la partie inférieure -->
+        <!-- La plupart des liens ne renvoient vers rien pour le moment -->
+        <ul class="fr-footer__bottom-list">
+          <li class="fr-footer__bottom-item">
+            <a id="footer__bottom-link-6959" href="/" class="fr-footer__bottom-link">
+              Retour à l'accueil
+            </a>
+          </li>
+          <li class="fr-footer__bottom-item">
+            <a id="footer__bottom-link-6961" href="[url - à modifier]" class="fr-footer__bottom-link">
+              Mentions légales
+            </a>
+          </li>
+          <li class="fr-footer__bottom-item">
+            <a id="footer__bottom-link-6962" href="[url - à modifier]" class="fr-footer__bottom-link">
+              Données personnelles
+            </a>
+          </li>
+          <li class="fr-footer__bottom-item">
+            <a id="footer__bottom-link-6963" href="[url - à modifier]" class="fr-footer__bottom-link">
+              Gestion des cookies
+            </a>
+          </li>
+        </ul>
+
+        <!-- Texte de copyright -->
+        <div class="fr-footer__bottom-copy">
+          <p>© IGN 2025 - Tous droits réservés - Captchamin Géo, l'interface administrateur du GéoCaptcha de l'IGN</p>
         </div>
-        <!-- Logo de l'IGN -->
-        <!-- Logo de l'IGN, logo du milieu -->
-        <img src="@/assets/IGN.png" alt="Logo de l'IGN" class="footer-logo middle" />
-        <!-- Logo de l'école -->
-        <img src="@/assets/ENSG.png" alt="Logo de l'école" class="footer-logo" />
       </div>
-    </section>
+    </div>
   </footer>
 </template>
 
-<script setup>
-// Aucun script nécessaire ici
+<script>
+export default {
+  name: "Footer",
+}
 </script>
 
 <style scoped>
-/* Style général du footer */
-.footer {
-  background-color: #f5f5f5;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Partie haute du footer */
-.footer-top {
+.fr-footer {
+  padding: 20px;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-top: auto;
 }
 
-/* Colonne "Nous contacter" */
-.footer-contact {
-  max-width: 800px;
-  margin: 0 auto;
+.fr-logo {
+  text-align: justify;
 }
 
-/* Titre "Nous contacter" */
-.footer-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #333;
+.fr-footer__content {
+  margin-right: 0px;
 }
 
-/* Texte sous le titre */
-.footer-text {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 1rem;
-}
-
-/* Adresses mails sur la même ligne avec possibilité de wrap */
-.contact-list {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
-}
-
-.contact-list a {
-  text-decoration: none;
-  color: #90c149;
-}
-
-.contact-list a:hover {
-  text-decoration: underline;
-}
-
-/* Partie basse du footer */
-/* Partie basse du footer */
-.footer-bottom {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.logos {
-  display: flex;
-  justify-content: space-between; /* Espacement égal entre les logos */
-  align-items: center;
-  gap: 1rem; /* Espacement entre tous les logos */
-  width: 100%; /* Pour étendre les logos sur toute la largeur disponible */
-  max-width: 500px; /* Ajuste cette valeur en fonction de la largeur souhaitée */
+.fr-footer__content-desc {
+  text-align: justify;
 }
 
 .footer-logo {
-  width: 80px; /* Taille des logos */
-  height: 80px;
-  object-fit: contain; /* Pour garder le ratio des logos */
+  width: 120px; /* Taille des logos */
+  height: 120px;
+  object-fit: contain; 
 }
 
-/* Centrer le logo du milieu */
 .footer-logo.middle {
-  margin-left: auto; /* Pousse les logos à gauche */
-  margin-right: auto; /* Pousse les logos à droite */
+  margin-left: auto; 
+  margin-right: auto; 
 }
 
-
+.fr-footer__bottom-copy {
+  width: 60%; 
+  margin: 0 auto;
+}
 </style>

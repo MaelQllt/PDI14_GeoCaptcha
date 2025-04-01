@@ -790,85 +790,85 @@ watch: {
 
 /* Styles des onglets à sélectionner */
 .fr-tabs__tab--selected {
-background-color: #007bff;
-color: white;
+  background-color: #007bff;
+  color: white;
 }
 
 .fr-tabs{
-margin-left: 50px;
-margin-right: 50px;
-margin-top: 170px;  
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 170px;  
 }
 
 /* Masquer les panels inactifs tout en maintenant leur espace */
 .fr-tabs__panel {
-visibility: hidden; 
-opacity: 0; 
-transition: opacity 0.1s ease, visibility 0.3s ease;
+  visibility: hidden; 
+  opacity: 0; 
+  transition: opacity 0.1s ease, visibility 0.3s ease;
 }
 
 /* Afficher le panel sélectionné */
 .fr-tabs__panel--selected {
-visibility: visible;
-opacity: 1; 
+  visibility: visible;
+  opacity: 1; 
 }
 
 
 /* Styles pour la recherche d'utilisateur */
 .key-list {
-margin: 1em;
+  margin: 1em;
 }
 
 .barre {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
 }
 
 .barre h1 {
-margin: 0;
+  margin: 0;
 }
 
 /* Styles des boutons */
 
 #close{
-background: none;
-border: none;
-cursor: pointer;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .fr-btn--reject {
-      background-color: red; 
-      color: #fff; 
-  }
+  background-color: red; 
+  color: #fff; 
+}
 
-  .fr-btn--reject:hover {
-      background-color: #c82333; 
-  }
+.fr-btn--reject:hover {
+  background-color: #c82333; 
+}
 
 #cancel{
-background-color: #ddd !important;
-color: #3a3a3a;
+  background-color: #ddd !important;
+  color: #3a3a3a;
 }
 
 #cancel:hover {
-background-color: #c1c1c1 !important;
-color: #3a3a3a;
+  background-color: #c1c1c1 !important;
+  color: #3a3a3a;
 }
 
 .key-generation {
-padding: 1em;
+  padding: 1em;
 }
 
 .delete-btn {
-background-color: red;
-color: white;
+  background-color: red;
+  color: white;
 }
 
 .delete-btn:hover {
-background-color: #c82333;
-color: white;
+  background-color: #c82333;
+  color: white;
 }
 
 .edit-btn {
@@ -880,36 +880,36 @@ color: white;
 }
 
 .fr-btn--disabled {
-opacity: 0.5;
-cursor: not-allowed;
-pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Pour une meilleure indication visuelle */
 .cle-generer {
-transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .fr-input-group {
-margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 .fr-input-group .fr-label {
-margin-bottom: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 .fr-input {
-width: 100%;
-padding: 0.8rem;
+  width: 100%;
+  padding: 0.8rem;
 }
 
 .cle-generer {
-display: block;
-margin-left: auto;
+  display: block;
+  margin-left: auto;
 }
 
 .fr-alert {
-margin: 15px;
+  margin: 15px;
 }
 
 /* Modal */
@@ -938,118 +938,118 @@ margin: 15px;
 }
 
 .modal-actions {
-display: flex;
-justify-content: space-between;
-align-items: flex-end; 
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; 
 }
 
 .modal-actions .btn-cancel {
-background-color: #ddd;
-color: #3a3a3a;
-align-self: flex-end; 
+  background-color: #ddd;
+  color: #3a3a3a;
+  align-self: flex-end; 
 }
 
 .modal-actions .btn-cancel:hover {
-background-color: #c1c1c1;
+  background-color: #c1c1c1;
 }
 
 
 .modal-actions button {
-width: 48%;
+  width: 48%;
 }
 
 .modal-actions .btn-delete {
-background-color: red;
-color: white;
+  background-color: red;
+  color: white;
 }
 
 .modal-actions .btn-delete:hover {
-background-color: #c82333;
+  background-color: #c82333;
 }
 
 .modal-actions .btn-cancel {
-background-color: #ddd;
-color: #3a3a3a;
+  background-color: #ddd;
+  color: #3a3a3a;
 }
 
 .modal-actions .btn-cancel:hover {
-background-color: #c1c1c1;
+  background-color: #c1c1c1;
 }
 
 
 /* Pagination */
 .pagination {
-display: flex;
-justify-content: center;
-align-items: center;
-margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .pagination-btn:disabled {
-background-color: #ccc;
-cursor: not-allowed;
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .page-info {
-font-weight: bold;
+  font-weight: bold;
 }
 
 
 .fr-tile__title {
-font-size: 1rem;  
-margin-bottom: 0.25rem;  
-line-height: 1.2;  
+  font-size: 1rem;  
+  margin-bottom: 0.25rem;  
+  line-height: 1.2;  
 }
 
 .search-container {
-display: flex;
-align-items: center; 
-gap: 8px; 
+  display: flex;
+  align-items: center; 
+  gap: 8px; 
 }
 
 
 /* Tags */
 .tag-container {
-margin-right: 25px;
+  margin-right: 25px;
 }
 
 .fr-tags-group .fr-tag{
-vertical-align: middle;
-margin-bottom: 0px;
+  vertical-align: middle;
+  margin-bottom: 0px;
 }
 
 .tooltip-container {
-position: relative;
+  position: relative;
 }
 
 .tooltip-button {
-background-color: #007bff;
-color: white;
-border: none;
-padding: 8px;
-cursor: pointer;
-border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .custom-tooltip {
-position: absolute;
-bottom: 100%;
-left: 50%;
-transform: translateX(-50%);
-background-color: rgb(21, 21, 21);
-color: white;
-padding: 6px 10px;
-border-radius: 4px;
-white-space: nowrap;
-font-size: 14px;
-visibility: visible;
-opacity: 1;
-transition: opacity 0.3s ease-in-out;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(21, 21, 21);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 14px;
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .tooltip-container:hover .custom-tooltip {
-visibility: visible;
-opacity: 1;
+  visibility: visible;
+  opacity: 1;
 }
 
 </style>

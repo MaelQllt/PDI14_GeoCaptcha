@@ -74,7 +74,6 @@
                                 <p v-if="longitudeError" class="fr-error-text">{{ longitudeError }}</p>
                               </div>
 
-                              <!-- Nouveaux champs pour zipcode et mode -->
                               <div class="fr-input-group">
                                 <label class="fr-label" for="zipcode">Zipcode :</label>
                                 <input type="text" id="zipcode" v-model="zipcode" class="fr-input" placeholder="Entrez un code postal" required />
@@ -104,41 +103,38 @@
 
                         <div v-if="selectedOption === '3'">
                           <div class="map-container">
-                          <!-- Carte -->
+
+                              <!-- Carte -->
                               <div id="map" class="map"></div>
                               
-                              <!-- Formulaire pour sélectionner la forme -->
                               <div class="row mt-3">
                                   <div class="col-auto">
-                                  <span class="tag-group">
-                                      <input type="button" value="Annuler la sélection" class="fr-tag tag-undo" @click="undoDraw"/>
-                                  </span>
+                                    <span class="tag-group">
+                                        <input type="button" value="Annuler la sélection" class="fr-tag tag-undo" @click="undoDraw"/>
+                                    </span>
                                   </div>
                               </div>
                           
-                              <!-- Affichage des coordonnées -->
                               <div v-if="boxCoordinates.length > 0" class="mt-3">
 
-                                  <!-- Affichage du point aléatoire -->
                                   <div v-if="randomPoint">
-                                  <p><strong>Point aléatoire dans la boîte :</strong></p>
-                                  <div class="fr-input-group">
-                                  <label class="fr-label" for="latitude">Latitude :</label>
-                                  <input type="number" step="any" id="latitude" v-model="latitude" class="fr-input" :placeholder="latitudePlaceholder" readonly /></div>
-      
-                                  <div class="fr-input-group">
-                                  <label class="fr-label" for="longitude">Longitude :</label>
-                                  <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" readonly /></div>
-      
-                                  <!-- <div class="fr-input-group">
-                                  <label class="fr-label" for="zipcode">Zipcode :</label>
-                                  <input type="text" id="zipcode" v-model="zipcode" class="fr-input" readonly /></div> -->
 
-                                  <div v-if="showAlert" id="alert-1070" class="fr-alert fr-alert--error">
-                                      <h3 class="fr-alert__title">Erreur</h3>
-                                      <p>Impossible de générer un GéoCaptcha en dehors de la France. Veuillez sélectionner une zone en France.</p>
-                                  </div>
+                                    <p><strong>Point aléatoire dans la boîte :</strong></p>
 
+                                    <div class="fr-input-group">
+                                      <label class="fr-label" for="latitude">Latitude :</label>
+                                      <input type="number" step="any" id="latitude" v-model="latitude" class="fr-input" :placeholder="latitudePlaceholder" readonly />
+                                    </div>
+        
+                                    <div class="fr-input-group">
+                                      <label class="fr-label" for="longitude">Longitude :</label>
+                                      <input type="number" step="any" id="longitude" v-model="longitude" class="fr-input" :placeholder="longitudePlaceholder" readonly />
+                                    </div>
+
+                                    <div v-if="showAlert" id="alert-1070" class="fr-alert fr-alert--error">
+                                        <h3 class="fr-alert__title">Erreur</h3>
+                                        <p>Impossible de générer un GéoCaptcha en dehors de la France. Veuillez sélectionner une zone en France.</p>
+                                    </div>
                                   
                                   </div>
                               </div>
@@ -146,34 +142,43 @@
                         </div>
 
                         <div class="fr-input-group mode-format">
+
                           <label class="fr-label" for="mode">Mode :</label>
+
                           <select id="mode" v-model="mode" class="fr-select" required>
                             <option value="" disabled selected>Choisissez un mode</option>
                             <option value="ortho">Ortho</option>
                             <option value="plan-sur-plan">Plan</option>
                             <option value="scan">Scan</option>
                           </select>
+
                         </div>
 
                         <div class="button-container">
+
                           <div v-if="selectedOption === '2'" class="tooltip-container">
-                            <!-- Bouton radio supprimé -->
                             <label @click="closeDepartement" class="fr-icon-refresh-line"></label>
                           </div>
                           <button type="submit" class="fr-btn btn-generer">Générer</button>
+
                         </div>
 
                         <div v-if="isSuccess" id="alert-1068" class="fr-alert fr-alert--success">
+
                           <h3 class="fr-alert__title">Succès de la création</h3>
                           <p v-if="isDepartement">{{ successMessage }}</p>
                           <p v-else>GéoCaptcha créé avec une localisation en France.</p>
+
                         </div>
 
                         <div v-if="isRefuse" id="alert-1068" class="fr-alert fr-alert--info">
+
                           <h3 class="fr-alert__title">Tuile refusée</h3>
                           <p v-if="isDepartement">{{ successMessage }}</p>
                           <p v-else>GéoCaptcha non enregistré.</p>
+
                         </div>
+
                       </div>
                       
 
@@ -181,6 +186,7 @@
                           <div class="fr-container fr-container--fluid fr-container-md">
                             <div class="fr-grid-row fr-grid-row--center">
                               <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+
                                 <div class="fr-modal__body">
                                   <div class="fr-modal__header">
                                     <button @click="closeModal" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
@@ -197,6 +203,7 @@
                                       <p v-else>Chargement de l'image...</p>
                                     </div>
                                   </div>
+                                  
                                   <div class="fr-modal__footer">
                                     <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
                                         <button @click="handleConserver" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>

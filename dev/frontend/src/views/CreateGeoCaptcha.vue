@@ -195,13 +195,26 @@
                                 <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
                                 GéoCaptcha généré :
                               </h1>
-                              <p>Voici un GéoCaptcha correspondant à la zone géographique choisi: </p>
+                              <p>Voici un GéoCaptcha correspondant à la zone géographique choisie :</p>
                               <div class="image-container">
-                                <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
-                                <p v-else>Chargement de l'image...</p>
+                                <!-- Conteneur pour l'image circulaire rotative -->
+                                <div class="captchas" @pointerdown="down($event)" @pointerup="up" @mouseleave="up">
+                                <div class="captcha-kingpin">
+                                  <div class="layer layer-base">
+                                    <img :src="backgroundImageTuile" alt="fond du geocaptcha" v-if="backgroundImageTuile">
+                                  </div>
+                                  <div class="layer layer-stacked" :style="{ transform: `rotate(-${rotationAngle}deg)` }">
+                                    <div class="cropped">
+                                      <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                                    </div>
+                                    <div class="grab"></div>
+                                  </div>
+                                </div>
+                                </div>
+                                <p v-if="!imageTuile">Chargement de l'image...</p>
                               </div>
                             </div>
-                            
+
                             <div class="fr-modal__footer">
                               <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
                                 <button @click="handleConserver" type="button" id="button-6047" class="accept-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Accepter</button>
@@ -280,6 +293,13 @@ export default {
       boxCoordinates: [],
       randomPoint: null,
       showAlert: false,
+
+      rotationAngle: Math.floor(Math.random() * 360),
+      backgroundMode: "", // Pour stocker le mode de fond différent
+      backgroundImageTuile: "",
+      startAngle: 0,
+      bboxCenter: {},
+      captcha: null,
     };
   },
 
@@ -297,6 +317,7 @@ export default {
 
   async mounted() {
     window.scrollTo(0, 0);
+    this.rotationAngle = Math.floor(Math.random() * 360);
     this.recupDepartementFrance();
     this.$nextTick(() => {
       const mapContainer = document.getElementById('map');
@@ -400,9 +421,12 @@ export default {
     },
 
     async showGeoCaptchaTile() {
+
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile
-      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 15 pour les GéoCaptchas
+      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15);
       console.log("Coordonnées de la tuile :", tileCoords);
+
+      this.rotationAngle = Math.floor(Math.random() * 360);
 
       // Préparation des données pour l'API
       const data = {
@@ -417,17 +441,54 @@ export default {
       console.log("Données envoyées à l'API :", data);
 
       // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
+      let actualMode = data.mode;
       if (data.mode === 'plan-sur-plan') {
-        data.mode = 'plan';
+        actualMode = 'plan';
       }
 
       try {
-        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
+        // Récupérer l'image principale
+        this.imageTuile = await this.getCaptchaImageTuile(actualMode, data.z, data.x, data.y);
+        
+        // Utiliser exactement la même image pour l'arrière-plan mais avec plan comme mode
+        this.backgroundImageTuile = await this.getCaptchaImageTuile("plan", data.z, data.x, data.y);
+        
         this.isModalOpen = true;
       } catch (error) {
         console.error("Erreur :", error);
       }
     },
+
+    down(evt) {
+      this.captcha = evt.currentTarget;
+      let bbox = this.captcha.getBoundingClientRect();
+      this.bboxCenter = {
+        x: bbox.left + bbox.width / 2,
+        y: bbox.top + bbox.height / 2,
+      };
+      this.startAngle = (this.getAngle(evt) - this.rotationAngle + 720) % 360;
+      this.captcha._evt = this.move.bind(this);
+      this.captcha.addEventListener('pointermove', this.captcha._evt);
+    },
+    
+    up() {
+      if (this.captcha) {
+        this.captcha.removeEventListener('pointermove', this.captcha._evt);
+      }
+    },
+    
+    move(evt) {
+      this.rotationAngle = (this.getAngle(evt) - this.startAngle + 720) % 360;
+    },
+    
+    getAngle(evt) {
+      return -(
+        (Math.atan2(this.bboxCenter.y - evt.clientY, this.bboxCenter.x - evt.clientX) *
+          180) /
+        Math.PI
+      );
+    },
+
 
     async createGeoCaptcha() {
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile
@@ -1038,11 +1099,6 @@ form {
   text-align: center;
 }
 
-.image-container {
-  display: flex;
-  justify-content: center;
-}
-
 .fr-modal__content {
   display: flex;
   flex-direction: column;
@@ -1081,6 +1137,120 @@ form {
 
 #alert-1068 {
   margin-top:1em;
+}
+
+/* Styles pour le défi géocaptcha */
+
+.image-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 256px;
+  height: 225px;
+}
+
+.captchas {
+  width: 256px;
+  height:200px;
+  margin: 50px auto;
+  box-shadow:0 0 0 1px;
+  background:#d3d3d3;
+  user-select: none;
+}
+
+.captcha-kingpin {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.layer-base {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.layer-base img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.layer-stacked .cropped img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.captcha-kingpin .cropped img {
+  position: absolute;
+  width: 256px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: none; 
+}
+
+.captcha-kingpin .layer-base img {
+  width: 256px;
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.captcha-kingpin .layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-position: 50% 50%;
+}
+
+.captcha-kingpin .layer-stacked {
+  cursor: grab;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  top: 25px;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.captcha-kingpin .cropped {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 1px 3px, 0 0 0 15px rgba(36,60,71,.25);
+}
+
+.captcha-kingpin .grab {
+  cursor: grab;
+  position: absolute;
+  z-index: 1;
+  right: -10px;
+  top: 60px;
+  width: 20px;
+  height: 30px;
+  border-radius: 3px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 30'%3E%3Cpath d='m5,10h10M5,15h10M5,20h10' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+  background-color: #243c47;
+}
+
+.captcha-kingpin .grab:hover {
+  background-color: #30a7df;
 }
 
 </style>

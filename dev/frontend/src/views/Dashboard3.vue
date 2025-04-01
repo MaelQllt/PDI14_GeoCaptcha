@@ -345,40 +345,41 @@ export default {
       sortOrder: 'asc',
       selectedTag: 'all',
       selectedTags: new Set(),
+      aggregatedData : {},
     };
   },
   computed: {
     filteredLogs() {
       let filtered = this.logs;
-      
+
       if (this.filterAction) {
         filtered = filtered.filter(log => log.action === this.filterAction);
       }
-      
+
       if (this.filterRoute) {
         filtered = filtered.filter(log => log.route === this.filterRoute);
       }
-      
+
       // Tri par date (du plus récent au plus ancien)
       filtered.sort((a, b) => new Date(b.rawTimestamp) - new Date(a.rawTimestamp));
-      
+
       // Pagination
       const start = (this.currentPage - 1) * this.logsPerPage;
       const end = start + this.logsPerPage;
-      
+
       return filtered.slice(start, end);
     },
     totalPages() {
       let filtered = this.logs;
-      
+
       if (this.filterAction) {
         filtered = filtered.filter(log => log.action === this.filterAction);
       }
-      
+
       if (this.filterRoute) {
         filtered = filtered.filter(log => log.route === this.filterRoute);
       }
-      
+
       return Math.ceil(filtered.length / this.logsPerPage) || 1;
     },
     uniqueRoutes() {
@@ -428,11 +429,11 @@ export default {
       return 0;
     });
   },
-  
+
   totalKingpins() {
     return this.kingpinStats.length;
   },
-  
+
   totalSessions() {
     return this.kingpinStats.reduce((sum, stat) => sum + stat.total, 0);
   },
@@ -441,19 +442,19 @@ export default {
         const totalSuccesses = this.kingpinStats.reduce((sum, stat) => sum + stat.successes, 0);
         return this.totalSessions > 0 ? (totalSuccesses / this.totalSessions) * 100 : 0;
       },
-      
+
       avgTimeGlobal() {
         let totalTime = 0;
         let totalSuccesses = 0;
-        
+
         this.kingpinStats.forEach(stat => {
           totalTime += stat.totalTime;
           totalSuccesses += stat.successes;
         });
-        
+
         return totalSuccesses > 0 ? totalTime / totalSuccesses : 0;
       },
-      
+
   },
   methods: {
 
@@ -485,21 +486,50 @@ export default {
       this.activeTab = tabId;
     },
 
-    async loadData() {
-        try {
-          const gcResponse = await import('../components/FakeGC.json');
-          const sessionResponse = await import('../components/FakeSession.json');
-          
-          this.kingpinData = gcResponse.kingpin || [];
-          this.sessionData = sessionResponse.sessions || [];
-          
-          this.analyzeData();
-        } catch (error) {
-          console.error('Erreur lors du chargement des données:', error);
+    async loadData(firstSessionObject = 1) {
+    try {
+      // Récupération des données de session
+      const sessionResponse = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
+        {
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": import.meta.env.VITE_API_KEY,
+            "x-app-id": import.meta.env.VITE_API_ID,
+          },
         }
-      },
-      
-      
+      );
+
+      if (!sessionResponse.ok) {
+        const errorText = await sessionResponse.text();
+        console.error('Erreur API session:', sessionResponse.status, errorText);
+        throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
+      }
+
+      const sessionData = await sessionResponse.json();
+      const newSessions = sessionData.sessions || [];
+
+      // Ajouter les nouvelles sessions aux données existantes
+      this.sessionData = [...this.sessionData, ...newSessions];
+
+      // Si le nombre de sessions récupérées est égal à 20, appeler récursivement pour récupérer la prochaine page
+      if (newSessions.length === 20) {
+        await this.loadData(firstSessionObject + 20);
+      } else {
+        console.log("Toutes les sessions ont été récupérées.");
+
+        // Analyse des données récupérées
+        this.analyzeData();
+      }
+
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+      this.errorMessage = `Erreur: ${error.message}`;
+      this.isError = true;
+    }
+  },
+
+
       analyzeData() {
         // Créer un mapping des kingpins par nom
         const kingpinsByName = {};
@@ -509,15 +539,15 @@ export default {
           }
           kingpinsByName[kingpin.name].push(kingpin);
         });
-        
+
         // Analyser les sessions pour chaque kingpin
         const statsMap = {};
-        
+
         this.sessionData.forEach(session => {
           const kingpinName = session.captcha?.challenge?.name;
-          
+
           if (!kingpinName) return;
-          
+
           if (!statsMap[kingpinName]) {
             statsMap[kingpinName] = {
               name: kingpinName,
@@ -529,32 +559,31 @@ export default {
               attempts: 0
             };
           }
-          
+
           const stats = statsMap[kingpinName];
           stats.total++;
           stats.attempts += session.attempts || 0;
-          
+
           if (session.success) {
             stats.successes++;
-            
+
             // Calculer le temps en secondes
             if (session.begin && session.end) {
               const beginTime = new Date(session.begin);
               const endTime = new Date(session.end);
               const durationInSeconds = Math.abs((endTime - beginTime) / 1000);
-              
               stats.totalTime += durationInSeconds;
             }
           }
         });
-        
+
         // Calculer les moyennes et taux
         Object.values(statsMap).forEach(stats => {
           stats.successRate = stats.total > 0 ? (stats.successes / stats.total) * 100 : 0;
           stats.avgTime = stats.successes > 0 ? stats.totalTime / stats.successes : 0;
           stats.avgAttempts = stats.total > 0 ? stats.attempts / stats.total : 0;
         });
-        
+
         this.kingpinStats = Object.values(statsMap);
       },
     getBoxClass(action) {
@@ -592,7 +621,7 @@ export default {
       auditService.clearLogs();
       this.logs = [];
       this.showDeleteModal = false;
-      
+
       // Ajouter une entrée d'audit pour la suppression
       const deleteAudit = {
         action: 'INFO',
@@ -601,7 +630,7 @@ export default {
         timestamp: new Date().toLocaleString(),
         rawTimestamp: new Date()
       };
-      
+
       this.logs = [deleteAudit];
       this.currentPage = 1;
     },
@@ -628,8 +657,8 @@ export default {
         {
           headers: {
             "Accept": "application/json",
-            "x-api-key": this.apiKey,
-            "x-app-id": this.apiId
+            "x-api-key": import.meta.env.VITE_API_KEY,
+            "x-app-id": import.meta.env.VITE_API_ID,
           },
         }
       );
@@ -645,11 +674,11 @@ export default {
       const sessions = data.sessions;
 
       // Regrouper les sessions par challengeId
-      const aggregatedData = {};
       sessions.forEach(session => {
         const challengeId = session.challengeId;
-        if (!aggregatedData[challengeId]) {
-          aggregatedData[challengeId] = {
+        if (!this.aggregatedData[challengeId]) {
+          this.aggregatedData[challengeId] = {
+            count: 0,
             id: session._id,
             attempts: 0,
             successes: 0,
@@ -661,17 +690,17 @@ export default {
             createdAt: session.createdAt,
           };
         }
-        aggregatedData[challengeId].attempts += session.attempts;
+        this.aggregatedData[challengeId].attempts += session.attempts;
         if (session.success) {
-          aggregatedData[challengeId].successes++;
+          this.aggregatedData[challengeId].successes++;
         } else {
-          aggregatedData[challengeId].failures++;
+          this.aggregatedData[challengeId].failures++;
         }
-        aggregatedData[challengeId].accuracy = (aggregatedData[challengeId].successes / aggregatedData[challengeId].attempts) * 100;
+        this.aggregatedData[challengeId].accuracy = (this.aggregatedData[challengeId].successes / this.aggregatedData[challengeId].attempts) * 100;
       });
 
       // Convertir l'objet agrégé en tableau
-      this.items = Object.values(aggregatedData);
+      this.items = Object.values(this.aggregatedData);
       console.log("Données agrégées:", this.items); // Vérifiez les données agrégées
 
       // Calculer les métriques
@@ -718,7 +747,7 @@ export default {
         // Stocker les informations du géocaptcha sélectionné
         this.selectedGeocaptcha = item;
         this.isModalVisible = true; // Afficher le modal
-        
+
         // Ajouter une entrée d'audit
         const auditEntry = {
           action: 'NAVIGATE',
@@ -727,7 +756,7 @@ export default {
           timestamp: new Date().toLocaleString(),
           rawTimestamp: new Date()
         };
-        
+
         if (auditService && typeof auditService.addLog === 'function') {
           auditService.addLog(auditEntry);
         }
@@ -779,8 +808,8 @@ export default {
             method: 'DELETE',
             headers: {
               "Content-Type": "application/json",
-              "x-api-key": this.apiKey,
-              "x-app-id": this.apiId
+              "x-api-key": import.meta.env.VITE_API_KEY,
+              "x-app-id": import.meta.env.VITE_API_ID,
             },
           }
         );
@@ -806,7 +835,7 @@ export default {
           timestamp: new Date().toLocaleString(),
           rawTimestamp: new Date()
         };
-        
+
         if (auditService && typeof auditService.addLog === 'function') {
           auditService.addLog(auditEntry);
         }
@@ -816,7 +845,7 @@ export default {
         this.closeConfirmationModal();
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
-        
+
         // Ajouter une entrée d'audit en cas d'erreur
         const auditEntry = {
           action: 'ERROR',
@@ -825,7 +854,7 @@ export default {
           timestamp: new Date().toLocaleString(),
           rawTimestamp: new Date()
         };
-        
+
         if (auditService && typeof auditService.addLog === 'function') {
           auditService.addLog(auditEntry);
         }
@@ -844,14 +873,14 @@ export default {
   mounted() {
     window.scrollTo(0, 0);
     this.loadLogs();
-    //this.loadData();
-    this.fetchData(); 
+    this.loadData();
+    //this.fetchData();
   },
   created() {
     this.loadLogs();
-    //this.loadData();
-    this.fetchData(); 
-    
+    this.loadData();
+    //this.fetchData();
+
     // Rafraîchir les logs toutes les 5 secondes
     this.refreshInterval = setInterval(this.loadLogs, 5000);
   },
@@ -866,7 +895,7 @@ export default {
 .fr-tabs{
   margin-left: 50px;
   margin-right: 50px;
-  margin-top: 170px;  
+  margin-top: 170px;
 }
 
 .fr-tabs__tab--selected {
@@ -875,9 +904,9 @@ export default {
 }
 
 .fr-tabs__panel {
-  visibility: hidden; 
+  visibility: hidden;
   opacity: 0;
-  transition: opacity 0.1s ease, visibility 0.3s ease; 
+  transition: opacity 0.1s ease, visibility 0.3s ease;
   display: none;
 }
 
@@ -890,7 +919,7 @@ export default {
 
 .select-group-metrics {
   display: flex;
-  align-items: flex-end; 
+  align-items: flex-end;
   margin-bottom: 20px;
   justify-content: space-between;
 }
@@ -930,7 +959,7 @@ export default {
 
 
 .select-metrics{
-  width: 200px; 
+  width: 200px;
 }
 
 .infos {
@@ -1029,7 +1058,7 @@ export default {
 
 .action-audit{
   width: 85px;
-  text-align: center; 
+  text-align: center;
   color: white;
   font-weight: bold;
   padding: 5px 10px;
@@ -1192,5 +1221,3 @@ export default {
 
 
 </style>
-
-  

@@ -1032,6 +1032,4 @@ form {
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
-
-  </style>
-  
+</style>

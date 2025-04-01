@@ -52,16 +52,18 @@
                 <option value="id-desc">ID (décroissant)</option>
                 <option value="success-asc">Précision (croissant)</option>
                 <option value="success-desc">Précision (décroissant)</option>
+                <option value="attempts-asc">Essais (coissant)</option>
+                <option value="attempts-desc">Essais (décroissant)</option>
               </select>
             </div>
           </div>
         </div>
 
           <div class="fr-grid-row fr-grid-row--gutters">
-            <div v-for="item in filteredItems" :key=item.id class="fr-col-12 fr-col-md-6 fr-col-lg-4" @click="selectGeocaptcha(item)">
-              <div class="fr-tile" :class="getAccuracyClass(item.accuracy,item.attempts)" id ="tile-7451">
+            <div v-for="item in paginatedItems" :key="item.id" class="fr-col-12 fr-col-md-6 fr-col-lg-4" @click="selectGeocaptcha(item)">
+              <div class="fr-tile" :class="getAccuracyClass(item.accuracy, item.attempts)" id="tile-7451">
                 <div class="fr-tile__header">
-                  <img :src="getChallengeImageUrl(item.challengeId)" alt="Logo Géocaptcha" class="geocaptcha-logo" />
+                  <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/challenge/${item.challenge.challengeID}`" alt="GeoCaptcha Image" class="geocaptcha-image" />
                 </div>
                 <div class="fr-tile__body">
                   <div class="infos">
@@ -76,6 +78,13 @@
             </div>
           </div>
 
+        <!-- Pagination -->
+        <div class="pagination" v-if="totalPages > 1">
+          <button @click="prevPage" :disabled="currentPage === 1" class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"></button>
+          <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+          <button @click="nextPage" :disabled="currentPage === totalPages" class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line"></button>
+        </div>
+
         <!-- Modal pour Détails du Géocaptcha -->
         <div v-if="isModalVisible" class="modal-overlay">
           <div class="fr-container fr-container--fluid fr-container-md">
@@ -85,7 +94,7 @@
                   <div class="fr-modal__header">
                     <h2 id="modal-6053-title" class="fr-modal__title">
                       <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
-                      Détails du Géocaptcha
+                      Détails du GéoCaptcha
                     </h2>
                     <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
                   </div>
@@ -103,8 +112,7 @@
 
                     <!-- Afficher les images du défi -->
                     <div>
-                      <img :src="backendImageUrl" alt="Backend" />
-                      <img :src="frontendImageUrl" alt="Frontend" />
+                      <img :src="`https://qlf-geocaptcha.ign.fr/api/v1/challenge/${selectedGeocaptcha.challenge.challengeID}`" alt="geocap" />
                     </div>
                   </div>
 
@@ -150,7 +158,7 @@
 </template>
 
 <script>
-// import logo from "@/assets/logo.png"; // Importation de l'image
+import logo from "@/assets/logo.png"; // Importation de l'image
 
 export default {
   data() {
@@ -160,9 +168,7 @@ export default {
       error: false,
       totalResolved: 0,
       successRate: 0,
-      backendImageUrl: null,
-      frontendImageUrl: null,
-      logoSrc: null,
+      logoSrc: logo,
       selectedGeocaptcha: null,
       isModalVisible: false,
       isConfirmationModalVisible: false,
@@ -170,96 +176,100 @@ export default {
       apiKey: import.meta.env.VITE_API_KEY,
       apiId: import.meta.env.VITE_API_ID,
       firstObject: 1,
-      nbObjects: 20,
+      nbObjects: 20, // Nombre d'objets à récupérer par appel API
+      currentPage: 1,
+      totalPages: 1,
+      itemsPerPage: 6, // Nombre d'éléments à afficher par page
     };
   },
   computed: {
     // Propriété calculée pour filtrer les items
     filteredItems() {
       if (this.filterOption === 'all') {
-        return this.items;
+      return this.items;
       } else if (this.filterOption === 'id-asc') {
-        return [...this.items].sort((a, b) => a.id.localeCompare(b.id));
+      return [...this.items].sort((a, b) => a.id.localeCompare(b.id));
       } else if (this.filterOption === 'id-desc') {
-        return [...this.items].sort((a, b) => b.id.localeCompare(a.id));
+      return [...this.items].sort((a, b) => b.id.localeCompare(a.id));
       } else if (this.filterOption === 'success-asc') {
-        return [...this.items].sort((a, b) => a.accuracy - b.accuracy);
+      return [...this.items].sort((a, b) => a.accuracy - b.accuracy);
       } else if (this.filterOption === 'success-desc') {
-        return [...this.items].sort((a, b) => b.accuracy - a.accuracy);
+      return [...this.items].sort((a, b) => b.accuracy - a.accuracy);
+      } else if (this.filterOption === 'attempts-asc') {
+      return [...this.items].sort((a, b) => a.attempts - b.attempts);
+      } else if (this.filterOption === 'attempts-desc') {
+      return [...this.items].sort((a, b) => b.attempts - a.attempts);
       }
       return this.items;
+    },
+    paginatedItems() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredItems.slice(start, end);
     }
   },
   methods: {
-    getChallengeImageUrl(challengeId) {
-      return `https://qlf-geocaptcha.ign.fr/api/v1/challenge/${challengeId}`;
-    },
-
-    getImageUrl(filename) {
-      if (!filename) return '';
-      return `https://qlf-geocaptcha.ign.fr/api/v1/admin/tile/${filename}`;
-    },
-    async loadImage(url) {
-        try {
-          const response = await fetch(url, {
-            headers: {
-              'accept': 'image/png',
-              'x-api-key': this.apiKey,
-              'x-app-id': this.apiId
-            }
-          });
-
-          if (!response.ok) throw new Error('Image non trouvée');
-          return URL.createObjectURL(await response.blob());
-        } catch (error) {
-          console.error('Erreur chargement image:', error);
-          return 'https://via.placeholder.com/400x300?text=Image+non+disponible';
-        }
-    },
     // Appliquer le filtre
     applyFilter() {
       console.log("Filtre appliqué:", this.filterOption);
+      this.currentPage = 1; // Réinitialiser la page actuelle lors du changement de filtre
     },
 
     // Récupérer les données des géocaptchas
     async fetchData() {
       try {
-        const response = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject}&nbObjects=${this.nbObjects}`,
-          {
-            headers: {
-              "Accept": "application/json",
-              "x-api-key": this.apiKey,
-              "x-app-id": this.apiId
-            },
-          }
-        );
+        let allItems = [];
+        let totalFetched = 0;
+        let continueFetching = true;
 
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des données");
+        while (continueFetching) {
+          const response = await fetch(
+            `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${this.firstObject + totalFetched}&nbObjects=${this.nbObjects}`,
+            {
+              headers: {
+                "Accept": "application/json",
+                "x-api-key": this.apiKey,
+                "x-app-id": this.apiId
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Erreur lors de la récupération des données");
+          }
+
+          const data = await response.json();
+          const fetchedItems = data.sessions.map(session => ({
+            id: session._id,
+            attempts: session.attempts,
+            successes: session.success ? 1 : 0,
+            failures: session.success ? 0 : 1,
+            accuracy: session.success ? 100 : 0,
+            challenge: session.captcha.challenge,
+            ip: session.ip,
+            referer: session.referer,
+            createdAt: session.createdAt,
+          }));
+
+          allItems.push(...fetchedItems);
+          totalFetched += fetchedItems.length;
+
+          // Si moins de 20 objets sont retournés, cela signifie qu'il n'y a plus d'objets à récupérer
+          if (fetchedItems.length < this.nbObjects) {
+            continueFetching = false;
+          }
         }
 
-        const data = await response.json();
-
-        this.items = data.sessions.map(session => ({
-          id: session._id,
-          challengeId: session.challengeId,
-          attempts: session.attempts,
-          successes: session.success ? 1 : 0,
-          failures: session.success ? 0 : 1,
-          accuracy: session.success ? 100 : 0,
-          ip: session.ip,
-          imgFrontend: session.captcha.challenge.frontendId,
-          imgBackend: session.captcha.challenge.backendId,
-          referer: session.referer,
-          createdAt: session.createdAt,
-        }));
+        this.items = allItems;
 
         // Calculer les métriques
         this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
         const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
         const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
         this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
+
+        // Calculer le nombre total de pages
+        this.totalPages = Math.ceil(this.items.length / this.itemsPerPage);
 
       } catch (error) {
         this.error = true;
@@ -273,36 +283,22 @@ export default {
         // Stocker les informations du géocaptcha sélectionné
         this.selectedGeocaptcha = item;
         this.isModalVisible = true; // Afficher le modal
-        this.backendImageUrl = null;
-        this.frontendImageUrl = null;
-        this.logoSrc   = this.getChallengeImageUrl(item.challengeId);
-
-        if (item.imgBackend) {
-          this.backendImageUrl = await this.loadImage(this.getImageUrl(item.imgBackend));
-        }
-        if (item.imgFrontend) {
-          this.frontendImageUrl = await this.loadImage(this.getImageUrl(item.imgFrontend));
-        }
       } catch (error) {
         console.error("Erreur lors de la sélection du géocaptcha:", error);
       }
     },
 
-    getAccuracyClass(accuracy,attempts) {
-
-      if (attempts>30) {
-        if (accuracy<=60) {
+    getAccuracyClass(accuracy, attempts) {
+      if (attempts > 30) {
+        if (accuracy <= 60) {
           return "low";
-        }
-        else if (accuracy>60 && accuracy<=80){
+        } else if (accuracy > 60 && accuracy <= 80) {
           return "medium";
-        }
-        else {
+        } else {
           return "high";
         }
-      }
-      else {
-        return "not-enough-attempts"
+      } else {
+        return "not-enough-attempts";
       }
     },
 
@@ -351,11 +347,28 @@ export default {
         const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
         this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
 
+        // Calculer le nombre total de pages
+        this.totalPages = Math.ceil(this.items.length / this.itemsPerPage);
+
         // Fermeture des modaux
         this.closeModal();
         this.closeConfirmationModal();
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
+      }
+    },
+
+    // Passer à la page précédente
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+
+    // Passer à la page suivante
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
       }
     }
   },
@@ -380,7 +393,6 @@ export default {
   padding: 2rem;
   margin-top: 80px;
 }
-
 
 /* Metriques */
 .metrics-dashboard {
@@ -411,14 +423,12 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-top: 2rem;
-
 }
 
 .metrics-list h1 {
   grid-column: span 3;
   text-align: left;
 }
-
 
 .infos {
   display: grid;
@@ -486,11 +496,17 @@ export default {
   text-align: center; /* Centrer le texte */
 }
 
-
 .geocaptcha-logo {
   width: 80px; /* Ajuste la taille en fonction de tes besoins */
   height: auto;
   margin-bottom: 15px;
+  object-fit: contain; /* Assure que l'image garde ses proportions */
+}
+
+.geocaptcha-image {
+  width: 100%; /* Ajuste la taille en fonction de tes besoins */
+  height: auto;
+  margin-top: 15px;
   object-fit: contain; /* Assure que l'image garde ses proportions */
 }
 
@@ -534,7 +550,6 @@ export default {
   z-index: 1000;
 }
 
-
 .modal button {
   position: absolute;  /* Positionner le bouton de manière absolue par rapport au modal */
   bottom: 10px;        /* Espacement de 10px depuis le bas du modal */
@@ -552,17 +567,16 @@ export default {
   background-color: #d13c3c;
 }
 
-
 .fr-modal__header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  justify-content: space-between; /* Espacer le titre et le bouton */
+  align-items: center; /* Centrer verticalement */
+  margin-bottom: 1rem; /* Ajoute un petit espace sous l'en-tête */
 }
 
 .fr-modal__title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.5rem; /* Ajuste la taille du titre si nécessaire */
 }
 
 .fr-btn--close {
@@ -577,26 +591,26 @@ export default {
 }
 
 .fr-btn--reject {
-        background-color: #ff4140;
-        color: #fff;
+        background-color: #ff4140; /* Couleur personnalisée */
+        color: #fff; /* Couleur du texte */
     }
 
     .fr-btn--reject:hover {
-        background-color: #ce0500;
+        background-color: #ce0500; /* Couleur au survol */
     }
 
 .fr-btn--cancel {
-    background-color: #ddd;
-    color: #3a3a3a;
+    background-color: #ddd; /* Couleur personnalisée */
+    color: #3a3a3a; /* Couleur du texte */
 }
 
 .fr-btn--cancel:hover {
-    background-color: #c1c1c1;
-    color: #3a3a3a;
+    background-color: #c1c1c1; /* Couleur personnalisée */
+    color: #3a3a3a; /* Couleur du texte */
 }
 
-
-
+/* filtre */
+/* Ajout pour l'en-tête de liste avec filtre */
 .list-header {
   display: flex;
   justify-content: space-between;
@@ -613,19 +627,19 @@ export default {
   min-width: 200px;
 }
 
-
+/* Modifier le style du fr-label pour aligner le texte à droite */
 .fr-label {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-end; /* Aligne à droite */
   align-items: center;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  text-align: right;
+  text-align: right; /* Texte aligné à droite */
 }
 
-
+/* Pour aligner l'icône et le texte */
 .fr-icon--sm {
-  margin-right: 0.3rem;
+  margin-right: 0.3rem; /* Espace entre l'icône et le texte */
 }
 
 .fr-select {
@@ -636,9 +650,26 @@ export default {
   font-size: 0.9rem;
 }
 
-
+/* S'assurer que le sélecteur DSFR s'intègre bien */
 .fr-select:focus {
   outline: 1px solid #7fc04b;
   outline-offset: 1px;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-weight: bold;
 }
 </style>

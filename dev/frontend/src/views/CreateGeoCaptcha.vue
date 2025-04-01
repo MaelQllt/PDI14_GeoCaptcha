@@ -181,33 +181,20 @@
                                 GéoCaptcha généré :
                               </h1>
                               <p>Voici un GéoCaptcha correspondant à la zone géographique choisie :</p>
-                              <div class="image-container">
-                                <div class="background-tile-container">
-                                  <img :src="backgroundImageTuile" alt="fond du geocaptcha" v-if="backgroundImageTuile">
-                                </div>
+                              <div class="image-container" @pointerdown="down($event)" @pointerup="up" @mouseleave="up">
                                 <!-- Conteneur pour l'image circulaire rotative -->
-                                <div class="circular-tile-container" :style="{ transform: `rotate(${rotationAngle}deg)` }">
-                                  <div class="circular-mask">
-                                    <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                                <div class="captcha-kingpin">
+                                  <div class="layer layer-base">
+                                    <img :src="backgroundImageTuile" alt="fond du geocaptcha" v-if="backgroundImageTuile">
+                                  </div>
+                                  <div class="layer layer-stacked" :style="{ transform: `rotate(-${rotationAngle}deg)` }">
+                                    <div class="cropped">
+                                      <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                                    </div>
+                                    <div class="grab"></div>
                                   </div>
                                 </div>
                                 <p v-if="!imageTuile">Chargement de l'image...</p>
-                                
-                                <!-- Section de rotation améliorée -->
-                                <div class="rotation-controls">
-                                  <p class="rotation-label">Faites glisser pour tourner la tuile</p>
-                                  <input 
-                                    type="range" 
-                                    min="0" 
-                                    max="360" 
-                                    v-model="rotationAngle" 
-                                    class="rotation-slider"
-                                    @input="updateRotation"
-                                  >
-                                  <div class="rotation-value" :style="{ left: `calc(${rotationAngle / 360 * 100}% - 20px)` }">
-                                    {{ rotationAngle }}°
-                                  </div>
-                                </div>
                               </div>
                             </div>
 
@@ -293,6 +280,9 @@ export default {
       rotationAngle: 0,
       backgroundMode: "", // Pour stocker le mode de fond différent
       backgroundImageTuile: "",
+      startAngle: 0,
+      bboxCenter: {},
+      captcha: null,
     };
   },
 
@@ -434,6 +424,10 @@ export default {
       // Fixez le mode de fond à "plan"
       const backgroundMode = "plan";
 
+      if (this.mode === 'plan-sur-plan') {
+        this.mode = 'plan';
+      }
+
       try {
         // Chargement de l'image principale
         this.imageTuile = await this.getCaptchaImageTuile(this.mode, data.z, data.x, data.y);
@@ -447,6 +441,36 @@ export default {
         console.error("Erreur :", error);
       }
     },
+
+    down(evt) {
+    this.captcha = evt.currentTarget;
+    let bbox = this.captcha.getBoundingClientRect();
+    this.bboxCenter = {
+      x: bbox.left + bbox.width / 2,
+      y: bbox.top + bbox.height / 2,
+    };
+    this.startAngle = (this.getAngle(evt) - this.rotationAngle + 720) % 360;
+    this.captcha._evt = this.move.bind(this);
+    this.captcha.addEventListener('pointermove', this.captcha._evt);
+  },
+  
+  up() {
+    if (this.captcha) {
+      this.captcha.removeEventListener('pointermove', this.captcha._evt);
+    }
+  },
+  
+  move(evt) {
+    this.rotationAngle = (this.getAngle(evt) - this.startAngle + 720) % 360;
+  },
+  
+  getAngle(evt) {
+    return -(
+      (Math.atan2(this.bboxCenter.y - evt.clientY, this.bboxCenter.x - evt.clientX) *
+        180) /
+      Math.PI
+    );
+  },
 
 
     async createGeoCaptcha() {
@@ -1093,128 +1117,72 @@ z-index: 1000;
   margin: 0 auto;
 }
 
-.background-tile-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  overflow: hidden;
-  border-radius: 10px;
-}
-
-.background-tile-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.circular-tile-container {
-  position: absolute;
-  width: 70%;
-  height: 70%;
-  transition: transform 0.5s ease-in-out;
-  z-index: 2;
-}
-
-.circular-mask {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid rgb(0, 0, 145);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-}
-
-.circular-mask img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.rotation-info {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #666;
-  position: absolute;
-  bottom: -30px;
-}
-
-.rotation-slider {
-  width: 80%;
-  margin: 40px auto 10px;
-  
-  height: 6px;
-  border-radius: 5px;
-  background: #d3d3d3;
-  outline: none;
+.captcha-kingpin {
   position: relative;
-  z-index: 3;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
 }
 
-.rotation-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgb(0, 0, 145);
-  cursor: pointer;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-}
-
-.rotation-slider::-webkit-slider-thumb:hover {
-  background: rgb(18, 18, 255);
-  transform: scale(1.1);
-}
-
-.rotation-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgb(0, 0, 145);
-  cursor: pointer;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  border: none;
-}
-
-.rotation-slider::-moz-range-thumb:hover {
-  background: rgb(18, 18, 255);
-  transform: scale(1.1);
-}
-
-/* Ajout d'un indicateur de valeur au-dessus du curseur */
-.rotation-value {
+.captcha-kingpin .layer {
   position: absolute;
-  bottom: -60px;
-  font-size: 14px;
-  font-weight: bold;
-  color: rgb(0, 0, 145);
-  background: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  z-index: 3;
+  width: 100%;
+  height: 100%;
+  background-position: 50% 50%;
 }
 
-/* Ajout d'un texte explicatif */
-.rotation-label {
-  font-size: 14px;
-  color: #444;
-  margin-bottom: 5px;
-  font-weight: bold;
-  text-align: center;
+.captcha-kingpin .layer-base {
+  width: 100%;
+  height: 100%;
 }
 
-/* Animation facultative pour ajouter un effet visuel lors de l'ouverture */
-@keyframes rotateIn {
-  from { transform: rotate(0deg); opacity: 0; }
-  to { transform: rotate(v-bind(rotationAngle + 'deg')); opacity: 1; }
+.captcha-kingpin .layer-base img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.circular-tile-container {
-  animation: rotateIn 1s ease-out forwards;
+.captcha-kingpin .layer-stacked {
+  cursor: grab;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  top: 25px;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.captcha-kingpin .cropped {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 1px 3px, 0 0 0 15px rgba(36,60,71,.25);
+}
+
+.captcha-kingpin .cropped img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.captcha-kingpin .grab {
+  cursor: grab;
+  position: absolute;
+  z-index: 1;
+  right: -10px;
+  top: 60px;
+  width: 20px;
+  height: 30px;
+  border-radius: 3px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 30'%3E%3Cpath d='m5,10h10M5,15h10M5,20h10' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+  background-color: #243c47;
+}
+
+.captcha-kingpin .grab:hover {
+  background-color: #30a7df;
 }
 
 .fr-modal__content {

@@ -485,6 +485,7 @@ export default {
     try {
       const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${layer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`,
           {
+            method: "GET",
             headers: {
               "Accept": "image/png",
               "x-api-key": import.meta.env.VITE_API_KEY,

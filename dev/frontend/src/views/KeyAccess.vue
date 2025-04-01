@@ -719,6 +719,7 @@ Votre service CaptchAdmin`);
       const response = await fetch(
         `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=21&nbObjects=20`,
         {
+          method: "GET",
           headers: {
             "Accept": "application/json",
             "x-api-key": this.apiKey,
@@ -741,6 +742,7 @@ Votre service CaptchAdmin`);
       const response = await fetch(
         `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=1&nbObjects=20`,
         {
+          method: "GET",
           headers: {
             "Accept": "application/json",
             "x-api-key": this.apiKey,

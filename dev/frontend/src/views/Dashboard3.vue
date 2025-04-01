@@ -491,6 +491,7 @@ export default {
       const sessionResponse = await fetch(
         `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
         {
+          method: 'GET',
           headers: {
             "Accept": "application/json",
             "x-api-key": import.meta.env.VITE_API_KEY,
@@ -655,6 +656,7 @@ export default {
       const response = await fetch(
         `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=1&nbObjects=20`,
         {
+          method: 'GET',
           headers: {
             "Accept": "application/json",
             "x-api-key": import.meta.env.VITE_API_KEY,

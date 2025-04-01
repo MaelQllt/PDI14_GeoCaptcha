@@ -3,6 +3,7 @@
     <div class="fr-tabs">
       <!-- Liste des onglets -->
       <ul class="fr-tabs__list" role="tablist" aria-label="Navigation des onglets">
+        <!-- Onglet pour la gestion de GéoCaptcha -->
         <li role="presentation">
           <button
             id="tabpanel-404"
@@ -16,6 +17,7 @@
             Gestion de GéoCaptcha
           </button>
         </li>
+        <!-- Onglet pour les logs -->
         <li role="presentation">
           <button
             id="tabpanel-405"
@@ -32,6 +34,8 @@
       </ul>
 
       <!-- Contenus des onglets -->
+
+      <!-- Contenu de l'onglet Gestion de GéoCaptcha -->
       <div
         id="tabpanel-404-panel"
         class="fr-tabs__panel tab-404"
@@ -43,8 +47,10 @@
           <div class="list-header">
             <h1 class="fr-h1">Gestion de Géocaptcha</h1>
             <h6 class="fr-h6">Heatmap affichant la localisation des GéoCaptchas créés :</h6>
+            <!-- Composant Heatmap pour afficher les données -->
             <Heatmap :geocaptchaData="kingpinStats" />
 
+            <!-- Barre de recherche et filtres -->
             <div class="select-group-metrics">
               <div class="fr-search-bar">
                 <input
@@ -55,6 +61,7 @@
                 />
                 <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
               </div>
+              <!-- Filtres par tag -->
               <div class="filter-tags">
                 <ul class="fr-tags-group">
                   <li>
@@ -90,6 +97,7 @@
                 </ul>
               </div>
 
+              <!-- Options de tri -->
               <div class="trier-metrics">
                 <label class="fr-label" for="filter-select">
                   <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
@@ -112,6 +120,7 @@
           </div>
         </div>
 
+        <!-- Affichage des statistiques filtrées et triées -->
         <div class="fr-grid-row fr-grid-row--gutters">
           <div
             v-for="(kingpin, index) in filteredAndSortedStats"
@@ -124,7 +133,7 @@
               </div>
               <div class="fr-tile__body">
                 <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
-                  <span class="text-2xl">🧩</span> <!-- Emoji placeholder for logo -->
+                  <span class="text-2xl">🧩</span> <!-- À modifier à terme -->
                 </div>
                 <div class="infos">
                   <div class="info-item grid grid-cols-2 gap-4 mb-4">
@@ -133,6 +142,7 @@
                     </div>
                   </div>
                   <div class="info-item gauge mb-2">
+                    <!-- Composant GaugeChart pour afficher le taux de réussite -->
                     <GaugeChart :value="Math.round(kingpin.successRate)" min="0" max="100" label="Taux de réussite (%)" />
                   </div>
                 </div>
@@ -141,7 +151,7 @@
           </div>
         </div>
 
-        <!-- Modal pour Détails du Géocaptcha -->
+        <!-- Modal pour les détails du Géocaptcha -->
         <div v-if="isModalVisible" class="modal-overlay">
           <div class="fr-container fr-container--fluid fr-container-md">
             <div class="fr-grid-row fr-grid-row--center">
@@ -177,7 +187,7 @@
           </div>
         </div>
 
-        <!-- Modal de confirmation -->
+        <!-- Modal de confirmation pour rejeter un Géocaptcha -->
         <div v-if="isConfirmationModalVisible" class="modal-overlay">
           <div class="fr-container fr-container--fluid fr-container-md">
             <div class="fr-grid-row fr-grid-row--center">
@@ -204,6 +214,7 @@
         </div>
       </div>
 
+      <!-- Contenu de l'onglet Logs -->
       <div
         id="tabpanel-405-panel"
         class="fr-tabs__panel tab-405"
@@ -216,16 +227,19 @@
           <div class="fr-container">
             <div class="fr-input-group">
               <div class="filtre">
+                <!-- Filtre par route -->
                 <select id="filter-route" v-model="filterRoute" class="fr-select filtre-route">
                   <option value="">Filtre par route</option>
                   <option v-for="route in uniqueRoutes" :key="route" :value="route">{{ route }}</option>
                 </select>
                 <button class="fr-btn-tertiary-no-outline fr-icon-refresh-line btn-refresh" @click="clearFilters"></button>
               </div>
+              <!-- Bouton pour effacer tous les logs -->
               <button class="fr-btn fr-btn--danger delete-log" @click="confirmDeleteLogs" :disabled="logs.length === 0">Tout effacer</button>
             </div>
           </div>
 
+          <!-- Message si aucun log ne correspond aux filtres -->
           <div v-if="filteredLogs.length === 0" class="fr-container">
             <div class="box-audit box-info">
               <span class="action-audit action-info">INFO</span>
@@ -233,6 +247,7 @@
             </div>
           </div>
 
+          <!-- Affichage des logs filtrés -->
           <div v-for="(log, index) in filteredLogs" :key="index" class="fr-container">
             <div :class="['box-audit', getBoxClass(log.action)]">
               <span :class="['action-audit', getActionClass(log.action)]">{{ log.action }}</span>
@@ -242,6 +257,7 @@
             </div>
           </div>
 
+          <!-- Pagination des logs -->
           <div class="fr-pagination" v-if="filteredLogs.length > 0">
             <button
               class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
@@ -257,6 +273,7 @@
           </div>
         </div>
 
+        <!-- Modal de confirmation pour supprimer tous les logs -->
         <div class="modal-overlay" v-if="showDeleteModal">
           <div class="fr-container fr-container--fluid fr-container-md">
             <div class="fr-grid-row fr-grid-row--center">
@@ -373,7 +390,6 @@ export default {
     // Filtrer et trier les statistiques
     filteredAndSortedStats() {
       let filtered = this.kingpinStats.filter(stat => {
-        console.log("Filtrage par nom:", stat.name, this.searchQuery);
         return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
       });
 
@@ -383,7 +399,6 @@ export default {
         filtered = filtered.filter(stat => stat.successRate <= 50);
       }
 
-      console.log("Données filtrées:", filtered);
 
       return filtered.sort((a, b) => {
         const modifier = this.sortOrder === 'asc' ? 1 : -1;
@@ -460,7 +475,6 @@ export default {
         if (newSessions.length === 20) {
           await this.loadData(firstSessionObject + 20);
         } else {
-          console.log("Toutes les sessions ont été récupérées.");
           this.analyzeData();
         }
       } catch (error) {
@@ -522,8 +536,6 @@ export default {
 
         this.kingpinStats = kingpinStatsArray;
 
-        console.log(`Analyse terminée: ${kingpinStatsArray.length} challenges différents identifiés`);
-        console.log("Statistiques:", this.kingpinStats);
 
         return kingpinStatsArray;
       } catch (error) {
@@ -683,14 +695,12 @@ export default {
 };
 </script>
 
-
 <style scoped>
-
 /* Styles pour les onglets */
 .fr-tabs{
   margin-left: 50px;
   margin-right: 50px;
-  margin-top: 170px;  
+  margin-top: 170px;
 }
 
 .fr-tabs__tab--selected {
@@ -699,12 +709,11 @@ export default {
 }
 
 .fr-tabs__panel {
-  visibility: hidden; 
+  visibility: hidden;
   opacity: 0;
-  transition: opacity 0.1s ease, visibility 0.3s ease; 
+  transition: opacity 0.1s ease, visibility 0.3s ease;
   display: none;
 }
-
 
 .fr-tabs__panel--selected {
   visibility: visible;
@@ -715,34 +724,33 @@ export default {
 /* Styles pour l'affichage des métriques */
 .select-group-metrics {
   display: flex;
-  align-items: flex-end; 
+  align-items: flex-end;
   margin-bottom: 20px;
   justify-content: space-between;
 }
 
 .fr-search-bar {
   display: flex;
-  align-items: center; 
-  width: 250px; 
+  align-items: center;
+  width: 250px;
   height: 40px;
 }
 
-
 .trier-metrics {
   display: flex;
-  align-items: center; 
+  align-items: center;
   gap: 10px;
   height: 50px;
 }
 
 .trier-metrics .fr-label {
   display: flex;
-  align-items: center; 
-  gap: 5px; 
+  align-items: center;
+  gap: 5px;
 }
 
 .fr-icon-filter-line {
-  height: 17px; 
+  height: 17px;
 }
 
 .fr-icon-arrow-up-down-line {
@@ -753,9 +761,8 @@ export default {
   height: 17px;
 }
 
-
 .select-metrics{
-  width: 200px; 
+  width: 200px;
 }
 
 .infos {
@@ -779,26 +786,25 @@ export default {
 
 .fr-input-group {
   display: flex;
-  align-items: center; 
-  width: 100%; 
-  margin-bottom: 20px; 
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
 }
-
 
 /* Styles pour les logs */
 .filtre {
   display: flex;
-  align-items: center; 
-  gap: 8px; 
+  align-items: center;
+  gap: 8px;
 }
 
 .filtre-route {
-    width: 250px;
-    margin-right: 10px;
+  width: 250px;
+  margin-right: 10px;
 }
 
 .delete-log {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .audit-container {
@@ -833,8 +839,8 @@ export default {
 }
 
 .box-error {
-    border: 1px solid orange;
-    background-color: #ffe;
+  border: 1px solid orange;
+  background-color: #ffe;
 }
 
 .box-navigate {
@@ -849,7 +855,7 @@ export default {
 
 .action-audit{
   width: 85px;
-  text-align: center; 
+  text-align: center;
   color: white;
   font-weight: bold;
   padding: 5px 10px;
@@ -883,16 +889,16 @@ export default {
 
 .route-audit {
   font-weight: bold;
-    color: #333;
+  color: #333;
 }
 
 .description-audit {
   flex-grow: 1;
-    color: #666;
+  color: #666;
 }
 
 .time-audit {
-    margin-right: 10px;
+  margin-right: 10px;
   color: #666;
 }
 
@@ -912,7 +918,6 @@ export default {
 .page-info {
   font-weight: bold;
 }
-
 
 /* Styles pour les boutons */
 .fr-btn--danger {
@@ -946,9 +951,7 @@ export default {
   z-index: 1000;
 }
 
-
 /* Styles pour le dark mode des logs */
-
 :root[data-fr-theme="dark"] .box-create {
   border: 1px solid rgb(73, 204, 144);
   background-color: rgba(73, 204, 144, 0.1);
@@ -1001,7 +1004,6 @@ export default {
 }
 
 /* Styles pour les tags */
-
 .fr-tag--checked {
   position: relative;
 }
@@ -1016,9 +1018,4 @@ export default {
   color: white;
   border-radius: 50%;
 }
-
-
-
 </style>
-
-  

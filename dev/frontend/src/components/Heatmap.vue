@@ -120,6 +120,7 @@ export default {
           view: new View({
             center: fromLonLat([2.45407, 46.80335]),
             zoom: 5.75,
+            maxZoom: 15
           }),
         });
         return;
@@ -157,6 +158,7 @@ export default {
         view: new View({
           center: fromLonLat([2.45407, 46.80335]),
           zoom: 5.75,
+          maxZoom: 15
         }),
       });
     },

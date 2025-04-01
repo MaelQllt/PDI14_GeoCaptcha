@@ -248,6 +248,7 @@ export default {
   name: "OpenLayersMap",
   data() {
     return {
+      
       selectedOption: "1",
       selectedDepartement: "",
       departements: [],
@@ -284,6 +285,7 @@ export default {
   },
 
   watch: {
+
     selectedShape() {
       this.updateInteraction();
     },

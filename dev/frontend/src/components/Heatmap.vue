@@ -6,7 +6,8 @@
 </template>
 
 <script>
-// Importation des modules OpenLayers nécessaires
+
+/*Bibliothèque OpenLayers*/
 import 'ol/ol.css'; // Styles CSS pour OpenLayers
 import { Map, View } from 'ol'; // Classes principales pour la carte et la vue
 import TileLayer from 'ol/layer/Tile'; // Couche de tuiles (fond de carte)
@@ -173,6 +174,7 @@ export default {
 </script>
 
 <style scoped>
+
 /* Styles CSS pour le conteneur de la carte */
 #map {
   width: 100%; 
@@ -182,4 +184,5 @@ export default {
   overflow: hidden; 
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
 }
+
 </style>

@@ -3,7 +3,7 @@
     <!-- Conteneur de la carte qui sera référencé par this.$refs.map -->
     <div id="map" ref="map"></div>
     
-    <!-- Légende de la carte thermique superposée -->
+    <!-- Légende de la heatmap -->
     <div class="legend-overlay">
       <h3>Légende</h3>
       <p>Présence de GéoCaptcha en France :</p>

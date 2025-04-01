@@ -84,7 +84,6 @@ Pour l'installer vous pouvez simplement exécuter cette ligne :
 
 ```
 npm install axios
-
 ```
 ## Pour utiliser l'API 
 

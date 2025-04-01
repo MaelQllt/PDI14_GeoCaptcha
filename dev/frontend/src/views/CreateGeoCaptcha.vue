@@ -183,6 +183,7 @@
                               <p>Voici un GéoCaptcha correspondant à la zone géographique choisi: </p>
                               <div class="image-container">
                                 <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
+                                <img :src="imageTuile" alt="geocaptcha" v-if="imageTuile">
                                 <p v-else>Chargement de l'image...</p>
                               </div>
                             </div>
@@ -413,6 +414,35 @@ export default {
         console.error("Erreur :", error);
       }
     },
+    async showGeoCaptchaTile() {
+      // Conversion des coordonnées latitude/longitude en coordonnées de tuile
+      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 15 pour les GéoCaptchas
+      console.log("Coordonnées de la tuile :", tileCoords);
+
+      // Préparation des données pour l'API
+      const data = {
+        id: this.generateUniqueId(),
+        x: tileCoords.x,
+        y: tileCoords.y,
+        z: 15,
+        zipcode: this.zipcode,
+        mode: this.mode,
+        ok: "1"
+      };
+      console.log("Données envoyées à l'API :", data);
+
+      // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
+      if (data.mode === 'plan-sur-plan') {
+        data.mode = 'plan';
+      }
+
+      try {
+        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
+        this.isModalOpen = true;
+      } catch (error) {
+        console.error("Erreur :", error);
+      }
+    },
 
     async createGeoCaptcha() {
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile
@@ -468,6 +498,25 @@ export default {
       }
     },
 
+    async getCaptchaImageTuile(layer, tileMatrix, col, row) {
+      // Récupération de l'image de la tuile à partir de l'API 
+      try {
+        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/proxy/tile?layer=${layer}&tileMatrix=${tileMatrix}&col=${col}&row=${row}`,
+          {
+            method: "GET",
+            headers: {
+              "Accept": "image/png",
+              "x-api-key": import.meta.env.VITE_API_KEY,
+              "x-app-id": import.meta.env.VITE_API_ID,
+            }
+          }
+        );
+        if (!response.ok) throw new Error('Image non trouvée');
+        return URL.createObjectURL(await response.blob());
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getCaptchaImageTuile(layer, tileMatrix, col, row) {
       // Récupération de l'image de la tuile à partir de l'API 
       try {

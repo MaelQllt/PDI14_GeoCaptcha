@@ -226,7 +226,7 @@ export default {
   padding: 10px 15px;
   border-radius: 8px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 1000; /* S'assure que la légende est au-dessus de la carte */
+  z-index: 30; /* S'assure que la légende est au-dessus de la carte */
 }
 
 .legend-overlay h3 {

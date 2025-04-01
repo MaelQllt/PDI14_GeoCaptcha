@@ -1,6 +1,5 @@
 <template>
   <div class="dashboard">
-    
     <div class="fr-tabs">
       <!-- Liste des onglets -->
       <ul class="fr-tabs__list" role="tablist" aria-label="Navigation des onglets">
@@ -39,172 +38,171 @@
         :class="{ 'fr-tabs__panel--selected': activeTab === 'tabpanel-404' }"
         role="tabpanel"
         aria-labelledby="tabpanel-404"
-      > 
-  
-      <div class="metrics-list">
-    <div class="list-header">
-      <h1 class="fr-h1">Gestion de Géocaptcha</h1>
-      
-      <h6 class="fr-h6">Heatmap affichant la localisation des GéoCaptchas créés :</h6>
-      <Heatmap :geocaptchaData="kingpinStats" />
+      >
+        <div class="metrics-list">
+          <div class="list-header">
+            <h1 class="fr-h1">Gestion de Géocaptcha</h1>
+            <h6 class="fr-h6">Heatmap affichant la localisation des GéoCaptchas créés :</h6>
+            <Heatmap :geocaptchaData="kingpinStats" />
 
-      <div class="select-group-metrics">
-        <div class="fr-search-bar">
-          <input
-            class="fr-input"
-            placeholder="Rechercher"
-            type="search"
-            v-model="searchQuery"
-          />
-          <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
-        </div>
-        <div class="filter-tags">
-          <ul class="fr-tags-group">
-            <li>
-              <button
-                class="fr-tag"
-                :class="{ 'fr-tag--selected': selectedTag === 'all', 'fr-tag--checked': selectedTag === 'all' }"
-                :aria-pressed="selectedTag === 'all'"
-                @click="setFilter('all')"
-              >
-                Tous
-              </button>
-            </li>
-            <li>
-              <button
-                class="fr-tag"
-                :class="{ 'fr-tag--selected': selectedTag === 'success', 'fr-tag--checked': selectedTag === 'success' }"
-                :aria-pressed="selectedTag === 'success'"
-                @click="setFilter('success')"
-              >
-                Réussis
-              </button>
-            </li>
-            <li>
-              <button
-                class="fr-tag"
-                :class="{ 'fr-tag--selected': selectedTag === 'failed', 'fr-tag--checked': selectedTag === 'failed' }"
-                :aria-pressed="selectedTag === 'failed'"
-                @click="setFilter('failed')"
-              >
-                Échoués
-              </button>
-            </li>
-          </ul>
-        </div>
+            <div class="select-group-metrics">
+              <div class="fr-search-bar">
+                <input
+                  class="fr-input"
+                  placeholder="Rechercher"
+                  type="search"
+                  v-model="searchQuery"
+                />
+                <button title="Rechercher" type="button" class="fr-btn">Rechercher</button>
+              </div>
+              <div class="filter-tags">
+                <ul class="fr-tags-group">
+                  <li>
+                    <button
+                      class="fr-tag"
+                      :class="{ 'fr-tag--selected': selectedTag === 'all', 'fr-tag--checked': selectedTag === 'all' }"
+                      :aria-pressed="selectedTag === 'all'"
+                      @click="setFilter('all')"
+                    >
+                      Tous
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      class="fr-tag"
+                      :class="{ 'fr-tag--selected': selectedTag === 'success', 'fr-tag--checked': selectedTag === 'success' }"
+                      :aria-pressed="selectedTag === 'success'"
+                      @click="setFilter('success')"
+                    >
+                      Réussis
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      class="fr-tag"
+                      :class="{ 'fr-tag--selected': selectedTag === 'failed', 'fr-tag--checked': selectedTag === 'failed' }"
+                      :aria-pressed="selectedTag === 'failed'"
+                      @click="setFilter('failed')"
+                    >
+                      Échoués
+                    </button>
+                  </li>
+                </ul>
+              </div>
 
-
-        <div class="trier-metrics">
-          <label class="fr-label" for="filter-select">
-            <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
-            <span class="trier-text">Trier</span>
-          </label>
-          <select class="fr-select select-metrics" aria-describedby="select-messages" id="filter-select" v-model="sortKey" @change="sortOrder = 'desc'">
-            <option value="name">Nom</option>
-            <option value="successRate">Taux de réussite</option>
-            <option value="attempts">Nombre d'essais</option>
-          </select>
-          <button class="fr-icon-arrow-up-down-line " @click="toggleSortOrder"></button>
-        </div>
-        
-      </div>
-
-
-
-    </div>
-  </div>
-
-  <div class="fr-grid-row fr-grid-row--gutters">
-  <div v-for="(kingpin, index) in filteredAndSortedStats" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-    <div class="fr-tile" @click="openKingpinModal(kingpin)">
-      <div class="fr-tile__header">
-        <p><strong class="fr-tile__title">Nom: </strong> {{ kingpin.name }}</p>
-      </div>
-      <div class="fr-tile__body">
-        <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
-          <span class="text-2xl">🧩</span> <!-- Emoji placeholder for logo -->
-        </div>
-        <div class="infos">
-          <div class="info-item grid grid-cols-2 gap-4 mb-4">
-            <div class="text-center">
-              <p><strong>Nombre d'essais : </strong>{{ kingpin.attempts }}</p>
+              <div class="trier-metrics">
+                <label class="fr-label" for="filter-select">
+                  <span class="fr-icon-filter-line fr-icon--sm" aria-hidden="true"></span>
+                  <span class="trier-text">Trier</span>
+                </label>
+                <select
+                  class="fr-select select-metrics"
+                  aria-describedby="select-messages"
+                  id="filter-select"
+                  v-model="sortKey"
+                  @change="sortOrder = 'desc'"
+                >
+                  <option value="name">Nom</option>
+                  <option value="successRate">Taux de réussite</option>
+                  <option value="attempts">Nombre d'essais</option>
+                </select>
+                <button class="fr-icon-arrow-up-down-line" @click="toggleSortOrder"></button>
+              </div>
             </div>
           </div>
-          <div class="info-item gauge mb-2">
-            <GaugeChart :value="Math.round(kingpin.successRate)" min="0" max="100" label="Taux de réussite (%)" />
+        </div>
+
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div
+            v-for="(kingpin, index) in filteredAndSortedStats"
+            :key="index"
+            class="fr-col-12 fr-col-md-6 fr-col-lg-4"
+          >
+            <div class="fr-tile" @click="openKingpinModal(kingpin)">
+              <div class="fr-tile__header">
+                <p><strong class="fr-tile__title">Nom: </strong> {{ kingpin.name }}</p>
+              </div>
+              <div class="fr-tile__body">
+                <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
+                  <span class="text-2xl">🧩</span> <!-- Emoji placeholder for logo -->
+                </div>
+                <div class="infos">
+                  <div class="info-item grid grid-cols-2 gap-4 mb-4">
+                    <div class="text-center">
+                      <p><strong>Nombre d'essais : </strong>{{ kingpin.attempts }}</p>
+                    </div>
+                  </div>
+                  <div class="info-item gauge mb-2">
+                    <GaugeChart :value="Math.round(kingpin.successRate)" min="0" max="100" label="Taux de réussite (%)" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-
-
-          <!-- Modal pour Détails du Géocaptcha -->
-          <div v-if="isModalVisible" class="modal-overlay">
-            <div class="fr-container fr-container--fluid fr-container-md">
-              <div class="fr-grid-row fr-grid-row--center">
-                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                  <div class="fr-modal__body">
-                    <div class="fr-modal__header">
-                      <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
+        <!-- Modal pour Détails du Géocaptcha -->
+        <div v-if="isModalVisible" class="modal-overlay">
+          <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                  <div class="fr-modal__header">
+                    <button @click="closeModal" class="fr-btn--close fr-btn">Fermer</button>
+                  </div>
+                  <div class="fr-modal__content">
+                    <h2 id="modal-6053-title" class="fr-modal__title">
+                      <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                      Détails du Géocaptcha
+                    </h2>
+                    <div>
+                      <p><strong>ID:</strong> {{ selectedGeocaptcha.id }}</p>
+                      <p><strong>IP:</strong> {{ selectedGeocaptcha.ip }}</p>
+                      <p><strong>Essais:</strong> {{ selectedGeocaptcha.attempts }}</p>
+                      <p><strong>Réussites:</strong> {{ selectedGeocaptcha.successes }}</p>
+                      <p><strong>Echecs:</strong> {{ selectedGeocaptcha.failures }}</p>
+                      <p><strong>Précision:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
+                      <p><strong>Referer:</strong> {{ selectedGeocaptcha.referer }}</p>
+                      <p><strong>Date de création:</strong> {{ selectedGeocaptcha.createdAt }}</p>
                     </div>
-                    <div class="fr-modal__content">
-                      <h2 id="modal-6053-title" class="fr-modal__title">
-                        <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
-                        Détails du Géocaptcha
-                      </h2>
-                      <div>
-                        <p><strong>ID:</strong> {{ selectedGeocaptcha.id }}</p>
-                        <p><strong>IP:</strong> {{ selectedGeocaptcha.ip }}</p>
-                        <p><strong>Essais:</strong> {{ selectedGeocaptcha.attempts }}</p>
-                        <p><strong>Réussites:</strong> {{ selectedGeocaptcha.successes }}</p>
-                        <p><strong>Echecs:</strong> {{ selectedGeocaptcha.failures }}</p>
-                        <p><strong>Précision:</strong> {{ selectedGeocaptcha.accuracy }}%</p>
-                        <p><strong>Referer:</strong> {{ selectedGeocaptcha.referer }}</p>
-                        <p><strong>Date de création:</strong> {{ selectedGeocaptcha.createdAt }}</p>
-                      </div>
-                    </div>
-
-                    <div class="fr-modal__footer">
-                      <div class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-left">
-                        <button @click="showConfirmationModal" class="fr-btn fr-btn--reject">Rejeter</button>
-                      </div>
+                  </div>
+                  <div class="fr-modal__footer">
+                    <div class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-left">
+                      <button @click="showConfirmationModal" class="fr-btn fr-btn--reject">Rejeter</button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Modal de confirmation -->
-          <div v-if="isConfirmationModalVisible" class="modal-overlay">
-            <div class="fr-container fr-container--fluid fr-container-md">
-              <div class="fr-grid-row fr-grid-row--center">
-                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                  <div class="fr-modal__body">
-                    <div class="fr-modal__header">
-                      <button @click="closeConfirmationModal" class="fr-btn--close fr-btn">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
-                      <h2 id="modal-6053-title" class="fr-modal__title">
-                        <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
-                        Confirmation
-                      </h2>
-                      <p>Êtes-vous sûr de vouloir rejeter ce géocaptcha ?</p>
-                    </div>
-                    <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
-                      <button @click="rejectGeocaptcha" class="fr-btn fr-btn--reject">Oui, Rejeter</button>
-                      <button @click="closeConfirmationModal" class="fr-btn fr-btn--cancel">Annuler</button>
-                    </div>
+        <!-- Modal de confirmation -->
+        <div v-if="isConfirmationModalVisible" class="modal-overlay">
+          <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                  <div class="fr-modal__header">
+                    <button @click="closeConfirmationModal" class="fr-btn--close fr-btn">Fermer</button>
+                  </div>
+                  <div class="fr-modal__content">
+                    <h2 id="modal-6053-title" class="fr-modal__title">
+                      <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
+                      Confirmation
+                    </h2>
+                    <p>Êtes-vous sûr de vouloir rejeter ce géocaptcha ?</p>
+                  </div>
+                  <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
+                    <button @click="rejectGeocaptcha" class="fr-btn fr-btn--reject">Oui, Rejeter</button>
+                    <button @click="closeConfirmationModal" class="fr-btn fr-btn--cancel">Annuler</button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>  
-
+        </div>
+      </div>
 
       <div
         id="tabpanel-405-panel"
@@ -213,91 +211,85 @@
         role="tabpanel"
         aria-labelledby="tabpanel-405"
       >
-      <h1>Logs</h1>
-
-      <div class="audit-container">
-        <div class="fr-container">
-        <div class="fr-input-group">
-
-            <div class="filtre">
+        <h1>Logs</h1>
+        <div class="audit-container">
+          <div class="fr-container">
+            <div class="fr-input-group">
+              <div class="filtre">
                 <select id="filter-route" v-model="filterRoute" class="fr-select filtre-route">
-                <option value="">Filtre par route</option>
-                <option v-for="route in uniqueRoutes" :key="route" :value="route">{{ route }}</option>
+                  <option value="">Filtre par route</option>
+                  <option v-for="route in uniqueRoutes" :key="route" :value="route">{{ route }}</option>
                 </select>
-            
-            
                 <button class="fr-btn-tertiary-no-outline fr-icon-refresh-line btn-refresh" @click="clearFilters"></button>
+              </div>
+              <button class="fr-btn fr-btn--danger delete-log" @click="confirmDeleteLogs" :disabled="logs.length === 0">Tout effacer</button>
             </div>
-            <button class="fr-btn fr-btn--danger delete-log" @click="confirmDeleteLogs" :disabled="logs.length === 0">Tout effacer</button>
-        </div>
-        </div>
-    
-        <div v-if="filteredLogs.length === 0" class="fr-container">
-        <div class="box-audit box-info">
-            <span class="action-audit action-info">INFO</span>
-            <span class="description-audit">Aucune entrée d'audit ne correspond aux filtres.</span>
-        </div>
-        </div>
-        
-        <div v-for="(log, index) in filteredLogs" :key="index" class="fr-container">
-        <div :class="['box-audit', getBoxClass(log.action)]">
-            <span :class="['action-audit', getActionClass(log.action)]">{{ log.action }}</span>
-            <span class="route-audit">{{ log.route }}</span>
-            <span class="description-audit">{{ log.description }}</span>
-            <span class="time-audit">{{ log.timestamp }}</span>
-        </div>
-        </div>
-        
-        <div class="fr-pagination" v-if="filteredLogs.length > 0">
-        <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line" 
-                :disabled="currentPage === 1" 
-                @click="currentPage--">
-        </button>
-        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
-        <button class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line" 
-                :disabled="currentPage === totalPages" 
-                @click="currentPage++">
-        </button>
-        </div>
-        
-      </div>
-
-      <div class="modal-overlay" v-if="showDeleteModal">
-        <div class="fr-container fr-container--fluid fr-container-md">
-                <div class="fr-grid-row fr-grid-row--center">
-                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                    <div class="fr-modal__body">
-                        <div class="fr-modal__header">
-                        <button @click="showDeleteModal = false" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
-                        </div>
-                        <div class="fr-modal__content">
-                        <h1 id="modal-6053-title" class="fr-modal__title">
-                            <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
-                            Confirmation de suppression
-                        </h1>
-                        <p>Êtes-vous sûr de vouloir supprimer tous les logs d'audit ? Cette action est irréversible.</p>
-                        </div>
-                        <div class="fr-modal__footer">
-                            <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
-                                <button class="fr-btn fr-btn--secondary" @click="showDeleteModal = false">Annuler</button>
-                                <button class="fr-btn fr-btn--danger" @click="deleteLogs">Confirmer la suppression</button>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
           </div>
+
+          <div v-if="filteredLogs.length === 0" class="fr-container">
+            <div class="box-audit box-info">
+              <span class="action-audit action-info">INFO</span>
+              <span class="description-audit">Aucune entrée d'audit ne correspond aux filtres.</span>
+            </div>
+          </div>
+
+          <div v-for="(log, index) in filteredLogs" :key="index" class="fr-container">
+            <div :class="['box-audit', getBoxClass(log.action)]">
+              <span :class="['action-audit', getActionClass(log.action)]">{{ log.action }}</span>
+              <span class="route-audit">{{ log.route }}</span>
+              <span class="description-audit">{{ log.description }}</span>
+              <span class="time-audit">{{ log.timestamp }}</span>
+            </div>
+          </div>
+
+          <div class="fr-pagination" v-if="filteredLogs.length > 0">
+            <button
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-left-s-line"
+              :disabled="currentPage === 1"
+              @click="currentPage--"
+            ></button>
+            <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+            <button
+              class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-right-s-line"
+              :disabled="currentPage === totalPages"
+              @click="currentPage++"
+            ></button>
+          </div>
+        </div>
+
+        <div class="modal-overlay" v-if="showDeleteModal">
+          <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                  <div class="fr-modal__header">
+                    <button @click="showDeleteModal = false" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
+                  </div>
+                  <div class="fr-modal__content">
+                    <h1 id="modal-6053-title" class="fr-modal__title">
+                      <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+                      Confirmation de suppression
+                    </h1>
+                    <p>Êtes-vous sûr de vouloir supprimer tous les logs d'audit ? Cette action est irréversible.</p>
+                  </div>
+                  <div class="fr-modal__footer">
+                    <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                      <button class="fr-btn fr-btn--secondary" @click="showDeleteModal = false">Annuler</button>
+                      <button class="fr-btn fr-btn--danger" @click="deleteLogs">Confirmer la suppression</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  </div>
-  </div>
-  
 </template>
 
 <script>
-
 import { auditService } from '@/services/audit-service';
-import logoSrc from '@/assets/logo.png'; // Assurez-vous que le chemin est correct
 import GaugeChart from '../components/GaugeChart.vue';
 import Heatmap from '../components/Heatmap.vue';
 
@@ -318,287 +310,230 @@ export default {
       showDeleteModal: false,
 
       items: [],
-      loading: true,
       error: false,
-      logoSrc: logoSrc,
       totalResolved: 0,
       successRate: 0,
       selectedGeocaptcha: null,
       isModalVisible: false,
       isConfirmationModalVisible: false,
       filterOption: 'id-asc',
-      apiKey: import.meta.env.VITE_API_KEY,
-      apiId: import.meta.env.VITE_API_ID,
       firstObject: 1,
       nbObjects: 20,
 
-      kingpinData: [],
       sessionData: [],
       kingpinStats: [],
       searchQuery: '',
-      sortKey: 'name', 
+      sortKey: 'name',
       sortOrder: 'asc',
       selectedTag: 'all',
-      selectedTags: new Set(),
     };
   },
   computed: {
+    // Filtrer les logs en fonction des critères de filtrage et de pagination
     filteredLogs() {
       let filtered = this.logs;
-      
+
       if (this.filterAction) {
         filtered = filtered.filter(log => log.action === this.filterAction);
       }
-      
+
       if (this.filterRoute) {
         filtered = filtered.filter(log => log.route === this.filterRoute);
       }
-      
-      // Tri par date (du plus récent au plus ancien)
+
+      // Trier par date (du plus récent au plus ancien)
       filtered.sort((a, b) => new Date(b.rawTimestamp) - new Date(a.rawTimestamp));
-      
+
       // Pagination
       const start = (this.currentPage - 1) * this.logsPerPage;
       const end = start + this.logsPerPage;
-      
+
       return filtered.slice(start, end);
     },
+    // Calculer le nombre total de pages
     totalPages() {
       let filtered = this.logs;
-      
+
       if (this.filterAction) {
         filtered = filtered.filter(log => log.action === this.filterAction);
       }
-      
+
       if (this.filterRoute) {
         filtered = filtered.filter(log => log.route === this.filterRoute);
       }
-      
+
       return Math.ceil(filtered.length / this.logsPerPage) || 1;
     },
+    // Obtenir les routes uniques
     uniqueRoutes() {
       const routes = new Set();
       this.logs.forEach(log => routes.add(log.route));
       return Array.from(routes);
     },
-
-    filteredItems() {
-      if (this.filterOption === 'all') {
-        return this.items;
-      } else if (this.filterOption === 'id-asc') {
-        return [...this.items].sort((a, b) => a.id.localeCompare(b.id));
-      } else if (this.filterOption === 'id-desc') {
-        return [...this.items].sort((a, b) => b.id.localeCompare(a.id));
-      } else if (this.filterOption === 'success-asc') {
-        return [...this.items].sort((a, b) => a.accuracy - b.accuracy);
-      } else if (this.filterOption === 'success-desc') {
-        return [...this.items].sort((a, b) => b.accuracy - a.accuracy);
-      }
-      return this.items;
-    },
+    // Filtrer et trier les statistiques
     filteredAndSortedStats() {
-    let filtered = this.kingpinStats.filter(stat => {
-      console.log("Filtrage par nom:", stat.name, this.searchQuery);
-      return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-    });
+      let filtered = this.kingpinStats.filter(stat => {
+        console.log("Filtrage par nom:", stat.name, this.searchQuery);
+        return stat.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+      });
 
-    if (this.selectedTag === 'success') {
-      filtered = filtered.filter(stat => stat.successRate > 70);
-    } else if (this.selectedTag === 'failed') {
-      filtered = filtered.filter(stat => stat.successRate <= 50);
-    }
-
-    console.log("Données filtrées:", filtered);
-
-    return filtered.sort((a, b) => {
-      const modifier = this.sortOrder === 'asc' ? 1 : -1;
-
-      if (this.sortKey === 'name') {
-        return modifier * a.name.localeCompare(b.name);
-      } else if (this.sortKey === 'successRate') {
-        return modifier * (a.successRate - b.successRate);
-      } else if (this.sortKey === 'attempts') {
-        return modifier * (a.attempts - b.attempts);
+      if (this.selectedTag === 'success') {
+        filtered = filtered.filter(stat => stat.successRate > 70);
+      } else if (this.selectedTag === 'failed') {
+        filtered = filtered.filter(stat => stat.successRate <= 50);
       }
-      return 0;
-    });
-  },
-  
-  totalKingpins() {
-    return this.kingpinStats.length;
-  },
-  
-  totalSessions() {
-    return this.kingpinStats.reduce((sum, stat) => sum + stat.total, 0);
-  },
 
+      console.log("Données filtrées:", filtered);
+
+      return filtered.sort((a, b) => {
+        const modifier = this.sortOrder === 'asc' ? 1 : -1;
+
+        if (this.sortKey === 'name') {
+          return modifier * a.name.localeCompare(b.name);
+        } else if (this.sortKey === 'successRate') {
+          return modifier * (a.successRate - b.successRate);
+        } else if (this.sortKey === 'attempts') {
+          return modifier * (a.attempts - b.attempts);
+        }
+        return 0;
+      });
+    },
+    // Calculer le nombre total de sessions
+    totalSessions() {
+      return this.kingpinStats.reduce((sum, stat) => sum + stat.total, 0);
+    },
+    // Calculer le taux de réussite global
     successRate() {
-        const totalSuccesses = this.kingpinStats.reduce((sum, stat) => sum + stat.successes, 0);
-        return this.totalSessions > 0 ? (totalSuccesses / this.totalSessions) * 100 : 0;
-      },
-      
-      avgTimeGlobal() {
-        let totalTime = 0;
-        let totalSuccesses = 0;
-        
-        this.kingpinStats.forEach(stat => {
-          totalTime += stat.totalTime;
-          totalSuccesses += stat.successes;
-        });
-        
-        return totalSuccesses > 0 ? totalTime / totalSuccesses : 0;
-      },
-      
+      const totalSuccesses = this.kingpinStats.reduce((sum, stat) => sum + stat.successes, 0);
+      return this.totalSessions > 0 ? (totalSuccesses / this.totalSessions) * 100 : 0;
+    },
   },
   methods: {
-
+    // Ouvrir le modal pour un kingpin spécifique
     openKingpinModal(kingpin) {
-    this.selectedGeocaptcha = {
-      id: kingpin.name, // Utilisez un identifiant unique si disponible
-      ip: 'N/A', // Remplacez par les données réelles si disponibles
-      attempts: kingpin.total,
-      successes: Math.round(kingpin.successRate * kingpin.total / 100),
-      failures: kingpin.total - Math.round(kingpin.successRate * kingpin.total / 100),
-      accuracy: kingpin.successRate,
-      referer: 'N/A', // Remplacez par les données réelles si disponibles
-      createdAt: 'N/A', // Remplacez par les données réelles si disponibles
-      challenge: {
-        backendId: 'N/A', // Remplacez par les données réelles si disponibles
-        frontendId: 'N/A' // Remplacez par les données réelles si disponibles
-      }
-    };
-    this.isModalVisible = true;
-  },
-    toggleTagSelection(tag) {
-    if (this.selectedTags.has(tag)) {
-      this.selectedTags.delete(tag);
-    } else {
-      this.selectedTags.add(tag);
-    }
-  },
+      this.selectedGeocaptcha = {
+        id: kingpin.name,
+        ip: 'N/A',
+        attempts: kingpin.total,
+        successes: Math.round(kingpin.successRate * kingpin.total / 100),
+        failures: kingpin.total - Math.round(kingpin.successRate * kingpin.total / 100),
+        accuracy: kingpin.successRate,
+        referer: 'N/A',
+        createdAt: 'N/A',
+        challenge: {
+          backendId: 'N/A',
+          frontendId: 'N/A'
+        }
+      };
+      this.isModalVisible = true;
+    },
+    // Changer d'onglet
     switchTab(tabId) {
       this.activeTab = tabId;
     },
-
+    // Charger les données de session depuis l'API
     async loadData(firstSessionObject = 1) {
-    try {
-      // Récupération des données de session
-      const sessionResponse = await fetch(
-        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
-        {
-          method: 'GET',
-          headers: {
-            "Accept": "application/json",
-            "x-api-key": import.meta.env.VITE_API_KEY,
-            "x-app-id": import.meta.env.VITE_API_ID,
-          },
-        }
-      );
-
-      if (!sessionResponse.ok) {
-        const errorText = await sessionResponse.text();
-        console.error('Erreur API session:', sessionResponse.status, errorText);
-        throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
-      }
-
-    if (!sessionResponse.ok) {
-      const errorText = await sessionResponse.text();
-      console.error('Erreur API session:', sessionResponse.status, errorText);
-      throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
-    }
-
-    const sessionData = await sessionResponse.json();
-    const newSessions = sessionData.sessions || [];
-
-    this.sessionData = [...this.sessionData, ...newSessions];
-
-    if (newSessions.length === 20) {
-      await this.loadData(firstSessionObject + 20);
-    } else {
-      console.log("Toutes les sessions ont été récupérées.");
-      this.analyzeData();
-    }
-  } catch (error) {
-    console.error('Erreur lors du chargement des données:', error);
-    this.errorMessage = `Erreur: ${error.message}`;
-    this.isError = true;
-  }
-},
-
-analyzeData() {
-  try {
-    // Grouper les sessions par nom de challenge
-    const sessionsByName = {};
-    
-    // Parcourir toutes les sessions
-    this.sessionData.forEach(session => {
-      if (session?.captcha?.challenge?.name) {
-        const challengeName = session.captcha.challenge.name;
-        
-        // Si ce nom de challenge n'existe pas encore dans notre map, l'initialiser
-        if (!sessionsByName[challengeName]) {
-          sessionsByName[challengeName] = {
-            name: challengeName,
-            attempts: 0,
-            successes: 0,
-            totalTime: 0,
-            sessions: []
-          };
-        }
-        
-        // Ajouter cette session au groupe correspondant
-        sessionsByName[challengeName].sessions.push(session);
-        
-        // Mettre à jour les compteurs
-        sessionsByName[challengeName].attempts++;
-        if (session.success) {
-          sessionsByName[challengeName].successes++;
-        }
-        
-        // Calculer le temps si disponible
-        if (session.begin && session.end) {
-          const beginTime = new Date(session.begin).getTime();
-          const endTime = new Date(session.end).getTime();
-          const duration = (endTime - beginTime) / 1000; // en secondes
-          
-          if (duration > 0 && session.success) {
-            sessionsByName[challengeName].totalTime += duration;
+      try {
+        const sessionResponse = await fetch(
+          `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
+          {
+            method: 'GET',
+            headers: {
+              "Accept": "application/json",
+              "x-api-key": import.meta.env.VITE_API_KEY,
+              "x-app-id": import.meta.env.VITE_API_ID,
+            },
           }
+        );
+
+        if (!sessionResponse.ok) {
+          const errorText = await sessionResponse.text();
+          console.error('Erreur API session:', sessionResponse.status, errorText);
+          throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
         }
+
+        const sessionData = await sessionResponse.json();
+        const newSessions = sessionData.sessions || [];
+
+        this.sessionData = [...this.sessionData, ...newSessions];
+
+        if (newSessions.length === 20) {
+          await this.loadData(firstSessionObject + 20);
+        } else {
+          console.log("Toutes les sessions ont été récupérées.");
+          this.analyzeData();
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+        this.errorMessage = `Erreur: ${error.message}`;
+        this.isError = true;
       }
-    });
-    
-    // Convertir en tableau pour l'affichage
-    const kingpinStatsArray = Object.values(sessionsByName);
-    
-    // Calculer les pourcentages de réussite
-    kingpinStatsArray.forEach(stat => {
-      stat.successRate = stat.attempts > 0 
-        ? parseFloat(((stat.successes / stat.attempts) * 100).toFixed(1)) 
-        : 0;
-      
-      stat.avgTime = stat.successes > 0 
-        ? parseFloat((stat.totalTime / stat.successes).toFixed(1))
-        : 0;
-        
-      // Ajouter le total pour compatibilité avec code existant
-      stat.total = stat.attempts;
-    });
-    
-    // Stocker les résultats
-    this.kingpinStats = kingpinStatsArray;
-    
-    console.log(`Analyse terminée: ${kingpinStatsArray.length} challenges différents identifiés`);
-    console.log("Statistiques:", this.kingpinStats);
-    
-    return kingpinStatsArray;
-  } catch (error) {
-    console.error('Erreur lors de l\'analyse des données:', error);
-    this.errorMessage = `Erreur d'analyse: ${error.message}`;
-    this.isError = true;
-    return [];
-  }
-},
+    },
+    // Analyser les données de session
+    analyzeData() {
+      try {
+        const sessionsByName = {};
+
+        this.sessionData.forEach(session => {
+          if (session?.captcha?.challenge?.name) {
+            const challengeName = session.captcha.challenge.name;
+
+            if (!sessionsByName[challengeName]) {
+              sessionsByName[challengeName] = {
+                name: challengeName,
+                attempts: 0,
+                successes: 0,
+                totalTime: 0,
+                sessions: []
+              };
+            }
+
+            sessionsByName[challengeName].sessions.push(session);
+            sessionsByName[challengeName].attempts++;
+            if (session.success) {
+              sessionsByName[challengeName].successes++;
+            }
+
+            if (session.begin && session.end) {
+              const beginTime = new Date(session.begin).getTime();
+              const endTime = new Date(session.end).getTime();
+              const duration = (endTime - beginTime) / 1000;
+
+              if (duration > 0 && session.success) {
+                sessionsByName[challengeName].totalTime += duration;
+              }
+            }
+          }
+        });
+
+        const kingpinStatsArray = Object.values(sessionsByName);
+
+        kingpinStatsArray.forEach(stat => {
+          stat.successRate = stat.attempts > 0
+            ? parseFloat(((stat.successes / stat.attempts) * 100).toFixed(1))
+            : 0;
+
+          stat.avgTime = stat.successes > 0
+            ? parseFloat((stat.totalTime / stat.successes).toFixed(1))
+            : 0;
+
+          stat.total = stat.attempts;
+        });
+
+        this.kingpinStats = kingpinStatsArray;
+
+        console.log(`Analyse terminée: ${kingpinStatsArray.length} challenges différents identifiés`);
+        console.log("Statistiques:", this.kingpinStats);
+
+        return kingpinStatsArray;
+      } catch (error) {
+        console.error('Erreur lors de l\'analyse des données:', error);
+        this.errorMessage = `Erreur d'analyse: ${error.message}`;
+        this.isError = true;
+        return [];
+      }
+    },
+    // Obtenir la classe CSS pour une action donnée
     getBoxClass(action) {
       switch (action) {
         case 'CREATE': return 'box-create';
@@ -609,6 +544,7 @@ analyzeData() {
         default: return 'box-info';
       }
     },
+    // Obtenir la classe CSS pour une action donnée
     getActionClass(action) {
       switch (action) {
         case 'CREATE': return 'action-create';
@@ -619,23 +555,26 @@ analyzeData() {
         default: return 'action-info';
       }
     },
+    // Réinitialiser les filtres
     clearFilters() {
       this.filterAction = '';
       this.filterRoute = '';
       this.currentPage = 1;
     },
+    // Charger les logs depuis le service d'audit
     loadLogs() {
       this.logs = auditService.getLogs();
     },
+    // Afficher le modal de confirmation de suppression des logs
     confirmDeleteLogs() {
       this.showDeleteModal = true;
     },
+    // Supprimer les logs
     deleteLogs() {
       auditService.clearLogs();
       this.logs = [];
       this.showDeleteModal = false;
-      
-      // Ajouter une entrée d'audit pour la suppression
+
       const deleteAudit = {
         action: 'INFO',
         route: 'audit',
@@ -643,86 +582,35 @@ analyzeData() {
         timestamp: new Date().toLocaleString(),
         rawTimestamp: new Date()
       };
-      
+
       this.logs = [deleteAudit];
       this.currentPage = 1;
     },
-
-     // Méthodes pour GéoCaptcha
-    // Appliquer le filtre
-    applyFilter() {
-      console.log("Filtre appliqué:", this.filterOption);
-    },
-
+    // Définir le filtre de tag
     setFilter(tag) {
-    this.selectedTag = tag;
-    this.filterOption = tag;
-  },
+      this.selectedTag = tag;
+      this.filterOption = tag;
+    },
+    // Inverser l'ordre de tri
     toggleSortOrder() {
-    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
-  },
-
-    // Sélectionner un géocaptcha
-    async selectGeocaptcha(item) {
-      try {
-        // Stocker les informations du géocaptcha sélectionné
-        this.selectedGeocaptcha = item;
-        this.isModalVisible = true; // Afficher le modal
-        
-        // Ajouter une entrée d'audit
-        const auditEntry = {
-          action: 'NAVIGATE',
-          route: `/geocaptcha/${item.id}`,
-          description: `Consultation du géocaptcha ID: ${item.id}`,
-          timestamp: new Date().toLocaleString(),
-          rawTimestamp: new Date()
-        };
-        
-        if (auditService && typeof auditService.addLog === 'function') {
-          auditService.addLog(auditEntry);
-        }
-      } catch (error) {
-        console.error("Erreur lors de la sélection du géocaptcha:", error);
-      }
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     },
-
-    getAccuracyClass(accuracy, attempts) {
-      if (attempts > 30) {
-        if (accuracy <= 60) {
-          return "low";
-        }
-        else if (accuracy > 60 && accuracy <= 80) {
-          return "medium";
-        }
-        else {
-          return "high";
-        }
-      }
-      else {
-        return "not-enough-attempts";
-      }
-    },
-
     // Fermer le modal
     closeModal() {
       this.isModalVisible = false;
       this.selectedGeocaptcha = null;
     },
-
     // Afficher le modal de confirmation
     showConfirmationModal() {
       this.isConfirmationModalVisible = true;
     },
-
     // Fermer le modal de confirmation
     closeConfirmationModal() {
       this.isConfirmationModalVisible = false;
     },
-
     // Rejeter un géocaptcha
     async rejectGeocaptcha() {
       try {
-        // Suppression de la session via l'API
         const response = await fetch(
           `https://qlf-geocaptcha.ign.fr/api/v1/admin/session/${this.selectedGeocaptcha.id}`,
           {
@@ -739,16 +627,13 @@ analyzeData() {
           throw new Error("Erreur lors de la suppression du Géocaptcha");
         }
 
-        // Mise à jour de la liste des géocaptchas
         this.items = this.items.filter(item => item.id !== this.selectedGeocaptcha.id);
 
-        // Réactualisation des métriques
         this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
         const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
         const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
         this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
 
-        // Ajouter une entrée d'audit
         const auditEntry = {
           action: 'DELETE',
           route: `/geocaptcha/${this.selectedGeocaptcha.id}`,
@@ -756,18 +641,16 @@ analyzeData() {
           timestamp: new Date().toLocaleString(),
           rawTimestamp: new Date()
         };
-        
+
         if (auditService && typeof auditService.addLog === 'function') {
           auditService.addLog(auditEntry);
         }
 
-        // Fermeture des modaux
         this.closeModal();
         this.closeConfirmationModal();
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
-        
-        // Ajouter une entrée d'audit en cas d'erreur
+
         const auditEntry = {
           action: 'ERROR',
           route: `/geocaptcha/${this.selectedGeocaptcha.id}`,
@@ -775,7 +658,7 @@ analyzeData() {
           timestamp: new Date().toLocaleString(),
           rawTimestamp: new Date()
         };
-        
+
         if (auditService && typeof auditService.addLog === 'function') {
           auditService.addLog(auditEntry);
         }
@@ -783,34 +666,27 @@ analyzeData() {
     },
   },
   watch: {
-    // Add watchers for the filter properties
+    // Réinitialiser la page courante lorsque le filtre de route change
     filterRoute() {
-      this.currentPage = 1;  // Reset to page 1 when route filter changes
+      this.currentPage = 1;
     },
+    // Réinitialiser la page courante lorsque le filtre d'action change
     filterAction() {
-      this.currentPage = 1;  // Reset to page 1 when action filter changes
+      this.currentPage = 1;
     }
   },
   mounted() {
     window.scrollTo(0, 0);
     this.loadLogs();
     this.loadData();
-    //this.fetchData(); 
-  },
-  created() {
-    this.loadLogs(); 
-
-    // Rafraîchir les logs toutes les 5 secondes
-    this.refreshInterval = setInterval(this.loadLogs, 5000);
-  },
-  beforeDestroy() {
-    clearInterval(this.refreshInterval);
-  },
+  }
 };
 </script>
 
+
 <style scoped>
 
+/* Styles pour les onglets */
 .fr-tabs{
   margin-left: 50px;
   margin-right: 50px;
@@ -836,6 +712,7 @@ analyzeData() {
   display: block;
 }
 
+/* Styles pour l'affichage des métriques */
 .select-group-metrics {
   display: flex;
   align-items: flex-end; 
@@ -845,27 +722,27 @@ analyzeData() {
 
 .fr-search-bar {
   display: flex;
-  align-items: center; /* Centrer verticalement les éléments dans la barre de recherche */
-  width: 250px; /* Largeur fixe pour la barre de recherche */
+  align-items: center; 
+  width: 250px; 
   height: 40px;
 }
 
 
 .trier-metrics {
   display: flex;
-  align-items: center; /* Aligner verticalement les éléments au centre */
+  align-items: center; 
   gap: 10px;
   height: 50px;
 }
 
 .trier-metrics .fr-label {
   display: flex;
-  align-items: center; /* Aligner verticalement les éléments au centre */
-  gap: 5px; /* Espacement entre l'icône et le texte */
+  align-items: center; 
+  gap: 5px; 
 }
 
 .fr-icon-filter-line {
-  height: 17px; /* Espacement entre l'icône et le texte */
+  height: 17px; 
 }
 
 .fr-icon-arrow-up-down-line {
@@ -900,24 +777,19 @@ analyzeData() {
   width: 100%;
 }
 
-.geocaptcha-logo {
-  width: 100px; /* Ajuste la taille en fonction de tes besoins */
-  height: auto;
-  margin-bottom: 15px;
-  object-fit: contain; /* Assure que l'image garde ses proportions */
-}
-
 .fr-input-group {
   display: flex;
-  align-items: center; /* Aligner verticalement */
-  width: 100%; /* S'assure que tout s'étale correctement */
-  margin-bottom: 20px; /* Espacement entre le groupe d'input et le reste du contenu */
+  align-items: center; 
+  width: 100%; 
+  margin-bottom: 20px; 
 }
 
+
+/* Styles pour les logs */
 .filtre {
   display: flex;
-  align-items: center; /* Aligner verticalement */
-  gap: 8px; /* Espacement entre le select et le bouton */
+  align-items: center; 
+  gap: 8px; 
 }
 
 .filtre-route {
@@ -1024,6 +896,7 @@ analyzeData() {
   color: #666;
 }
 
+/* Styles pour la pagination */
 .fr-pagination {
   display: flex;
   justify-content: center;
@@ -1040,6 +913,8 @@ analyzeData() {
   font-weight: bold;
 }
 
+
+/* Styles pour les boutons */
 .fr-btn--danger {
   background-color: red;
   color: white;
@@ -1070,6 +945,9 @@ analyzeData() {
   align-items: center;
   z-index: 1000;
 }
+
+
+/* Styles pour le dark mode des logs */
 
 :root[data-fr-theme="dark"] .box-create {
   border: 1px solid rgb(73, 204, 144);
@@ -1121,6 +999,8 @@ analyzeData() {
   margin-right: 10px;
   color: #cfcfcf;
 }
+
+/* Styles pour les tags */
 
 .fr-tag--checked {
   position: relative;

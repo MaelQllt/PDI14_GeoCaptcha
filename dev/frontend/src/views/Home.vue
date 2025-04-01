@@ -45,8 +45,8 @@
 import { onMounted, ref } from 'vue';
 
 // Utilisez vos variables d'environnement ou placez directement les clés ici pour les tests
-const apiKey = import.meta.env.VITE_API_KEY || 'VOTRE_API_KEY';
-const apiId = import.meta.env.VITE_API_ID || 'VOTRE_API_ID';
+const apiKey = import.meta.env.VITE_API_KEY;
+const apiId = import.meta.env.VITE_API_ID;
 // URL de base pour toutes les requêtes API
 const apiBaseUrl = 'https://qlf-geocaptcha.ign.fr/api/v1';
 
@@ -223,13 +223,12 @@ const initCaptcha = async () => {
 
 onMounted(() => {
   window.scrollTo(0, 0);
-  console.log("Composant monté, initialisation du captcha");
   initCaptcha();
 });
 </script>
 
 <style scoped>
-/* Ajouter un padding sous le header pour éviter un chevauchement */
+/* Ajout d'un padding sous le header pour éviter un chevauchement */
 .home {
   padding-top: 170px;
 }
@@ -248,21 +247,6 @@ onMounted(() => {
   height: auto;
   margin-bottom: 20px;
 }
-
-/* Suppression des styles personnalisés du bouton car nous utilisons maintenant les classes DSFR */
-/* .validate-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.validate-button:hover {
-  background-color: #0056b3;
-} */
 
 .validation-message {
   margin-top: 10px;

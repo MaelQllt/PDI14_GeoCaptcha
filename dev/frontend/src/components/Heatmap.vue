@@ -6,7 +6,7 @@
     <!-- Légende de la heatmap -->
     <div class="legend-overlay">
       <h3>Légende</h3>
-      <p>Présence de GéoCaptcha en France :</p>
+      <p>Présence de GéoCaptcha :</p>
       <div class="legend-gradient">
         <div class="gradient"></div>
         <div class="labels">

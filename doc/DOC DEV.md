@@ -49,7 +49,7 @@ Une fois le serveur lancé, les exemples sont disponibles à l'adresse : [http:/
 
 Etant donné que nous travaillons en Vue, la visualisation de notre frontend via [Vite](https://vitejs.fr/guide/) correspond exactement à nos besoins.
 
-Pour l'installer vous pouvez simplement exécuter cette ligne :
+Pour l'installer vous pouvez simplement exécuter cette ligne dans le terminal au dossier du projet :
 
 ```
 npm install vite
@@ -68,7 +68,7 @@ npm install ol
 
 ### Installation de Turf
 
-Ayant besoin de gérer des données GeoJSON, [Turf](https://turfjs.org/) est la meilleure option pour ce besoin.
+Ayant besoin de gérer des données GeoJSON pour les contours de la France, [Turf](https://turfjs.org/) est la meilleure option pour ce besoin.
 
 Pour l'installer vous pouvez simplement exécuter cette ligne :
 
@@ -84,7 +84,22 @@ Pour l'installer vous pouvez simplement exécuter cette ligne :
 
 ```
 npm install axios
+
 ```
+## Pour utiliser l'API 
+
+Pour exploiter pleinement l'interface il faut une clé d'accès à l'API GeoCaptcha de l'IGN. 
+La suite n'est alors utile qu'en possession d'une clé et d'un id qu'il faut mettre dans un fichier `.env` dans le dossier `dev/frontend`.
+
+
+```js
+
+VITE_API_KEY= 
+VITE_API_ID= 
+
+```
+
+Il ne faut jamais commit ces infos sur Git.
 
 ## Lancement du projet sur le Network
 

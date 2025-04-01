@@ -115,35 +115,30 @@
   </div>
 
   <div class="fr-grid-row fr-grid-row--gutters">
-    <div v-for="(kingpin, index) in filteredAndSortedStats" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-      <div class="fr-tile" :class="getAccuracyClass(kingpin.successRate)" @click="openKingpinModal(kingpin)">
-        <div class="fr-tile__header">
-          <p><strong class="fr-tile__title">Nom: </strong> {{ kingpin.name }}</p>
+  <div v-for="(session, index) in sessionData" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
+    <div class="fr-tile">
+      <div class="fr-tile__header">
+        <p><strong class="fr-tile__title">Nom: </strong> {{ session.captcha?.challenge?.name }}</p>
+      </div>
+      <div class="fr-tile__body">
+        <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
+          <span class="text-2xl">🧩</span> <!-- Emoji placeholder for logo -->
         </div>
-        <div class="fr-tile__body">
-          <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
-            <span class="text-2xl">🧩</span> <!-- Emoji placeholder for logo -->
+        <div class="infos">
+          <div class="info-item grid grid-cols-2 gap-4 mb-4">
+            <div class="text-center">
+              <p><strong>Nombre d'essais : </strong>{{ session.attempts }}</p>
+            </div>
           </div>
-          
-          <div class="infos">
-            <div class="info-item grid grid-cols-2 gap-4 mb-4">
-              <div class="text-center">
-                <p><strong>Nombre d'essais : </strong>{{ kingpin.total }}</p>
-              </div>
-            </div>
-            
-            <div class="info-item gauge mb-2">
-              <GaugeChart :value="Math.round(kingpin.successRate)" min="0" max="100" label="Taux de réussite (%)" />
-            </div>
+          <div class="info-item gauge mb-2">
+            <GaugeChart :value="Math.round((session.successes / session.attempts) * 100)" min="0" max="100" label="Taux de réussite (%)" />
           </div>
         </div>
       </div>
     </div>
-    
-    <div v-if="filteredAndSortedStats.length === 0" class="fr-col-12 text-center p-8 bg-gray-50 rounded">
-      <p class="text-lg text-gray-600">Aucun kingpin ne correspond à votre recherche</p>
-    </div>
   </div>
+</div>
+
 
 
           <!-- Modal pour Détails du Géocaptcha -->
@@ -486,106 +481,87 @@ export default {
     },
 
     async loadData(firstSessionObject = 1) {
-    try {
-      // Récupération des données de session
-      const sessionResponse = await fetch(
-        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
-        {
-          headers: {
-            "Accept": "application/json",
-            "x-api-key": import.meta.env.VITE_API_KEY,
-            "x-app-id": import.meta.env.VITE_API_ID,
-          },
-        }
-      );
-
-      if (!sessionResponse.ok) {
-        const errorText = await sessionResponse.text();
-        console.error('Erreur API session:', sessionResponse.status, errorText);
-        throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
+  try {
+    const sessionResponse = await fetch(
+      `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=${firstSessionObject}&nbObjects=20`,
+      {
+        headers: {
+          "Accept": "application/json",
+          "x-api-key": import.meta.env.VITE_API_KEY,
+          "x-app-id": import.meta.env.VITE_API_ID,
+        },
       }
+    );
 
-      const sessionData = await sessionResponse.json();
-      const newSessions = sessionData.sessions || [];
-
-      // Ajouter les nouvelles sessions aux données existantes
-      this.sessionData = [...this.sessionData, ...newSessions];
-
-      // Si le nombre de sessions récupérées est égal à 20, appeler récursivement pour récupérer la prochaine page
-      if (newSessions.length === 20) {
-        await this.loadData(firstSessionObject + 20);
-      } else {
-        console.log("Toutes les sessions ont été récupérées.");
-
-        // Analyse des données récupérées
-        this.analyzeData();
-      }
-
-    } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
-      this.errorMessage = `Erreur: ${error.message}`;
-      this.isError = true;
+    if (!sessionResponse.ok) {
+      const errorText = await sessionResponse.text();
+      console.error('Erreur API session:', sessionResponse.status, errorText);
+      throw new Error(`Erreur réseau (session): ${sessionResponse.status} - ${sessionResponse.statusText}`);
     }
-  },
-      
-      
-      analyzeData() {
-        // Créer un mapping des kingpins par nom
-        const kingpinsByName = {};
-        this.kingpinData.forEach(kingpin => {
-          if (!kingpinsByName[kingpin.name]) {
-            kingpinsByName[kingpin.name] = [];
-          }
-          kingpinsByName[kingpin.name].push(kingpin);
-        });
-        
-        // Analyser les sessions pour chaque kingpin
-        const statsMap = {};
-        
-        this.sessionData.forEach(session => {
-          const kingpinName = session.captcha?.challenge?.name;
-          
-          if (!kingpinName) return;
-          
-          if (!statsMap[kingpinName]) {
-            statsMap[kingpinName] = {
-              name: kingpinName,
-              total: 0,
-              successes: 0,
-              totalTime: 0,
-              avgTime: 0,
-              successRate: 0,
-              attempts: 0
-            };
-          }
-          
-          const stats = statsMap[kingpinName];
-          stats.total++;
-          stats.attempts += session.attempts || 0;
-          
-          if (session.success) {
-            stats.successes++;
-            
-            // Calculer le temps en secondes
-            if (session.begin && session.end) {
-              const beginTime = new Date(session.begin);
-              const endTime = new Date(session.end);
-              const durationInSeconds = Math.abs((endTime - beginTime) / 1000);
-              
-              stats.totalTime += durationInSeconds;
-            }
-          }
-        });
-        
-        // Calculer les moyennes et taux
-        Object.values(statsMap).forEach(stats => {
-          stats.successRate = stats.total > 0 ? (stats.successes / stats.total) * 100 : 0;
-          stats.avgTime = stats.successes > 0 ? stats.totalTime / stats.successes : 0;
-          stats.avgAttempts = stats.total > 0 ? stats.attempts / stats.total : 0;
-        });
-        
-        this.kingpinStats = Object.values(statsMap);
-      },
+
+    const sessionData = await sessionResponse.json();
+    const newSessions = sessionData.sessions || [];
+
+    this.sessionData = [...this.sessionData, ...newSessions];
+
+    if (newSessions.length === 20) {
+      await this.loadData(firstSessionObject + 20);
+    } else {
+      console.log("Toutes les sessions ont été récupérées.");
+      this.analyzeData();
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement des données:', error);
+    this.errorMessage = `Erreur: ${error.message}`;
+    this.isError = true;
+  }
+},
+
+analyzeData() {
+  // Créer un objet pour stocker les statistiques agrégées par nom
+  const statsMap = {};
+
+  this.sessionData.forEach(session => {
+    const kingpinName = session.captcha?.challenge?.name;
+    if (!kingpinName) return;
+
+    if (!statsMap[kingpinName]) {
+      statsMap[kingpinName] = {
+        name: kingpinName,
+        total: 0,
+        successes: 0,
+        totalTime: 0,
+        avgTime: 0,
+        successRate: 0,
+        attempts: 0
+      };
+    }
+
+    const stats = statsMap[kingpinName];
+    stats.total++;
+    stats.attempts += session.attempts || 0;
+
+    if (session.success) {
+      stats.successes++;
+      if (session.begin && session.end) {
+        const beginTime = new Date(session.begin);
+        const endTime = new Date(session.end);
+        const durationInSeconds = Math.abs((endTime - beginTime) / 1000);
+        stats.totalTime += durationInSeconds;
+      }
+    }
+  });
+
+  // Calculer les moyennes et taux
+  Object.values(statsMap).forEach(stats => {
+    stats.successRate = stats.total > 0 ? (stats.successes / stats.total) * 100 : 0;
+    stats.avgTime = stats.successes > 0 ? stats.totalTime / stats.successes : 0;
+    stats.avgAttempts = stats.total > 0 ? stats.attempts / stats.total : 0;
+  });
+
+  this.kingpinStats = Object.values(statsMap);
+  console.log("Statistiques agrégées:", this.kingpinStats);
+},
     getBoxClass(action) {
       switch (action) {
         case 'CREATE': return 'box-create';
@@ -877,10 +853,8 @@ export default {
     //this.fetchData(); 
   },
   created() {
-    this.loadLogs();
-    this.loadData();
-    //this.fetchData(); 
-    
+    this.loadLogs(); 
+
     // Rafraîchir les logs toutes les 5 secondes
     this.refreshInterval = setInterval(this.loadLogs, 5000);
   },

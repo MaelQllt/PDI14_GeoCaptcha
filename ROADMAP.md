@@ -16,15 +16,15 @@ Le projet de refonte de l'interface d'administration du GéoCaptcha a pour objec
 ## Développement
 
 - **Fonctionnalité 1** : Gestion des clés d'accès + [Haute] + [terminé]
-- **Fonctionnalité 2** : Création des jeux GéoCaptcha + [Haute] + [en cours]
+- **Fonctionnalité 2** : Création des jeux GéoCaptcha + [Haute] + [terminé]
 - **Fonctionnalité 3** : Visualisation des métriques + [Moyen] + [en cours]
 
 ---
 
 ## Fonctionnalités à venir (Backlog)
 
-- **Idée 1** : Amélioration de la représentation des métriques
-- **Idée 2** : Création d'un GéoCaptcha à partir d'une emprise choisie
+- **Idée 1** : Amélioration de la représentation des métriques choisie
+- **Idée 2** : Faire une carte de chaleur liée aux adresses IP des utilisateurs
 
 ---
 

@@ -8,7 +8,12 @@
             <div class="fr-header__brand-top">
               <div class="fr-header__operator">
                 <!-- Logo avec attribut alt à renseigner -->
-                <img class="fr-responsive-img" style="max-width:5rem;" :src="logo" alt="Logo de l'interface" />
+                <img
+                  class="fr-responsive-img logo"
+                  style="max-width:5rem;"
+                  :src="currentLogo"
+                  alt="Logo de l'interface"
+                />
               </div>
             </div>
             <div class="fr-header__service">
@@ -69,22 +74,47 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import logo from "@/assets/logo.png"; // Chemin du logo de l'interface
+import { ref, onMounted, onUnmounted } from 'vue';
+import logo from "@/assets/logo.png";
+import logoBis from "@/assets/logo_bis.png";
 
-// Variable pour suivre l'état du bouton actif
 const activeButton = ref('');
+const currentLogo = ref(logo);
 
-// Fonction pour définir le bouton actif
 function setActiveButton(button) {
   activeButton.value = button;
 }
+
+function updateLogoBasedOnTheme() {
+  // Vérifier le thème actuel basé sur l'attribut data-fr-theme du root
+  const isDarkMode = document.documentElement.getAttribute('data-fr-theme') === 'dark';
+  currentLogo.value = isDarkMode ? logoBis : logo;
+}
+
+onMounted(() => {
+  // Mettre à jour le logo au montage
+  updateLogoBasedOnTheme();
+  
+  // Observer les changements d'attribut data-fr-theme sur l'élément root
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'data-fr-theme') {
+        updateLogoBasedOnTheme();
+      }
+    });
+  });
+  
+  observer.observe(document.documentElement, { attributes: true });
+  
+  onUnmounted(() => {
+    observer.disconnect();
+  });
+});
 </script>
 
 <style scoped>
 @import "@gouvfr/dsfr/dist/dsfr.min.css";
 
-/* HEADER FIXÉ */
 .fr-header {
   position: fixed;
   top: 0;
@@ -92,29 +122,24 @@ function setActiveButton(button) {
   width: 100%;
 }
 
-/* BOUTON */
 .fr-btn {
   transition: all 0.3s ease;
 }
 
-/* Effet au survol */
 .fr-btn:hover {
   background-color: rgb(18, 18, 255) !important;
   color: #ffffff !important;
 }
 
-/* Effet au clic (focus) */
 .fr-btn:active {
   background-color: rgb(220, 220, 252) !important;
 }
 
-/* Style pour le bouton actif */
 .fr-btn.active {
   background-color: rgb(0, 0, 145) !important;
   color: #fff !important;
 }
 
-/* STYLES EN MODE SOMBRE */
 :root[data-fr-theme="dark"] .fr-btn {
   color: #ffffff !important;
 }

@@ -414,35 +414,7 @@ export default {
         console.error("Erreur :", error);
       }
     },
-    async showGeoCaptchaTile() {
-      // Conversion des coordonnées latitude/longitude en coordonnées de tuile
-      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 15 pour les GéoCaptchas
-      console.log("Coordonnées de la tuile :", tileCoords);
-
-      // Préparation des données pour l'API
-      const data = {
-        id: this.generateUniqueId(),
-        x: tileCoords.x,
-        y: tileCoords.y,
-        z: 15,
-        zipcode: this.zipcode,
-        mode: this.mode,
-        ok: "1"
-      };
-      console.log("Données envoyées à l'API :", data);
-
-      // Cas où le mode est 'plan-sur-plan' -- le changer en 'plan' pour faire fonctionner le mode
-      if (data.mode === 'plan-sur-plan') {
-        data.mode = 'plan';
-      }
-
-      try {
-        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
-        this.isModalOpen = true;
-      } catch (error) {
-        console.error("Erreur :", error);
-      }
-    },
+    
 
     async createGeoCaptcha() {
       // Conversion des coordonnées latitude/longitude en coordonnées de tuile

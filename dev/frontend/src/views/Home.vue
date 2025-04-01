@@ -20,10 +20,6 @@
     <section class="fr-container fr-my-5">
       <div class="logo-container">
         <form id="captcha-form" @submit.prevent="handleSubmit">
-          <!-- Affichage de l'image du captcha si disponible -->
-          <div v-if="imageUrl">
-            <img :src="imageUrl" alt="Challenge Image" class="challenge-img" />
-          </div>
           <!-- Bouton pour tester un GeoCaptcha -->
           <button type="submit" class="fr-btn">Tester un GeoCaptcha</button>
           <!-- Message affiché après validation du captcha -->
@@ -102,52 +98,7 @@ export default {
       });
     },
 
-    // Récupère un ID de challenge depuis l'API
-    async getChallengeId() {
-      try {
-        const response = await fetch(`${this.apiBaseUrl}/challenge?type=kingpin`, {
-          method: 'GET',
-          headers: {
-            'x-api-key': this.apiKey,
-            'x-app-id': this.apiId,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erreur API (${response.status})`);
-        }
-
-        const data = await response.json();
-        return data.challengeId;
-      } catch (error) {
-        this.loadingError = `Erreur: ${error.message}`;
-        throw error;
-      }
-    },
-
-    // Charge l'image du captcha associée à un challenge ID
-    async getCaptchaImage(cId) {
-      try {
-        const response = await fetch(`${this.apiBaseUrl}/challenge/${cId}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'image/png',
-            'x-api-key': this.apiKey,
-            'x-app-id': this.apiId,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Image non trouvée (${response.status})`);
-        }
-
-        return URL.createObjectURL(await response.blob());
-      } catch (error) {
-        this.loadingError = `Erreur de chargement de l'image: ${error.message}`;
-        return null;
-      }
-    },
-
+    
     // Valide un captcha en envoyant son token à l'API
     async validateCaptcha(token) {
       try {
@@ -158,11 +109,8 @@ export default {
             'x-app-id': this.apiId,
           },
         });
-
-        this.validationMessage = response.ok ? 'Captcha validé avec succès!' : `Échec de validation (${response.status})`;
         return response.ok;
       } catch (error) {
-        this.validationMessage = `Erreur de validation: ${error.message}`;
         return false;
       }
     },

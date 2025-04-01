@@ -115,10 +115,10 @@
   </div>
 
   <div class="fr-grid-row fr-grid-row--gutters">
-  <div v-for="(session, index) in sessionData" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-    <div class="fr-tile">
+  <div v-for="(kingpin, index) in filteredAndSortedStats" :key="index" class="fr-col-12 fr-col-md-6 fr-col-lg-4">
+    <div class="fr-tile" @click="openKingpinModal(kingpin)">
       <div class="fr-tile__header">
-        <p><strong class="fr-tile__title">Nom: </strong> {{ session.captcha?.challenge?.name }}</p>
+        <p><strong class="fr-tile__title">Nom: </strong> {{ kingpin.name }}</p>
       </div>
       <div class="fr-tile__body">
         <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
@@ -127,11 +127,11 @@
         <div class="infos">
           <div class="info-item grid grid-cols-2 gap-4 mb-4">
             <div class="text-center">
-              <p><strong>Nombre d'essais : </strong>{{ session.attempts }}</p>
+              <p><strong>Nombre d'essais : </strong>{{ kingpin.attempts }}</p>
             </div>
           </div>
           <div class="info-item gauge mb-2">
-            <GaugeChart :value="Math.round((session.successes / session.attempts) * 100)" min="0" max="100" label="Taux de réussite (%)" />
+            <GaugeChart :value="Math.round(kingpin.successRate)" min="0" max="100" label="Taux de réussite (%)" />
           </div>
         </div>
       </div>
@@ -526,49 +526,78 @@ export default {
 },
 
 analyzeData() {
-  // Créer un objet pour stocker les statistiques agrégées par nom
-  const statsMap = {};
-
-  this.sessionData.forEach(session => {
-    const kingpinName = session.captcha?.challenge?.name;
-    if (!kingpinName) return;
-
-    if (!statsMap[kingpinName]) {
-      statsMap[kingpinName] = {
-        name: kingpinName,
-        total: 0,
-        successes: 0,
-        totalTime: 0,
-        avgTime: 0,
-        successRate: 0,
-        attempts: 0
-      };
-    }
-
-    const stats = statsMap[kingpinName];
-    stats.total++;
-    stats.attempts += session.attempts || 0;
-
-    if (session.success) {
-      stats.successes++;
-      if (session.begin && session.end) {
-        const beginTime = new Date(session.begin);
-        const endTime = new Date(session.end);
-        const durationInSeconds = Math.abs((endTime - beginTime) / 1000);
-        stats.totalTime += durationInSeconds;
+  try {
+    // Grouper les sessions par nom de challenge
+    const sessionsByName = {};
+    
+    // Parcourir toutes les sessions
+    this.sessionData.forEach(session => {
+      if (session?.captcha?.challenge?.name) {
+        const challengeName = session.captcha.challenge.name;
+        
+        // Si ce nom de challenge n'existe pas encore dans notre map, l'initialiser
+        if (!sessionsByName[challengeName]) {
+          sessionsByName[challengeName] = {
+            name: challengeName,
+            attempts: 0,
+            successes: 0,
+            totalTime: 0,
+            sessions: []
+          };
+        }
+        
+        // Ajouter cette session au groupe correspondant
+        sessionsByName[challengeName].sessions.push(session);
+        
+        // Mettre à jour les compteurs
+        sessionsByName[challengeName].attempts++;
+        if (session.success) {
+          sessionsByName[challengeName].successes++;
+        }
+        
+        // Calculer le temps si disponible
+        if (session.begin && session.end) {
+          const beginTime = new Date(session.begin).getTime();
+          const endTime = new Date(session.end).getTime();
+          const duration = (endTime - beginTime) / 1000; // en secondes
+          
+          if (duration > 0 && session.success) {
+            sessionsByName[challengeName].totalTime += duration;
+          }
+        }
       }
-    }
-  });
-
-  // Calculer les moyennes et taux
-  Object.values(statsMap).forEach(stats => {
-    stats.successRate = stats.total > 0 ? (stats.successes / stats.total) * 100 : 0;
-    stats.avgTime = stats.successes > 0 ? stats.totalTime / stats.successes : 0;
-    stats.avgAttempts = stats.total > 0 ? stats.attempts / stats.total : 0;
-  });
-
-  this.kingpinStats = Object.values(statsMap);
-  console.log("Statistiques agrégées:", this.kingpinStats);
+    });
+    
+    // Convertir en tableau pour l'affichage
+    const kingpinStatsArray = Object.values(sessionsByName);
+    
+    // Calculer les pourcentages de réussite
+    kingpinStatsArray.forEach(stat => {
+      stat.successRate = stat.attempts > 0 
+        ? parseFloat(((stat.successes / stat.attempts) * 100).toFixed(1)) 
+        : 0;
+      
+      stat.avgTime = stat.successes > 0 
+        ? parseFloat((stat.totalTime / stat.successes).toFixed(1))
+        : 0;
+        
+      // Ajouter le total pour compatibilité avec code existant
+      stat.total = stat.attempts;
+    });
+    
+    // Stocker les résultats
+    this.kingpinStats = kingpinStatsArray;
+    
+    console.log(`Analyse terminée: ${kingpinStatsArray.length} challenges différents identifiés`);
+    console.log("Statistiques:", this.kingpinStats);
+    
+    return kingpinStatsArray;
+  } catch (error) {
+    console.error('Erreur lors de l\'analyse des données:', error);
+    this.errorMessage = `Erreur d'analyse: ${error.message}`;
+    this.isError = true;
+    return [];
+  }
 },
     getBoxClass(action) {
       switch (action) {
@@ -631,99 +660,6 @@ analyzeData() {
   },
     toggleSortOrder() {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
-  },
-
-    // Récupérer les données des géocaptchas
-    async fetchData() {
-    try {
-      const response = await fetch(
-        `https://qlf-geocaptcha.ign.fr/api/v1/admin/session?firstObject=1&nbObjects=20`,
-        {
-          method: 'GET',
-          headers: {
-            "Accept": "application/json",
-            "x-api-key": import.meta.env.VITE_API_KEY,
-            "x-app-id": import.meta.env.VITE_API_ID,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération des données");
-      }
-
-      const data = await response.json();
-      console.log("Données récupérées de l'API:", data); // Vérifiez les données récupérées
-
-      // Accédez à data.sessions pour itérer sur les sessions
-      const sessions = data.sessions;
-
-      // Regrouper les sessions par challengeId
-      const aggregatedData = {};
-      sessions.forEach(session => {
-        const challengeId = session.challengeId;
-        if (!aggregatedData[challengeId]) {
-          aggregatedData[challengeId] = {
-            id: session._id,
-            attempts: 0,
-            successes: 0,
-            failures: 0,
-            accuracy: 0,
-            challenge: session.captcha.challenge,
-            ip: session.ip,
-            referer: session.referer,
-            createdAt: session.createdAt,
-          };
-        }
-        aggregatedData[challengeId].attempts += session.attempts;
-        if (session.success) {
-          aggregatedData[challengeId].successes++;
-        } else {
-          aggregatedData[challengeId].failures++;
-        }
-        aggregatedData[challengeId].accuracy = (aggregatedData[challengeId].successes / aggregatedData[challengeId].attempts) * 100;
-      });
-
-      // Convertir l'objet agrégé en tableau
-      this.items = Object.values(aggregatedData);
-      console.log("Données agrégées:", this.items); // Vérifiez les données agrégées
-
-      // Calculer les métriques
-      this.totalResolved = this.items.reduce((total, item) => total + item.successes, 0);
-      const totalAttempts = this.items.reduce((total, item) => total + item.attempts, 0);
-      const totalSuccesses = this.items.reduce((total, item) => total + item.successes, 0);
-      this.successRate = totalAttempts > 0 ? parseFloat(((totalSuccesses / totalAttempts) * 100).toFixed(2)) : 0;
-
-      // Ajouter une entrée d'audit
-      const auditEntry = {
-        action: 'INFO',
-        route: '/geocaptcha',
-        description: `Chargement de ${this.items.length} géocaptchas`,
-        timestamp: new Date().toLocaleString(),
-        rawTimestamp: new Date()
-      };
-
-      if (auditService && typeof auditService.addLog === 'function') {
-        auditService.addLog(auditEntry);
-      }
-
-    } catch (error) {
-      this.error = true;
-      console.error("Erreur:", error);
-
-      // Ajouter une entrée d'audit en cas d'erreur
-      const auditEntry = {
-        action: 'ERROR',
-        route: '/geocaptcha',
-        description: `Erreur lors du chargement des géocaptchas: ${error.message}`,
-        timestamp: new Date().toLocaleString(),
-        rawTimestamp: new Date()
-      };
-
-      if (auditService && typeof auditService.addLog === 'function') {
-        auditService.addLog(auditEntry);
-      }
-    }
   },
 
     // Sélectionner un géocaptcha

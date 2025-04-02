@@ -24,7 +24,7 @@
                 :class="{ active: activeButton === '' }"
                 @click="setActiveButton('')"
               >
-                CaptchaAdmin
+                CaptchAdmin
                 <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
               </router-link>
               <p class="fr-header__service-tagline">Interface Administrateur du GéoCaptcha</p>

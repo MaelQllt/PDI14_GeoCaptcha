@@ -1,36 +1,40 @@
-# Roadmap
+# 🗺️ Roadmap
 
-## Vision globale
+## 🎯 Vision Globale
 
-Le projet de refonte de l'interface d'administration du GéoCaptcha a pour objectif d'améliorer l'interface déjà existante en la rendant plus ergonomique et plus intuitive.
-
----
-
-## Objectifs à long terme
-
-- **Objectif 1** : Mettre en valeur les produits IGN et contribuer à certains projets.
-- **Objectif 2** : Ouvrir à un plus large public.
+Le projet de refonte de l'interface d'administration du **GéoCaptcha** vise à rendre l'expérience plus **ergonomique**, **intuitive** et **efficace**.
 
 ---
 
-## Développement
+## 🚀 Objectifs à Long Terme
 
-- **Fonctionnalité 1** : Gestion des clés d'accès + [Haute] + [terminé]
-- **Fonctionnalité 2** : Création des jeux GéoCaptcha + [Haute] + [terminé]
-- **Fonctionnalité 3** : Visualisation des métriques + [Moyen] + [en cours]
-
----
-
-## Fonctionnalités à venir (Backlog)
-
-- **Idée 1** : Amélioration de la représentation des métriques choisie
-- **Idée 2** : Faire une carte de chaleur liée aux adresses IP des utilisateurs
+- 🔹 **Valoriser** les produits **IGN** et contribuer à certains projets.
+- 🔹 **Ouvrir** à un **public plus large**.
 
 ---
 
-## Challenges
+## ⚙️ Développement
 
-- **Challenge 1** : Peu de temps
-- **Challenge 2** : Petite équipe
-- **Challenge 3** : Contrainte du DSFR
+| Fonctionnalité                    | Priorité | Statut |
+|-----------------------------------|---------|--------|
+| 🛠️ Gestion des clés d'accès      | 🔥 Haute | ✅ Terminé |
+| 🎮 Création des tuiles GéoCaptcha | 🔥 Haute | ✅ Terminé |
+| 📊 Visualisation des métriques    | ⚖️ Moyen | 🚧 En cours |
+
+---
+
+## 🔮 Fonctionnalités à Venir (Backlog)
+
+- 📌 **Optimisation** de la représentation des métriques.
+- 🌍 **Carte de chaleur** des connexions basée sur les adresses IP.
+
+---
+
+## ⚡ Challenges
+
+- ⏳ **Temps limité**
+- 👥 **Petite équipe**
+- 📏 **Conformité avec le DSFR** (Design System de l’État Français)
+
+---
 

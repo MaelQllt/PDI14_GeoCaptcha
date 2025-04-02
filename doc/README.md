@@ -23,7 +23,7 @@ de l’interface est donc demandée par l’IGN.
 
 ## Documentation 
 
-La documentation complète est disponible ici (https://github.com/MaelQllt/PDI14_GeoCaptcha/blob/Mael/doc/DOC%20DEV.md). 
+La documentation complète est disponible ici (https://github.com/MaelQllt/PDI14_GeoCaptcha/blob/main/doc/DOC%20DEV.md). 
 
 
 ## Pour le lancer rapidement

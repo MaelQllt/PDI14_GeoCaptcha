@@ -133,13 +133,7 @@
               </div>
               <div class="fr-tile__body">
                 <div class="geocaptcha-icon bg-gray-100 rounded-full p-2 flex items-center justify-center mb-4">
-                  <img 
-                    :src="`https://qlf-geocaptcha.ign.fr/api/v1/challenge/${kingpin.name}`"
-                    :alt="kingpin.name"
-                    class="challenge-image w-16 h-16 object-cover"
-                    @error="handleImageError($event)"
-                  />
-                                  
+                  <span class="text-2xl">🧩</span> <!-- À modifier à terme -->
                 </div>
                 <div class="infos">
                   <div class="info-item grid grid-cols-2 gap-4 mb-4">
@@ -372,7 +366,6 @@ export default {
       selectedTag: 'all',
       currentMetricPage: 1,
       metricsPerPage: 9,
-      challengeImages: {},
 
     };
   },
@@ -525,46 +518,6 @@ export default {
       }
     },
 
-    async loadChallengeImage(challengeName) {
-      if (this.challengeImages[challengeName]) {
-        return; // Image déjà chargée
-      }
-      
-      try {
-        const challengeResponse = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/challenge/${challengeName}`,
-          {
-            method: 'GET',
-            headers: {
-              "Accept": "image/png",
-              "x-api-key": import.meta.env.VITE_API_KEY,
-              "x-app-id": import.meta.env.VITE_API_ID,
-            },
-          }
-        );
-
-        if (!challengeResponse.ok) {
-          throw new Error(`Erreur réseau (challenge image): ${challengeResponse.status}`);
-        }
-
-        // Convertir la réponse en blob puis en URL d'objet
-        const blob = await challengeResponse.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        
-        // Mettre à jour l'objet challengeImages
-        this.challengeImages = { ...this.challengeImages, [challengeName]: imageUrl };
-      } catch (error) {
-        console.error(`Erreur lors du chargement de l'image du challenge ${challengeName}:`, error);
-        // Utiliser une image par défaut en cas d'erreur
-        this.challengeImages = { ...this.challengeImages, [challengeName]: null };
-      }
-    },
-
-    handleImageError(event) {
-      // Remplacer par l'emoji en cas d'erreur de chargement
-      event.target.outerHTML = '<span class="text-2xl">🧩</span>';
-    },
-
     // Analyser les données de session
     analyzeData() {
       try {
@@ -617,10 +570,6 @@ export default {
         });
 
         this.kingpinStats = kingpinStatsArray;
-
-        kingpinStatsArray.forEach(stat => {
-          this.loadChallengeImage(stat.name);
-        });
 
 
         return kingpinStatsArray;
@@ -1147,11 +1096,4 @@ export default {
   color: white;
   border-radius: 50%;
 }
-
-.challenge-image {
-  border-radius: 8px;
-  width: 64px;
-  height: 64px;
-}
-
 </style>

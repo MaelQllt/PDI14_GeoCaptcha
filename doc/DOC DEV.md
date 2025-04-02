@@ -2,7 +2,6 @@
 
 [![GitHub release](https://img.shields.io/badge/release-v0.0.1-blue)](https://github.com/MaelQllt/PDI14_GeoCaptcha) [![Generic badge](https://img.shields.io/badge/npm-yellow.svg)](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) [![Generic badge](https://img.shields.io/badge/Vue-blue.svg)](https://vuejs.org/) [![Generic badge](https://img.shields.io/badge/Réalisé_par-Etudiants_de_l'ENSG-brightgreen.svg)](https://ensg.eu/fr) [![Generic badge](https://img.shields.io/badge/GéoCaptcha-IGN-brightgreen.svg)](https://github.com/IGNF/GeocaptchaAPI) 
 
-
 La **MARS** (Mission Architecture Réseau et Sécurité) de l'**IGN** (Institut National de l'information géographiques et forestière) a développé un système de Captcha innovant basé sur des données géographiques appelé: GéoCaptcha.
 
 [Voir documentation du GéoCaptcha](https://github.com/IGNF/GeocaptchaAPI/blob/master/README.md)
@@ -25,15 +24,15 @@ La méthode la plus optimale pour installer et utiliser le DSFR est de se servir
 
 Une fois **npm** bien installé, ouvrez votre terminal et rentrez ceci pour installer le DSFR:
 
-```
+```sh
 npm install @gouvfr/dsfr
 ```
 
-Une fois terminé le DSFR sera alors installé dans le dossier: **node\_modules/@gouvfr/dsfr/**
+Une fois terminé le DSFR sera alors installé dans le dossier: **node_modules/@gouvfr/dsfr/**
 
 Vous pouvez d'ailleurs visualiser les composants, fondamentaux et autres éléments du DSFR en local ainsi:
 
-```
+```sh
 npm install browser-sync
 cd node_modules/@gouvfr/dsfr/
 npm run serve
@@ -47,98 +46,73 @@ Une fois le serveur lancé, les exemples sont disponibles à l'adresse : [http:/
 
 ### Installation de Vite
 
-Etant donné que nous travaillons en Vue, la visualisation de notre frontend via [Vite](https://vitejs.fr/guide/) correspond exactement à nos besoins.
-
-Pour l'installer vous pouvez simplement exécuter cette ligne dans le terminal au dossier du projet :
-
-```
+```sh
 npm install vite
 ```
 
 ### Installation de OpenLayers
 
-Nous avons choisi [OpenLayers](https://openlayers.org/) pour ses nombreux avantages :
-Open-source, librairie cartographique permettant de répondre à des besoins avancés.
-
-Pour l'installer vous pouvez simplement exécuter cette ligne :
-
-```
+```sh
 npm install ol
 ```
 
 ### Installation de Turf
 
-Ayant besoin de gérer des données GeoJSON pour les contours de la France, [Turf](https://turfjs.org/) est la meilleure option pour ce besoin.
-
-Pour l'installer vous pouvez simplement exécuter cette ligne :
-
-```
+```sh
 npm install @turf/turf
 ```
 
 ### Installation d'Axios
 
-Nous avons besoin d'Axios pour gérer les logs.
-
-Pour l'installer vous pouvez simplement exécuter cette ligne :
-
-```
+```sh
 npm install axios
 ```
+
 ## Pour utiliser l'API 
 
-Pour exploiter pleinement l'interface il faut une clé d'accès à l'API GeoCaptcha de l'IGN. 
-La suite n'est alors utile qu'en possession d'une clé et d'un id qu'il faut mettre dans un fichier `.env` dans le dossier `dev/frontend`.
+Créer un fichier `.env` dans le dossier `dev/frontend` et y ajouter :
 
-
-```js
-
+```ini
 VITE_API_KEY= 
 VITE_API_ID= 
-
 ```
 
-Il ne faut jamais commit ces infos sur Git.
+Ne jamais commit ces informations sur Git.
 
 ## Lancement du projet sur le Network
 
-Afin de lancer le projet nous allons utiliser, une fois encore, **npm**. Pour ce faire rendez vous dans votre terminal ouvert dans votre dossier frontend. Faites ensuite cette requête:
-
-```
+```sh
 npm run dev -- --host
 ```
 
-Ainsi vous devriez obtenir un accès local et network au projet, vous pouvez copier-coller le network sur votre navigateur.
+Exemple d'accès local et network:
 
 ```js
 Local:   http://localhost:5176/
 Network: http://192.0.0.2:5176/
 ```
 
-**Attention**: le port peut être un autre que 5176, suivez la réponse de votre terminal en priorité.
+**Attention**: le port peut être différent.
 
 ## Guide Technique
 
 ### Structure du Code
 
-Le projet est organisé selon l'architecture suivante:
-
 - **dev/** : Contient le code
-    - **frontend/** : Contient l'interface utilisateur basée sur Vue et DSFR
+    - **frontend/** : Interface utilisateur basée sur Vue et DSFR
     - **src/** : Code source Vue
-        - **assets/** : Images et autre ajout visuel
-        - **components/** : Composants réutilisables (header, footer et dark mode)
+        - **assets/** : Images et ajouts visuels
+        - **components/** : Composants réutilisables
         - **views/** : Pages principales
         - **router/** : Gestion des routes
-    - **package.json** : Gestion des dépendances et scripts
-    - **backend/** : API et gestion des données (ici nous avons utilisé le backend pour des json factices quans l'API ne fonctionnait pas)
+    - **backend/** : API et gestion des données
 
 ### Choix Technologiques
 
-- **Vue.js** : Framework principal pour le frontend
-- **Vite** : Outil de build rapide pour Vue
-- **DSFR** : Système de design gouvernemental
-- **Node.js & npm** : Gestion des dépendances
+- **Vue.js**
+- **Vite**
+- **DSFR**
+- **Node.js & npm**
 
 ### Etapes de Développement
 
@@ -160,11 +134,10 @@ Le projet est organisé selon l'architecture suivante:
 - **Node.js v16+**
 - **Vue CLI ou Vite**
 - **Navigateurs supportés** : Chrome, Firefox, Edge, Safari
-- **API GéoCaptcha** : Documentation disponible [ici](https://github.com/IGNF/GeocaptchaAPI)
+- **API GéoCaptcha** : [Documentation](https://github.com/IGNF/GeocaptchaAPI)
 
 ---
 
 https://github.com/gregoiredavid/france-geojson/blob/master/regions-avec-outre-mer.geojson
 
-Cette documentation est amenée à évoluer avec le projet. Bonne contribution ! 
-
+Cette documentation est amenée à évoluer avec le projet. Bonne contribution !

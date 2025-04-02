@@ -54,6 +54,24 @@ Puis
 npm install vite
 ```
 
+Puis 
+
+```
+npm install ol
+```
+
+Puis
+
+```
+npm install @turf/turf
+```
+
+Puis
+
+```
+npm install axios
+```
+
 Ensuite 
 
 ```bash

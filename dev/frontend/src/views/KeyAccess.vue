@@ -44,6 +44,7 @@
         <div class="barre">
           <h1>Liste des utilisateurs</h1>
           <div class="search-container">
+
             <div class="tag-container">
               <ul class="fr-tags-group">
                 <li>
@@ -58,12 +59,14 @@
                 </li>
               </ul>
             </div>
+
             <div class="tooltip-container">
               <button @mouseover="showTooltip" @mouseleave="hideTooltip" class="fr-btn--tertiary-no-outline fr-icon-information-line"></button>
               <span v-if="isTooltipVisible" class="custom-tooltip">
                 Vous pouvez rechercher via le nom, l'adresse mail ou le referer.
               </span>
             </div>
+
             <div class="fr-search-bar">
               <input
                 class="fr-input"
@@ -73,8 +76,10 @@
               />
               <button title="Rechercher" type="button" class="fr-btn"> Rechercher </button>
             </div>
+
           </div>
         </div>
+
         <div class="fr-grid-row fr-grid-row--gutters">
           <div
             v-for="(key, index) in filteredKeys"
@@ -88,6 +93,7 @@
                 <p><strong class="fr-tile__title">Referer : </strong>{{ key.referer }}</p>
                 <p><strong class="fr-tile__title">Rôle : </strong>{{ key.role }}</p>
               </div>
+
               <div class="fr-tile__body">
                 <button type="button" class="edit-btn fr-btn fr-btn--sm" @click="openEditModal(key)">
                   Modifier
@@ -96,9 +102,13 @@
                   Supprimer
                 </button>
               </div>
+
             </div>
+
           </div>
         </div>
+
+        
 
         <!-- Pagination pour visualiser tous les utilisateurs-->
         <div class="pagination" v-if="totalPages > 1">
@@ -152,6 +162,7 @@
                       />
                       <span class="fr-hint-text">Le nom d'utilisateur ne peut pas être modifié</span>
                     </div>
+
                     <div class="fr-input-group">
                       <label class="fr-label" for="edit-email">Adresse mail associée :</label>
                       <input 
@@ -183,6 +194,7 @@
                         L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme http(s)://application-client1.fr
                       </span>
                     </div>
+
                     <div class="fr-select-group">
                       <label class="fr-label" for="edit-select">Rôle :</label>
                       <select id="edit-select" name="edit-select" v-model="editedUser.role" class="fr-select" required>
@@ -191,6 +203,7 @@
                         <option value='private'>Private</option>
                       </select>
                     </div>
+
                     <div class="fr.modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
                       <button 
                         type="submit" 
@@ -201,6 +214,7 @@
                         Enregistrer les modifications
                       </button>
                     </div>
+
                   </form>
                 </div>
               </div>
@@ -219,6 +233,7 @@
                 <div class="fr-modal__header">
                   <button @click="closeModal" class="fr-btn--close fr-btn" id="close">Fermer</button>
                 </div>
+
                 <div class="fr-modal__content">
                   <h2 class="fr-modal__title">
                     <span class="fr-icon-warning-line fr-icon--lg" aria-hidden="true"></span>
@@ -226,10 +241,12 @@
                   </h2>
                   <p>Êtes-vous sûr de vouloir supprimer cette clé ?</p>
                 </div>
+
                 <div class="fr-modal__footer fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
                   <button @click="deleteKey" class="fr-btn fr-btn--reject">Oui, supprimer</button>
                   <button @click="closeModal" class="fr-btn fr-btn--cancel" id="cancel">Annuler</button>
                 </div>
+
               </div>
             </div>
           </div>
@@ -246,63 +263,66 @@
       aria-labelledby="tabpanel-405"
     >
       <div class="main-content">
+
         <div class="key-generation">
-        <h1 class="fr-h1">Générer une clé d'accès</h1>
-        <form @submit.prevent="openConfirmationModal">
+          <h1 class="fr-h1">Générer une clé d'accès</h1>
+          <form @submit.prevent="openConfirmationModal">
 
-          <div class="fr-input-group">
-            <label class="fr-label" for="key-name">Nom :</label>
-            <input
-              type="text"
-              id="key-name"
-              v-model="keyName"
-              class="fr-input"
-              placeholder="Nom associé à la clé d'accès (minimum 5 caractères)"
-              minlength="5"
-              required
-            />
-          </div>
-
-
-          <div class="fr-input-group">
-            <label class="fr-label" for="email">Adresse mail associée :</label>
-            <input type="email" id="email" v-model="email" class="fr-input" placeholder="exemple@xyz.fr" required/>
-            <span v-if="email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme exemple@xyz.fr</span>
-          </div>
-
-          <div class="fr-input-group">
-            <label class="fr-label" for="key-referer">Referer :</label>
-            <input
-              type="text"
-              id="key-referer"
-              v-model="referer"
-              class="fr-input"
-              placeholder="Exemple : http(s)://application-client1.fr"
-              @input="validateReferer"
-              required
-            />
-            <span v-if="referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme http(s)://application-client1.fr</span>
-          </div>
+            <div class="fr-input-group">
+              <label class="fr-label" for="key-name">Nom :</label>
+              <input
+                type="text"
+                id="key-name"
+                v-model="keyName"
+                class="fr-input"
+                placeholder="Nom associé à la clé d'accès (minimum 5 caractères)"
+                minlength="5"
+                required
+                @input="validateKeyName"
+              />
+              <span v-if="keyName && !isValidKeyname" class="fr-error">Le nom doit comprendre au minimum 5 caractères, sans espace, et sans symboles autre que "-" et "_".</span>
+            </div>
 
 
-          <div class="fr-select-group">
-            <label class="fr-label" for="select">Rôle :</label>
-            <select id="select" name="select" v-model="role" class="fr-select" required>
-              <option value="" disabled selected hidden>Choisissez un rôle</option>
-              <option value='admin'>Admin</option>
-              <option value='private'>Private</option>
-            </select>
-          </div>
+            <div class="fr-input-group">
+              <label class="fr-label" for="email">Adresse mail associée :</label>
+              <input type="email" id="email" v-model="email" class="fr-input" placeholder="exemple@xyz.fr" required/>
+              <span v-if="email && !isValidEmail" class="fr-error">L'adresse email doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme exemple@xyz.fr</span>
+            </div>
 
-          <button 
-            type="submit" 
-            class="fr-btn fr-btn--primary cle-generer" 
-            :disabled="!isFormValid"
-            :class="{ 'fr-btn--disabled': !isFormValid }"
-          >
-            Générer la clé
-          </button>
-        </form>
+            <div class="fr-input-group">
+              <label class="fr-label" for="key-referer">Referer :</label>
+              <input
+                type="text"
+                id="key-referer"
+                v-model="referer"
+                class="fr-input"
+                placeholder="Exemple : http(s)://application-client1.fr"
+                @input="validateReferer"
+                required
+              />
+              <span v-if="referer && !isValidReferer" class="fr-error">L'URL doit se terminer par un domaine à exactement 2 caractères (ex: .fr, .uk, .de) ou par .com, et être de la forme http(s)://application-client1.fr</span>
+            </div>
+
+
+            <div class="fr-select-group">
+              <label class="fr-label" for="select">Rôle :</label>
+              <select id="select" name="select" v-model="role" class="fr-select" required>
+                <option value="" disabled selected hidden>Choisissez un rôle</option>
+                <option value='admin'>Admin</option>
+                <option value='private'>Private</option>
+              </select>
+            </div>
+
+            <button 
+              type="submit" 
+              class="fr-btn fr-btn--primary cle-generer" 
+              :disabled="!isFormValid"
+              :class="{ 'fr-btn--disabled': !isFormValid }"
+              >
+              Générer la clé
+            </button>
+          </form>
         </div>
 
         <!-- Modal de confirmation de génération -->
@@ -314,6 +334,7 @@
                   <div class="fr-modal__header">
                     <button @click="generateApiKey" aria-controls="modal-6053" title="Fermer" type="button" id="button-6054" class="fr-btn--close fr-btn">Fermer</button>
                   </div>
+
                   <div class="fr-modal__content">
                     <h1 id="modal-6053-title" class="fr-modal__title">
                       <span class="fr-icon-check-line fr-icon--lg" aria-hidden="true"></span>
@@ -321,11 +342,13 @@
                     </h1>
                     <p>La clé a été générée avec succès. Un mail sera envoyé à l'adresse renseignée dans les plus brefs délais.</p>
                   </div>
+
                   <div class="fr-modal__footer">
                       <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
                         <button @click="generateApiKey" type="button" id="button-6047" class="validate-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left">Valider</button>
                       </div>
                   </div>
+
                 </div> 
               </div>
             </div>
@@ -338,222 +361,227 @@
 
 
 <script>
-/*Service de logs*/
+
 import { auditService } from '@/services/audit-service';
 
 export default {
-  data() {
-    return {
-      activeTab: "tabpanel-404",
-      keyName: "",
+
+data() {
+  return {
+    activeTab: "tabpanel-404",
+    keyName: "",
+    email: "",
+    referer: "",
+    isValidReferer: true,
+    isValidEmail: true,
+    isValidKeyname: true,
+    role: "",
+    apiKeys: [],
+    searchQuery: "",
+    showModal: false,
+    keyToDelete: null,
+    showConfirmationModal: false,
+    showMissingInfoModal: false,
+    apiKey: import.meta.env.VITE_API_KEY,
+    apiId: import.meta.env.VITE_API_ID,
+    firstObject: 1,
+    nbObjects: 20,
+    currentPage: 1,
+    totalKeys: 0,
+    itemsPerPage: 6,
+    isTooltipVisible: false,
+    selectedTag: "",
+    showEditModal: false,
+    editedUser: {
+      appId: "",
       email: "",
       referer: "",
-      isValidReferer: true,
-      isValidEmail: true,
-      role: "",
-      apiKeys: [],
-      searchQuery: "",
-      showModal: false,
-      keyToDelete: null,
-      showConfirmationModal: false,
-      showMissingInfoModal: false,
-      apiKey: import.meta.env.VITE_API_KEY,
-      apiId: import.meta.env.VITE_API_ID,
-      firstObject: 1,
-      nbObjects: 20,
-      currentPage: 1,
-      totalKeys: 0,
-      itemsPerPage: 6,
-      isTooltipVisible: false,
-      selectedTag: "",
-      showEditModal: false,
-      editedUser: {
-        appId: "",
-        email: "",
-        referer: "",
-        role: ""
-      },
-    };
-  },
-
-  computed: {
-    // Vérification de la validité du formulaire
-    isFormValid() {
-      return (
-        this.keyName && 
-        this.keyName.length >= 5 && 
-        this.email && 
-        this.isValidEmail && 
-        this.referer && 
-        this.isValidReferer && 
-        this.role
-      );
+      role: ""
     },
-    
-    filteredKeys() {
-      const filtered = this.apiKeys.filter(key => {
-        const searchQueryLower = this.searchQuery.toLowerCase();
-        
-        const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
-        const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
-        const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
+  };
+},
 
-        const matchesTag = this.selectedTag === "" || key.role === this.selectedTag;
-
-        return (appIdMatch || emailMatch || refererMatch) && matchesTag;
-      });
-
-      // Pagination
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return filtered.slice(start, end);
-    },
-
-    totalPages() {
-      const filtered = this.apiKeys.filter(key => {
-        const searchQueryLower = this.searchQuery.toLowerCase();
-        
-        const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
-        const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
-        const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
-
-        const matchesTag = this.selectedTag === "" || key.role === this.selectedTag;
-
-        return (appIdMatch || emailMatch || refererMatch) && matchesTag;
-      });
-
-      return Math.ceil(filtered.length / this.itemsPerPage);
-    }
+computed: {
+  // Nouvelle propriété calculée pour déterminer si le formulaire est valide
+  isFormValid() {
+    return (
+      this.keyName && 
+      this.keyName.length >= 5 && 
+      this.isValidKeyname &&
+      this.email && 
+      this.isValidEmail && 
+      this.referer && 
+      this.isValidReferer && 
+      this.role
+    );
   },
   
-  methods: {
-    switchTab(tabId) {
-      this.activeTab = tabId;
-      this.fetchKeys();
-    },
-
-    validateReferer() {
-      // Regex pour vérifier que le referer se termine par .xx (2 caractères) ou .com
-      const regex = /^(https?:\/\/)[a-zA-Z0-9-]+(\.[a-zA-Z]{2}|\.com)\/?\s*$/;
-      this.isValidReferer = regex.test(this.referer);
-    },
-
-    validateEmail() {
-      // Regex pour valider que l'email se termine par .xx (exactement 2 caractères)
-      const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(?:[a-zA-Z]{2}|com)$/;
-      this.isValidEmail = regex.test(this.email);
-    },
-
-    validateKeyName() {
-      return this.keyName && this.keyName.length >= 5;
-    },
-
-    // Ouverture du modal et définition de la clé à supprimer
-    openModal(id) {
-      this.keyToDelete = id;
-      this.showModal = true;
-    },
-
-    // Fermeture du modal sans effectuer de suppression
-    closeModal() {
-      this.showModal = false;
-      this.keyToDelete = null;
-    },
-
-    // Ouverture du modal de confirmation pour générer une clé
-    openConfirmationModal() {
-      if (this.isFormValid) {
-        this.showConfirmationModal = true; 
-      } else {
-        this.showMissingInfoModal = true; 
-      }
-    },
-
-    // Fermeture du modal de confirmation pour générer une clé
-    closeConfirmationModal() {
-      this.showConfirmationModal = false;
-    },
-
-    // Fermeture du modal si l'utilisateur n'a pas rempli les champs
-    closeMissingInfoModal() {
-      this.showMissingInfoModal = false; 
-    },
-
-    showTooltip() {
-      this.isTooltipVisible = true;
-    },
-
-    hideTooltip() {
-      this.isTooltipVisible = false;
-    },
-
-    toggleTag(role) {
-      // Si on clique sur le tag déjà actif, on le désactive
-      this.selectedTag = this.selectedTag === role ? "" : role;
-      this.currentPage = 1;
-    },
-
-    openEditModal(user) {
-      this.editedUser = { ...user };
-      this.showEditModal = true;
+  //Fonction qui gère la barre de recherche 
+  filteredKeys() {
+    const filtered = this.apiKeys.filter(key => {
+      const searchQueryLower = this.searchQuery.toLowerCase();
       
-      // Changement de l'email et du referer avec les modifications faites
-      this.email = this.editedUser.email;
-      this.referer = this.editedUser.referer;
+      const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
+      const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
+      const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
+
+      const matchesTag = this.selectedTag === "" || key.role === this.selectedTag;
+
+      return (appIdMatch || emailMatch || refererMatch) && matchesTag;
+    });
+
+    // Pagination
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return filtered.slice(start, end);
+  },
+
+  totalPages() {
+    // Calcule le total des pages en se basant sur les clés filtrées
+    const filtered = this.apiKeys.filter(key => {
+      const searchQueryLower = this.searchQuery.toLowerCase();
       
-      // Validation des changements
-      this.validateEmail();
-      this.validateReferer();
-    },
+      const appIdMatch = key.appId && key.appId.toLowerCase().includes(searchQueryLower);
+      const emailMatch = key.email && key.email.toLowerCase().includes(searchQueryLower);
+      const refererMatch = key.referer && key.referer.toLowerCase().includes(searchQueryLower);
 
-    closeEditModal() {
-      this.showEditModal = false;
-      this.email = "";
-      this.referer = "";
-      this.editedUser = {
-        appId: "",
-        email: "",
-        referer: "",
-        role: ""
-      };
-    },
+      const matchesTag = this.selectedTag === "" || key.role === this.selectedTag;
 
-    async saveChanges() {
-      this.email = this.editedUser.email;
-      this.referer = this.editedUser.referer;
-      this.validateEmail();
-      this.validateReferer();
-      
-      if (!this.isValidEmail || !this.isValidReferer) {
-        return;
-      }
-      
-      try {
-        const oldEmail = this.apiKeys.find(key => key.appId === this.editedUser.appId).email;
+      return (appIdMatch || emailMatch || refererMatch) && matchesTag;
+    });
 
-        // Envoie de la requête POST à l'API pour récupérer le cuser
-        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": this.apiKey,
-            "x-app-id": this.apiId
-          },
-          body: JSON.stringify({
-            appId: this.editedUser.appId,
-            email: this.editedUser.email,
-            referer: this.editedUser.referer,
-            role: this.editedUser.role
-          })
-        });
+    return Math.ceil(filtered.length / this.itemsPerPage);
+  }
+},
+methods: {
+  switchTab(tabId) {
+    this.activeTab = tabId;
+    this.fetchKeys();
+  },
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Erreur HTTP : ${response.status} - ${errorText}`);
-        }
+  validateKeyName() {
+    // Regex pour une chaîne compacte avec uniquement des lettres, chiffres, _ et -, sans espace
+    const regex = /^[a-zA-Z0-9_-]+$/;
+    this.isValidKeyname = this.keyName.length >= 5 && regex.test(this.keyName);
+    return this.keyName && this.keyName.length >= 5 && regex.test(this.keyName);
+  },
 
-        const subjectNew = encodeURIComponent("Modification de votre profil utilisateur");
-        const bodyNew = encodeURIComponent(`Bonjour,
+  validateEmail() {
+    // Regex pour valider que l'email se termine par .xx (exactement 2 caractères)
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(?:[a-zA-Z]{2}|com)$/;
+    this.isValidEmail = regex.test(this.email);
+  },
+
+  validateReferer() {
+    // Regex pour vérifier que le referer se termine par .xx (2 caractères) ou .com
+    const regex = /^(https?:\/\/)[a-zA-Z0-9-]+(\.[a-zA-Z]{2}|\.com)\/?\s*$/;
+    this.isValidReferer = regex.test(this.referer);
+  },
+
+  // Ouvrir le modal et définir la clé à supprimer
+  openModal(id) {
+    this.keyToDelete = id;
+    this.showModal = true;
+  },
+
+  // Fermer le modal sans effectuer de suppression
+  closeModal() {
+    this.showModal = false;
+    this.keyToDelete = null;
+  },
+
+  // Ouvrir le modal de confirmation pour générer une clé
+  openConfirmationModal() {
+    if (this.isFormValid) {
+      this.showConfirmationModal = true; // Affiche le modal de confirmation
+    } else {
+      this.showMissingInfoModal = true; // Affiche le modal d'erreur si les champs sont invalides
+    }
+  },
+
+  // Fermer le modal de confirmation pour générer une clé
+  closeConfirmationModal() {
+    this.showConfirmationModal = false; // Ferme le modal de confirmation
+  },
+
+  // Fermer le modal si l'utilisateur n'a pas rempli les champs
+  closeMissingInfoModal() {
+    this.showMissingInfoModal = false; // Ferme le modal d'erreur
+  },
+  //Affiche l'aide 
+  showTooltip() {
+    this.isTooltipVisible = true;
+  },
+  //Cache l'aide
+  hideTooltip() {
+    this.isTooltipVisible = false;
+  },
+
+  toggleTag(role) {
+    // Si on clique sur le tag déjà actif, on le désactive
+    this.selectedTag = this.selectedTag === role ? "" : role;
+    this.currentPage = 1;
+  },
+
+  openEditModal(user) {
+    this.editedUser = { ...user };
+    this.showEditModal = true;
+  
+    this.email = this.editedUser.email;
+    this.referer = this.editedUser.referer;
+  
+    this.validateEmail();
+    this.validateReferer();
+},
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.email = "";
+    this.referer = "";
+    this.editedUser = {
+      appId: "",
+      email: "",
+      referer: "",
+      role: ""
+    };
+},
+
+  async saveChanges() {
+    this.email = this.editedUser.email;
+    this.referer = this.editedUser.referer;
+    this.validateEmail();
+    this.validateReferer();
+  
+    // Ne soumettre que si les validations passent
+    if (!this.isValidEmail || !this.isValidReferer) {
+      return;
+    }
+  
+    try {
+      const oldEmail = this.apiKeys.find(key => key.appId === this.editedUser.appId).email;
+
+      const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": this.apiKey,
+          "x-app-id": this.apiId
+        },
+      body: JSON.stringify({
+        appId: this.editedUser.appId,
+        email: this.editedUser.email,
+        referer: this.editedUser.referer,
+        role: this.editedUser.role
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erreur HTTP : ${response.status} - ${errorText}`);
+    }
+
+    const subjectNew = encodeURIComponent("Modification de votre profil utilisateur");
+    const bodyNew = encodeURIComponent(`Bonjour,
 
 Nous avons procédé à une modification de votre profil utilisateur. Voici vos nouvelles informations :
 
@@ -569,55 +597,57 @@ Si vous n'êtes pas à l'origine de cette action ou si vous avez des questions, 
 Cordialement,
 Votre service CaptchAdmin`);
 
-        window.location.href = `mailto:${oldEmail},${this.editedUser.email}?subject=${subjectNew}&body=${bodyNew}`;
+    window.location.href = `mailto:${oldEmail},${this.editedUser.email}?subject=${subjectNew}&body=${bodyNew}`;
 
-        auditService.logUpdate('/key-access', `Modification du profil de l'utilisateur: ${this.editedUser.appId}`);
-        await this.fetchKeys();
-        this.closeEditModal();
-      } catch (error) {
-        console.error("Erreur:", error);
-        auditService.logError('/key-access', `Échec lors de la modification du profil de l'utilisateur: ${this.editedUser.appId}`);
+    auditService.logUpdate('/key-access', `Modification du profil de l'utilisateur: ${this.editedUser.appId}`);
+    await this.fetchKeys();
+    this.closeEditModal();
+  } catch (error) {
+    console.error("Erreur:", error);
+    auditService.logError('/key-access', `Échec lors de la modification du profil de l'utilisateur: ${this.editedUser.appId}`);
+  }
+},
+
+  // Méthode pour générer une nouvelle clé d'accès
+  async generateApiKey() {
+    try {
+      const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": this.apiKey,
+          "x-app-id": this.apiId
+        },
+        body: JSON.stringify({
+          appId: this.keyName,
+          email: this.email,
+          referer: this.referer,
+          role: this.role
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erreur HTTP : ${response.status} - ${errorText}`);
       }
-    },
 
-    // Méthode pour générer une nouvelle clé d'accès
-    async generateApiKey() {
-      try {
-        // Envoie de la requête POST à l'API pour récupérer le cuser
-        const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": this.apiKey,
-            "x-app-id": this.apiId
-          },
-          body: JSON.stringify({
-            appId: this.keyName,
-            email: this.email,
-            referer: this.referer,
-            role: this.role
-          })
-        });
+      const responseData = await response.json();
+      
+      // Log détaillé de la réponse
+      console.log('Réponse complète :', responseData);
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Erreur HTTP : ${response.status} - ${errorText}`);
-        }
+      // Extraction de la clé depuis l'objet cuser
+      const generatedApiKey = responseData.cuser?.key || 
+                              responseData.cuser?.apiKey || 
+                              responseData.cuser?.access_key;
 
-        const responseData = await response.json();
+      if (!generatedApiKey) {
+        console.error('Aucune clé trouvée dans cuser', responseData.cuser);
+        throw new Error('Impossible de trouver la clé API dans la réponse');
+      }
 
-        // Extraction de la clé depuis l'objet cuser
-        const generatedApiKey = responseData.cuser?.key || 
-                                responseData.cuser?.apiKey || 
-                                responseData.cuser?.access_key;
-
-        if (!generatedApiKey) {
-          console.error('Aucune clé trouvée dans cuser', responseData.cuser);
-          throw new Error('Impossible de trouver la clé API dans la réponse');
-        }
-
-        const subject = encodeURIComponent("Votre nouvelle clé d'accès");
-        const body = encodeURIComponent(`Bonjour,
+      const subject = encodeURIComponent("Votre nouvelle clé d'accès");
+      const body = encodeURIComponent(`Bonjour,
 
 Voici votre nouvelle clé d'accès :
 
@@ -629,51 +659,53 @@ Veuillez la conserver de manière sécurisée.
 Cordialement,
 Votre service CaptchAdmin`);
 
-        window.location.href = `mailto:${this.email}?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:${this.email}?subject=${subject}&body=${body}`;
 
-        auditService.logCreate('/key-access', `Création de la clé d'accès pour l'utilisateur: ${this.keyName}`);
+      auditService.logCreate('/key-access', `Création de la clé d'accès pour l'utilisateur: ${this.keyName}`);
 
-        await this.fetchKeys();
-        
-        // Réinitialisation des champs
-        this.keyName = "";
-        this.email = "";
-        this.referer = "";
-        this.role = "";
-        this.showConfirmationModal = false;
-      } catch (error) {
-        console.error("Erreur lors de la génération de la clé", error);
-        this.errorMessage = error.message || "Une erreur est survenue lors de la génération de la clé.";
-        auditService.logCreate('/key-access', `Échec lors de la création de la clé d'accès pour l'utilisateur: ${this.keyName}`);
+      await this.fetchKeys();
+      
+      // Réinitialisation des champs
+      this.keyName = "";
+      this.email = "";
+      this.referer = "";
+      this.role = "";
+      this.showConfirmationModal = false;
+
+    } catch (error) {
+      console.error("Erreur lors de la génération de la clé", error);
+      this.errorMessage = error.message || "Une erreur est survenue lors de la génération de la clé.";
+      auditService.logCreate('/key-access', `Échec lors de la création de la clé d'accès pour l'utilisateur: ${this.keyName}`);
+    }
+  },
+
+  // Méthode pour supprimer la clé d'accès après confirmation
+  async deleteKey() {
+    const id = this.keyToDelete;
+    if (!id) return;
+
+    try {
+      // Trouver l'email de l'utilisateur avant de supprimer la clé
+      const userToDelete = this.apiKeys.find(key => key.appId === id);
+      const userEmail = userToDelete?.email;
+      const userName = userToDelete?.appId;
+      
+      const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser/${id}`,
+          { method: "DELETE",
+                headers: {
+                "Accept": "*/*",
+                "x-api-key": this.apiKey,
+                "x-app-id": this.apiId
+              }});
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression de la clé.");
       }
-    },
 
-    // Méthode pour supprimer une clé d'accès après confirmation
-    async deleteKey() {
-      const id = this.keyToDelete;
-      if (!id) return;
-
-      try {
-        const userToDelete = this.apiKeys.find(key => key.appId === id);
-        const userEmail = userToDelete?.email;
-        const userName = userToDelete?.appId;
-        
-        // Envoie de la requête DELETE à l'API pour supprimer un cuser
-        const response = await fetch(`https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser/${id}`,
-            { method: "DELETE",
-                  headers: {
-                  "Accept": "*/*",
-                  "x-api-key": this.apiKey,
-                  "x-app-id": this.apiId
-                }});
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de la suppression de la clé.");
-        }
-
-        if (userEmail) {
-          const subject = encodeURIComponent("Suppression de votre clé d'accès");
-          const body = encodeURIComponent(`Bonjour,
+      // Si l'email existe, envoyer une notification
+      if (userEmail) {
+        const subject = encodeURIComponent("Suppression de votre clé d'accès");
+        const body = encodeURIComponent(`Bonjour,
 
 Nous vous informons que votre clé d'accès "${userName}" a été supprimée.
 
@@ -682,240 +714,230 @@ Si vous n'êtes pas à l'origine de cette action ou si vous avez des questions, 
 Cordialement,
 Votre service CaptchAdmin`);
 
-          window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
-        }
-
-        auditService.logDelete('/key-access', `Suppression de la clé d'accès pour l'utilisateur: ${userName}`);
-
-        await this.fetchKeys();
-        this.closeModal();
-      } catch (error) {
-        console.error("Erreur:", error);
-        auditService.logError('/key-access', `Échec lors de la suppression de la clé d'accès pour l'utilisateur: ${this.keyToDelete}`);
+        window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
       }
-    },
 
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
-    },
-    
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-      }
-    },
+      auditService.logDelete('/key-access', `Suppression de la clé d'accès pour l'utilisateur: ${userName}`);
 
-    async fetchMoreKeys() {
-      try {
-        // Récupération des cuser
-        const response = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=21&nbObjects=20`,
-          {
-            method: "GET",
-            headers: {
-              "Accept": "application/json",
-              "x-api-key": this.apiKey,
-              "x-app-id": this.apiId
-            },
-          }
-        );
-        const resultat = await response.json();
-        const additionalKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
-        
-        this.apiKeys = [...this.apiKeys, ...additionalKeys];
-        this.totalKeys = this.apiKeys.length;
-      } catch (error) {
-        console.error("Erreur lors de la récupération des clés supplémentaires", error);
-      }
-    },
-
-    async fetchKeys() {
-      try {
-        // Récupération des cuser
-        const response = await fetch(
-          `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=1&nbObjects=20`,
-          {
-            method: "GET",
-            headers: {
-              "Accept": "application/json",
-              "x-api-key": this.apiKey,
-              "x-app-id": this.apiId
-            },
-          }
-        );
-        const resultat = await response.json();
-        this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
-        this.totalKeys = this.apiKeys.length;
-
-        // Si il y a moins de 20 clés, plus besoin d'en chercher plus
-        if (this.apiKeys.length === 20) {
-          await this.fetchMoreKeys();
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des clés", error);
-      }
-    },
-  },
-
-  mounted() {
-    window.scrollTo(0, 0);
-    this.fetchKeys();
-  },
-
-  watch: {
-    searchQuery() {
-      this.currentPage = 1;
-    },
-
-    // Validation l'email à chaque changement
-    email() {
-      this.validateEmail();
-    },
-
-    // Validation le referer à chaque changement
-    referer() {
-      this.validateReferer();
+      await this.fetchKeys();
+      this.closeModal();
+    } catch (error) {
+      console.error("Erreur:", error);
+      auditService.logError('/key-access', `Échec lors de la suppression de la clé d'accès pour l'utilisateur: ${this.keyToDelete}`);
     }
+  },
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  },
+  
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  },
+
+  async fetchMoreKeys() {
+    try {
+      const response = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=21&nbObjects=20`,
+        {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": this.apiKey,
+            "x-app-id": this.apiId
+          },
+        }
+      );
+      const resultat = await response.json();
+      const additionalKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
+      
+      this.apiKeys = [...this.apiKeys, ...additionalKeys];
+      this.totalKeys = this.apiKeys.length;
+    } catch (error) {
+      console.error("Erreur lors de la récupération des clés supplémentaires", error);
+    }
+  },
+
+  async fetchKeys() {
+    try {
+      const response = await fetch(
+        `https://qlf-geocaptcha.ign.fr/api/v1/admin/cuser?firstObject=1&nbObjects=20`,
+        {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "x-api-key": this.apiKey,
+            "x-app-id": this.apiId
+          },
+        }
+      );
+      const resultat = await response.json();
+      this.apiKeys = JSON.parse(JSON.stringify(resultat.cusers)) || [];
+      this.totalKeys = this.apiKeys.length;
+
+      // Si moins de 20 clés, pas besoin de chercher plus
+      if (this.apiKeys.length === 20) {
+        await this.fetchMoreKeys();
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des clés", error);
+    }
+  },
+},
+
+mounted() {
+  window.scrollTo(0, 0);
+  this.fetchKeys();
+},
+
+watch: {
+  // Remettre à la première page quand la requête de recherche change
+  searchQuery() {
+    this.currentPage = 1;
+  },
+  // Valider l'email à chaque changement
+  email() {
+    this.validateEmail();
+  },
+  // Valider le referer à chaque changement
+  referer() {
+    this.validateReferer();
   }
+}
 };
 </script>
 
 <style scoped>
 
 /* Styles des onglets à sélectionner */
-
 .fr-tabs__tab--selected {
-  background-color: #007bff;
-  color: white;
+background-color: #007bff;
+color: white;
 }
 
-.fr-tabs {
-  margin-left: 50px;
-  margin-right: 50px;
-  margin-top: 170px;  
+.fr-tabs{
+margin-left: 50px;
+margin-right: 50px;
+margin-top: 170px;  
 }
 
 /* Masquer les panels inactifs tout en maintenant leur espace */
 .fr-tabs__panel {
-  visibility: hidden; 
-  opacity: 0; 
-  transition: opacity 0.1s ease, visibility 0.3s ease;
+visibility: hidden; 
+opacity: 0; 
+transition: opacity 0.1s ease, visibility 0.3s ease;
 }
 
 /* Afficher le panel sélectionné */
 .fr-tabs__panel--selected {
-  visibility: visible;
-  opacity: 1; 
+visibility: visible;
+opacity: 1; 
 }
-
 
 
 /* Styles pour la recherche d'utilisateur */
-
 .key-list {
-  margin: 1em;
+margin: 1em;
 }
 
 .barre {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding-bottom: 20px;
 }
 
 .barre h1 {
-  margin: 0;
+margin: 0;
 }
-
-
 
 /* Styles des boutons */
 
-#close {
-  background: none;
-  border: none;
-  cursor: pointer;
+#close{
+background: none;
+border: none;
+cursor: pointer;
 }
 
 .fr-btn--reject {
-  background-color: red; 
-  color: #fff; 
+      background-color: red; 
+      color: #fff; 
 }
 
 .fr-btn--reject:hover {
-  background-color: #c82333; 
+      background-color: #c82333; 
 }
 
-#cancel {
-  background-color: #ddd !important;
-  color: #3a3a3a;
+#cancel{
+background-color: #ddd !important;
+color: #3a3a3a;
 }
 
 #cancel:hover {
-  background-color: #c1c1c1 !important;
-  color: #3a3a3a;
+background-color: #c1c1c1 !important;
+color: #3a3a3a;
 }
 
 .key-generation {
-  padding: 1em;
-}
-
-.cle-generer {
-  transition: opacity 0.3s ease;
-  display: block;
-  margin-left: auto;
+padding: 1em;
 }
 
 .delete-btn {
-  background-color: red;
-  color: white;
+background-color: red;
+color: white;
 }
 
 .delete-btn:hover {
-  background-color: #c82333;
-  color: white;
+background-color: #c82333;
+color: white;
 }
 
 .edit-btn {
   margin-right: 10px;
 }
 
-.btn-enregistrer {
+.btn-enregistrer{
   margin-left: 0 auto;
 }
 
 .fr-btn--disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
+opacity: 0.5;
+cursor: not-allowed;
+pointer-events: none;
 }
 
-
-
-/* Styles affichage visuel */
+/* Pour une meilleure indication visuelle */
+.cle-generer {
+transition: opacity 0.3s ease;
+}
 
 .fr-input-group {
-  margin-bottom: 1em;
+margin-bottom: 1em;
 }
 
 .fr-input-group .fr-label {
-  margin-bottom: 0.5em;
+margin-bottom: 0.5em;
 }
 
 .fr-input {
-  width: 100%;
-  padding: 0.8rem;
+width: 100%;
+padding: 0.8rem;
+}
+
+.cle-generer {
+display: block;
+margin-left: auto;
 }
 
 .fr-alert {
-  margin: 15px;
+margin: 15px;
 }
 
-
-
-/* Styles pour les Modales */
+/* Modal */
 
 .modal-overlay {
   position: fixed;
@@ -927,7 +949,7 @@ Votre service CaptchAdmin`);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .modal-content {
@@ -940,69 +962,121 @@ Votre service CaptchAdmin`);
   z-index: 1001;
 }
 
+.modal-actions {
+display: flex;
+justify-content: space-between;
+align-items: flex-end; 
+}
+
+.modal-actions .btn-cancel {
+background-color: #ddd;
+color: #3a3a3a;
+align-self: flex-end; 
+}
+
+.modal-actions .btn-cancel:hover {
+background-color: #c1c1c1;
+}
 
 
-/* Styles pour la pagination */
+.modal-actions button {
+width: 48%;
+}
+
+.modal-actions .btn-delete {
+background-color: red;
+color: white;
+}
+
+.modal-actions .btn-delete:hover {
+background-color: #c82333;
+}
+
+.modal-actions .btn-cancel {
+background-color: #ddd;
+color: #3a3a3a;
+}
+
+.modal-actions .btn-cancel:hover {
+background-color: #c1c1c1;
+}
+
+
+/* Pagination */
 
 .pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
+display: flex;
+justify-content: center;
+align-items: center;
+margin-top: 20px;
+}
+
+.pagination-btn:disabled {
+background-color: #ccc;
+cursor: not-allowed;
 }
 
 .page-info {
-  font-weight: bold;
+font-weight: bold;
 }
 
+
 .fr-tile__title {
-  font-size: 1rem;  
-  margin-bottom: 0.25rem;  
-  line-height: 1.2;  
+font-size: 1rem;  
+margin-bottom: 0.25rem;  
+line-height: 1.2;  
 }
 
 .search-container {
-  display: flex;
-  align-items: center; 
-  gap: 8px; 
+display: flex;
+align-items: center; 
+gap: 8px; 
 }
 
 
-
-/* Styles pour les tags */
+/* Tags */
 
 .tag-container {
-  margin-right: 25px;
+margin-right: 25px;
 }
 
-.fr-tags-group .fr-tag {
-  vertical-align: middle;
-  margin-bottom: 0px;
+.fr-tags-group .fr-tag{
+vertical-align: middle;
+margin-bottom: 0px;
 }
 
 .tooltip-container {
-  position: relative;
+position: relative;
+}
+
+.tooltip-button {
+background-color: #007bff;
+color: white;
+border: none;
+padding: 8px;
+cursor: pointer;
+border-radius: 5px;
 }
 
 .custom-tooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgb(21, 21, 21);
-  color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  white-space: nowrap;
-  font-size: 14px;
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
+position: absolute;
+bottom: 100%;
+left: 50%;
+transform: translateX(-50%);
+background-color: rgb(21, 21, 21);
+color: white;
+padding: 6px 10px;
+border-radius: 4px;
+white-space: nowrap;
+font-size: 14px;
+visibility: visible;
+opacity: 1;
+transition: opacity 0.3s ease-in-out;
 }
 
 .tooltip-container:hover .custom-tooltip {
-  visibility: visible;
-  opacity: 1;
+visibility: visible;
+opacity: 1;
 }
 
 </style>

@@ -46,7 +46,7 @@
         <div class="metrics-list">
           <div class="list-header">
             <h1 class="fr-h1">Gestion de Géocaptcha</h1>
-            <h6 class="fr-h6">Heatmap affichant la localisation des GéoCaptchas créés :</h6>
+            <h6 class="fr-h6">Carte de chaleur affichant la localisation des GéoCaptchas créés :</h6>
             <!-- Composant Heatmap pour afficher les données -->
             <Heatmap :geocaptchaData="kingpinStats" />
 

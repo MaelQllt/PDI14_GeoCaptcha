@@ -1,84 +1,62 @@
-# CaptchAdmin
+# 🚀 CaptchAdmin
 
+## 🌍 Pourquoi CaptchAdmin ?
 
+Lorsque vous naviguez sur Internet, il vous est souvent demandé de prouver que vous êtes un humain à l’aide d’un captcha. Ces défis, souvent sous forme de textes déformés ou de séquences d’images, peuvent être contraignants.
 
-## Pourquoi CaptchAdmin ?
+L’**IGN**, par l’intermédiaire de la **Mission Architecture Réseau et Sécurité (MARS)**, a développé un système innovant : **les GéoCaptcha**. Ces captchas utilisent des données géographiques pour offrir une alternative ludique, respectueuse de la vie privée et éducative.
 
-Lorsque vous arrivez sur un site internet, il vous est souvent demandé si vous êtes un
-humain ou un robot. Pour prouver votre humanité vous devez résoudre un captcha, la plupart du temps sous la forme de déchiffrage de texte ou bien de séquence
-d’images. L’IGN, par la Mission Architecture Réseau et Sécurité (MARS), a conçu un
-système novateur dans ce domaine, les GéoCaptcha. Ces captchas reposent
-sur des données géographiques, l’objectif est de proposer aux utilisateurs un nouveau type
-de captcha qui se veut ludique et respectueux de la vie privée tout en sensibilisant le public
-à la donnée géospatiale.
+Dans le cadre du projet de **développement informatique 2024-2025**, notre équipe est chargée d’**améliorer et optimiser l’interface d’administration** existante du GéoCaptcha. Actuellement, une API administrateur permet de gérer les jeux, les clés d’accès et d’accéder à diverses métriques. Cependant, l’interface actuelle présente des **contraintes d’ergonomie, de design et de fonctionnalités**. Une refonte est donc nécessaire pour offrir une **expérience utilisateur plus fluide et intuitive**.
 
-Dans le contexte du projet de développement informatique pour 2024-2025, notre
-équipe est chargée d’améliorer et d’optimiser l’interface d’administration déjà existante
-du GéoCaptcha. À l’heure actuelle, une API administrateur offre la possibilité de gérer les
-jeux, les clés d’accès et d’accéder à diverses métriques. Toutefois, l’interface liée présente
-des contraintes en matière d’ergonomie, de design et de fonctionnalités. Pour assurer une
-expérience utilisateur plus aisée et intuitive avec de nouvelles fonctionnalités, une refonte
-de l’interface est donc demandée par l’IGN.
+---
 
+## 📚 Documentation
 
-## Documentation 
+📌 **Retrouvez la documentation complète ici :** [Documentation CaptchAdmin](https://github.com/MaelQllt/PDI14_GeoCaptcha/blob/main/doc/DOC%20DEV.md)
 
-La documentation complète est disponible ici (https://github.com/MaelQllt/PDI14_GeoCaptcha/blob/main/doc/DOC%20DEV.md). 
+---
 
+## 🚀 Installation et Lancement
 
-## Pour le lancer rapidement
+### ✅ **Prérequis**
 
-Tout d'abord pour exploiter pleinement l'interface il faut une clé d'accès à l'API GeoCaptcha de l'IGN. 
-La suite n'est alors utile qu'en possession d'une clé et d'un id qu'il faut mettre dans un fichier `.env` dans le dossier `dev/frontend`.
+1. **Obtenir une clé d’accès** :
+   - Une clé API et un identifiant sont nécessaires pour exploiter pleinement l’interface.
+   - Ces informations doivent être renseignées dans un fichier **`.env`** dans le dossier `dev/frontend`.
 
-
-```js
-
-VITE_API_KEY= 
-VITE_API_ID= 
-
+```env
+VITE_API_KEY=your_api_key
+VITE_API_ID=your_api_id
 ```
 
+2. **Installer Node.js et npm** :
+   - Assurez-vous que **npm** est installé sur votre machine.
+   - [Guide d’installation de npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
-Ensuite vérifiez que npm est installé sur votre machine. (https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+---
 
-Dans le terminale au dossier `dev/frontend` lancez la commande :
+### 🔧 **Étapes d’installation**
 
+Dans le terminal, **placez-vous dans le dossier `dev/frontend`**, puis exécutez les commandes suivantes :
+
+1️⃣ **Installer les dépendances** :
 ```bash
-npm install @gouvfr/dsfr
+npm install @gouvfr/dsfr vite ol @turf/turf axios
 ```
 
-Puis 
-
-```bash
-npm install vite
-```
-
-Puis 
-
-```
-npm install ol
-```
-
-Puis
-
-```
-npm install @turf/turf
-```
-
-Puis
-
-```
-npm install axios
-```
-
-Ensuite 
-
+2️⃣ **Lancer le projet** :
 ```bash
 npm run dev -- --host
 ```
+> La commande `npm run dev -- --host` permet de lancer le serveur de développement en rendant l’interface accessible depuis d’autres appareils sur le réseau local. Cela est particulièrement utile pour tester l’application sur différents environnements.
 
-Enfin, copiez-collez dans un navigateur le lien Network renvoyé. Exemple : http://192.0.0.2:5176/
+3️⃣ **Accéder à l’interface** :
+   - Copiez-collez dans un navigateur le lien **Network** affiché (ex. : `http://192.0.0.2:5176/`).
+
+---
+
+## 🎉 Profitez de CaptchAdmin !
+
+Vous êtes maintenant prêt à utiliser **CaptchAdmin** et à découvrir une nouvelle manière de gérer les GéoCaptcha ! 🌎🔒
 
 
-Vous pouvez maintenant profiter de CaptchAdmin.

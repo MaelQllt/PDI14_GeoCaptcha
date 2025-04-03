@@ -341,6 +341,7 @@ export default {
   },
 
   methods: {
+
     async validateAndCreateGeoCaptcha() {
       this.latitudeError = "";
       this.longitudeError = "";
@@ -487,61 +488,6 @@ export default {
           180) /
         Math.PI
       );
-    },
-
-
-    async createGeoCaptcha() {
-      // Conversion des coordonnées latitude/longitude en coordonnées de tuile
-      const tileCoords = this.latLonToTile(this.latitude, this.longitude, 15); // z = 15 pour les GéoCaptchas
-      console.log("Coordonnées de la tuile :", tileCoords);
-
-      // Préparation des données pour l'API
-      const data = {
-        id: this.generateUniqueId(),
-        x: tileCoords.x,
-        y: tileCoords.y,
-        z: 15,
-        zipcode: this.zipcode,
-        mode: this.mode,
-        ok: "1"
-      };
-      console.log("Données envoyées à l'API :", data);
-
-      try {
-        // Envoie de la requête POST à l'API pour récupérer le kingpin
-        const response = await fetch("https://qlf-geocaptcha.ign.fr/api/v1/admin/kingpin", {
-          method: "POST",
-          headers: {
-            "Accept": "*/*",
-            "content-type": "application/json",
-            "x-api-key": import.meta.env.VITE_API_KEY,
-            "x-app-id": import.meta.env.VITE_API_ID,
-          },
-          body: JSON.stringify(data),
-        });
-        console.log(response);
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de la création du GéoCaptcha");
-        }
-
-        // Log de création d'un GéoCaptcha
-        auditService.logCreate('/geo-captcha', `Création d'un GéoCaptcha`);
-
-        const result = await response.json();
-        console.log("Réponse de l'API :", result);
-
-        if (data.mode === 'plan-sur-plan') {
-          data.mode = 'plan';
-        }
-
-        this.successMessage = `GéoCaptcha créé avec succès ! ID : ${data.id}`;
-        this.imageTuile = await this.getCaptchaImageTuile(data.mode, data.z, data.x, data.y);
-        this.isModalOpen = true;
-      } catch (error) {
-        console.error("Erreur :", error);
-        auditService.logError('/geo-captcha', `Échec lors de la création d'un GéoCaptcha`);
-      }
     },
 
     async getCaptchaImageTuile(layer, tileMatrix, col, row) {
